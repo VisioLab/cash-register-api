@@ -1,0 +1,156 @@
+asyncapi: 2.4.0
+info:
+  title: VisioLab Cash Register API
+  version: 0.1.0
+  description: >
+    ### Enables communication between the VisioLab food scanner and a cash register
+
+    The iPad running the VisioLab scanner runs a Websocket server in the local
+    network on `ws:/<local-ip>/visiolab-cash-register`.
+
+
+    Once the cash register has established a connection, it should synchronize
+    its articles using the `syncItems` operation. Afterwards
+    the scanner is ready to detect food.
+
+
+    Once something is detected, `enterBasket` will be send, followed by 
+    `startPayment`. The cash register should handle the transaction and 
+    "respond" by sending either `paymentSuccess` or `paymentFailure`.
+servers:
+  visiolab:
+    url: "ws://localhost/visiolab-cash-register"
+    protocol: ws
+channels:
+  /visiolab-cash-register:
+    publish:
+      summary: Messages the client can send.
+      operationId: sendMessage
+      message:
+        oneOf:
+          - $ref: "#/components/messages/syncItems"
+          - $ref: "#/components/messages/paymentSuccess"
+          - $ref: "#/components/messages/paymentFailure"
+    subscribe:
+      summary: Messages the sever can send.
+      operationId: processMessage
+
+      description: >
+        Update the contents of the current basket.
+
+        The contents of the basket are completely replaced by the new contents.
+      message:
+        oneOf:
+          - $ref: "#/components/messages/enterBasket"
+          - $ref: "#/components/messages/startPayment"
+
+components:
+  schemas:
+    Item:
+      type: object
+      required: ["id", "price_lookup", "price"]
+      properties:
+        id:
+          type: string
+        price_lookup:
+          type: string
+        price:
+          type: number
+    Items:
+      type: array
+      items:
+        type: object
+        $ref: "#/components/schemas/Item"
+    SuccessfulPayment:
+      type: object
+      properties:
+        totalGross:
+          type: number
+      required:
+        - totalGross
+    FailedPayment:
+      type: object
+      properties:
+        reason:
+          enum:
+            - cancelled
+            - other
+          type: string
+        message:
+          type: string
+      required:
+        - reason
+        - message
+  messages:
+    syncItems:
+      summary: Available items in the cash register.
+      payload:
+        type: object
+        properties:
+          event:
+            type: string
+            const: syncItems
+          data:
+            type: object
+            properties:
+              items:
+                type: array
+                items:
+                  type: object
+                  $ref: "#/components/schemas/Item"
+    enterBasket:
+      summary: Message that contains information about travel status.
+      examples:
+        - payload:
+            destination: Far far away
+            distance: Beyond the seven mountains and seven forests
+            arrival: Pretty soon
+      payload:
+        type: object
+        properties:
+          event:
+            type: string
+            const: enterBasket
+          data:
+            type: object
+            properties:
+              items:
+                $ref: "#/components/schemas/Items"
+    startPayment:
+      summary: Server initiates payment for current basket.
+      payload:
+        type: object
+        properties:
+          event:
+            type: string
+            const: startPayment
+          data:
+            type: object
+            properties:
+              paymentMethod:
+                type: string
+      examples:
+        - payload:
+            event: paymentStarted
+            data:
+              paymentMethod: "CreditCard"
+    paymentSuccess:
+      summary: Result of the payment process.
+      payload:
+        type: object
+        properties:
+          event:
+            type: string
+            const: paymentSuccess
+          data:
+            $ref: "#/components/schemas/SuccessfulPayment"
+    paymentFailure:
+      summary: Result of the payment process.
+      payload:
+        type: object
+        properties:
+          event:
+            type: string
+            const: paymentFailure
+          data:
+            $ref: "#/components/schemas/FailedPayment"
