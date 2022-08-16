@@ -14,13 +14,19 @@ info:
     the scanner is ready to detect food.
 
 
-    Once something is detected, `enterBasket` will be send, followed by 
+    Once something is detected, `setBasket` will be send, followed by 
     `startPayment`. The cash register should handle the transaction and 
     "respond" by sending either `paymentSuccess` or `paymentFailure`.
+
+
+    Each message contains an `event` and a `data` property at the top level. The `event`
+    property identifies the type of the message, so that actions can be dispatched
+    based on it. The `data` property contains the actual content of the message.
 servers:
   visiolab:
     url: "ws://localhost/visiolab-cash-register"
     protocol: ws
+defaultContentType: application/json
 channels:
   /visiolab-cash-register:
     publish:
@@ -34,28 +40,26 @@ channels:
     subscribe:
       summary: Messages the sever can send.
       operationId: processMessage
-
-      description: >
-        Update the contents of the current basket.
-
-        The contents of the basket are completely replaced by the new contents.
       message:
         oneOf:
-          - $ref: "#/components/messages/enterBasket"
+          - $ref: "#/components/messages/setBasket"
           - $ref: "#/components/messages/startPayment"
 
 components:
   schemas:
     Item:
       type: object
-      required: ["id", "price_lookup", "price"]
+      required: ["id", "priceLookup", "price"]
       properties:
         id:
           type: string
-        price_lookup:
+          description: Identifier for the item.
+        priceLookup:
           type: string
+          description: The price lookup code for the item.
         price:
           type: number
+          description: The default price for the item. Is disregarded for price calculation if priceLookup is present.
     Items:
       type: array
       items:
@@ -66,6 +70,13 @@ components:
       properties:
         totalGross:
           type: number
+          description: The amount that was payed for the transaction.
+        totalVat:
+          type: number
+          description: The amount of taxes that was payed for the transaction.
+        receiptQrCode:
+          type: string
+          description: QR Code for pointing to the digital receipt for the transaction.
       required:
         - totalGross
     FailedPayment:
@@ -76,14 +87,16 @@ components:
             - cancelled
             - other
           type: string
+          description: Reason for the payment failure.
         message:
           type: string
+          description: Message for the customer on how to proceed with the payment.
       required:
         - reason
         - message
   messages:
     syncItems:
-      summary: Available items in the cash register.
+      summary: Synchronize available items in the cash register.
       payload:
         type: object
         properties:
@@ -94,30 +107,48 @@ components:
             type: object
             properties:
               items:
-                type: array
-                items:
-                  type: object
-                  $ref: "#/components/schemas/Item"
-    enterBasket:
-      summary: Message that contains information about travel status.
+                $ref: "#/components/schemas/Items"
       examples:
         - payload:
-            destination: Far far away
-            distance: Beyond the seven mountains and seven forests
-            arrival: Pretty soon
+            event: syncItems
+            data:
+              items:
+                - id: "a"
+                  priceLookup: "1"
+                  price: 1.00
+                - id: "b"
+                  priceLookup: "2"
+                  price: 2.00
+                - id: "c"
+                  priceLookup: "3"
+                  price: 3.00
+    setBasket:
+      summary: Set the current basket.
+      description: The contents of the basket are completely replaced by the new contents.
       payload:
         type: object
         properties:
           event:
             type: string
-            const: enterBasket
+            const: setBasket
           data:
             type: object
             properties:
               items:
                 $ref: "#/components/schemas/Items"
+      examples:
+        - payload:
+            event: setBasket
+            data:
+              items:
+                - id: "abc"
+                  price_lookup: "123"
+                  price: 1.20
+                - id: "def"
+                  price_lookup: "456"
+                  price: 2.40
     startPayment:
-      summary: Server initiates payment for current basket.
+      summary: Initiate the payment for the current basket.
       payload:
         type: object
         properties:
@@ -129,13 +160,15 @@ components:
             properties:
               paymentMethod:
                 type: string
+            required:
+              - paymentMethod
       examples:
         - payload:
-            event: paymentStarted
+            event: startPayment
             data:
               paymentMethod: "CreditCard"
     paymentSuccess:
-      summary: Result of the payment process.
+      summary: Report the success of a payment.
       payload:
         type: object
         properties:
@@ -144,8 +177,13 @@ components:
             const: paymentSuccess
           data:
             $ref: "#/components/schemas/SuccessfulPayment"
+      examples:
+        - payload:
+            event: paymentSuccess
+            data:
+              totalGross: 5.20
     paymentFailure:
-      summary: Result of the payment process.
+      summary: Report the failure of a payment.
       payload:
         type: object
         properties:
