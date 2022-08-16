@@ -49,11 +49,18 @@ components:
   schemas:
     Item:
       type: object
-      required: ["id", "priceLookup", "price"]
+      required:
+        - id
+        - name
+        - priceLookup
+        - price
       properties:
         id:
           type: string
           description: Identifier for the item.
+        name:
+          type: string
+          description: Name of the item.
         priceLookup:
           type: string
           description: The price lookup code for the item.
@@ -114,12 +121,15 @@ components:
             data:
               items:
                 - id: "a"
+                  name: "Eggs Benedict"
                   priceLookup: "1"
                   price: 1.00
                 - id: "b"
+                  name: "Waldorf Salad"
                   priceLookup: "2"
                   price: 2.00
                 - id: "c"
+                  name: "Caesar Salad"
                   priceLookup: "3"
                   price: 3.00
     setBasket:
@@ -142,9 +152,11 @@ components:
             data:
               items:
                 - id: "abc"
+                  name: "Caesar Salad"
                   price_lookup: "123"
                   price: 1.20
                 - id: "def"
+                  name: "Beef Stroganoff"
                   price_lookup: "456"
                   price: 2.40
     startPayment:
