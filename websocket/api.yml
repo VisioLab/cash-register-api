@@ -35,8 +35,7 @@ channels:
       message:
         oneOf:
           - $ref: "#/components/messages/syncItems"
-          - $ref: "#/components/messages/paymentSuccess"
-          - $ref: "#/components/messages/paymentFailure"
+          - $ref: "#/components/messages/paymentResult"
     subscribe:
       summary: Messages the sever can send.
       operationId: processMessage
@@ -75,6 +74,9 @@ components:
     SuccessfulPayment:
       type: object
       properties:
+        status:
+          type: string
+          const: success
         totalGross:
           type: number
           description: The amount that was payed for the transaction.
@@ -89,7 +91,7 @@ components:
     FailedPayment:
       type: object
       properties:
-        reason:
+        status:
           enum:
             - cancelled
             - other
@@ -179,28 +181,26 @@ components:
             event: startPayment
             data:
               paymentMethod: "CreditCard"
-    paymentSuccess:
+    paymentResult:
       summary: Report the success of a payment.
       payload:
         type: object
         properties:
           event:
             type: string
-            const: paymentSuccess
+            const: paymentResult
           data:
-            $ref: "#/components/schemas/SuccessfulPayment"
+            oneOf:
+              - $ref: "#/components/schemas/SuccessfulPayment"
+              - $ref: "#/components/schemas/FailedPayment"
       examples:
         - payload:
-            event: paymentSuccess
+            event: paymentResult
             data:
+              status: "success"
               totalGross: 5.20
-    paymentFailure:
-      summary: Report the failure of a payment.
-      payload:
-        type: object
-        properties:
-          event:
-            type: string
-            const: paymentFailure
-          data:
-            $ref: "#/components/schemas/FailedPayment"
+        - payload:
+            event: paymentResult
+            data:
+              status: "cancelled"
+              message: "Please tap your card again."
