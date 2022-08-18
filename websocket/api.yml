@@ -49,7 +49,6 @@ components:
     Item:
       type: object
       required:
-        - id
         - name
         - priceLookup
         - price
@@ -66,6 +65,8 @@ components:
         price:
           type: number
           description: The default price for the item. Is disregarded for price calculation if priceLookup is present.
+        previewImage:
+          type: string
     Items:
       type: array
       items:
@@ -77,6 +78,10 @@ components:
         status:
           type: string
           const: success
+        cashRegisterId:
+          type: string
+        receiptId:
+          type: string
         totalGross:
           type: number
           description: The amount that was payed for the transaction.
@@ -94,6 +99,8 @@ components:
         status:
           enum:
             - cancelled
+            - cardRemovedTooQuickly
+            - notEnoughBalance
             - other
           type: string
           description: Reason for the payment failure.
@@ -117,6 +124,9 @@ components:
             properties:
               items:
                 $ref: "#/components/schemas/Items"
+          required:
+            - event
+            - data
       examples:
         - payload:
             event: syncItems
@@ -152,6 +162,7 @@ components:
         - payload:
             event: setBasket
             data:
+              checkoutId: string
               items:
                 - id: "abc"
                   name: "Caesar Salad"
@@ -204,3 +215,14 @@ components:
             data:
               status: "cancelled"
               message: "Please tap your card again."
+    reset:
+      summary: Reset the cash register.
+      description: >
+        Cancel all ongoing transactions and delete all 
+        items from the current basket.
+      payload:
+        type: object
+        properties:
+          event:
+            type: string
+            const: reset
