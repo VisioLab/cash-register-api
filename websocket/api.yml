@@ -10,7 +10,7 @@ info:
 
 
     Once the cash register has established a connection, it should synchronize
-    its articles using the `syncItems` operation. Afterwards
+    its articles using the `syncArticles` operation. Afterwards
     the scanner is ready to detect food.
 
 
@@ -34,8 +34,9 @@ channels:
       operationId: sendMessage
       message:
         oneOf:
-          - $ref: "#/components/messages/syncItems"
-          - $ref: "#/components/messages/paymentResult"
+          - $ref: "#/components/messages/syncArticles"
+          - $ref: "#/components/messages/paymentSuccess"
+          - $ref: "#/components/messages/paymentFailure"
     subscribe:
       summary: Messages the sever can send.
       operationId: processMessage
@@ -46,32 +47,57 @@ channels:
 
 components:
   schemas:
-    Item:
+    Article:
       type: object
       required:
         - name
         - priceLookup
         - price
       properties:
-        id:
-          type: string
-          description: Identifier for the item.
         name:
           type: string
-          description: Name of the item.
+          description: Name of the article.
         priceLookup:
           type: string
-          description: The price lookup code for the item.
+          description: >
+            The price lookup code for the article. Whatever identifier is used in the cash register,
+            to identify the price group of articles, such as an article ID.
         price:
           type: number
-          description: The default price for the item. Is disregarded for price calculation if priceLookup is present.
+          description: The default price for the articles. Is disregarded for price calculation if priceLookup is present.
+        id:
+          type: string
+          description: >
+            Optional unique identifier for the article, such as a GUID.
+            Different articles with the same price on different days should still have different IDs.
+            If not set, a unique ID will be generated internally.
         previewImage:
           type: string
-    Items:
+          description: Preview image for the article as base64 encoded string.
+    Articles:
       type: array
       items:
         type: object
-        $ref: "#/components/schemas/Item"
+        $ref: "#/components/schemas/Article"
+    BasketArticle:
+      type: object
+      required:
+        - name
+        - priceLookup
+        - id
+      properties:
+        name:
+          type: string
+          description: Name of the article.
+        priceLookup:
+          type: string
+          description: >
+            The price lookup code for the article. Whatever identifier is used in the cash register,
+            to identify the price group of articles, such as an article ID.
+        id:
+          type: string
+          description: >
+            Unique identifier for the article, such as a GUID.
     SuccessfulPayment:
       type: object
       properties:
@@ -111,27 +137,27 @@ components:
         - reason
         - message
   messages:
-    syncItems:
-      summary: Synchronize available items in the cash register.
+    syncArticles:
+      summary: Synchronize available articles in the cash register.
       payload:
         type: object
         properties:
           event:
             type: string
-            const: syncItems
+            const: syncArticles
           data:
             type: object
             properties:
-              items:
-                $ref: "#/components/schemas/Items"
-          required:
-            - event
-            - data
+              articles:
+                $ref: "#/components/schemas/Articles"
+        required:
+          - event
+          - data
       examples:
         - payload:
-            event: syncItems
+            event: syncArticles
             data:
-              items:
+              articles:
                 - id: "a"
                   name: "Eggs Benedict"
                   priceLookup: "1"
@@ -156,14 +182,17 @@ components:
           data:
             type: object
             properties:
-              items:
-                $ref: "#/components/schemas/Items"
+              articles:
+                type: array
+                items:
+                  type: object
+                  $ref: "#/components/schemas/BasketArticle"
       examples:
         - payload:
             event: setBasket
             data:
               checkoutId: string
-              items:
+              articles:
                 - id: "abc"
                   name: "Caesar Salad"
                   price_lookup: "123"
@@ -192,24 +221,35 @@ components:
             event: startPayment
             data:
               paymentMethod: "CreditCard"
-    paymentResult:
+    paymentSuccess:
       summary: Report the success of a payment.
       payload:
         type: object
         properties:
           event:
             type: string
-            const: paymentResult
+            const: paymentSuccess
           data:
             oneOf:
               - $ref: "#/components/schemas/SuccessfulPayment"
-              - $ref: "#/components/schemas/FailedPayment"
       examples:
         - payload:
             event: paymentResult
             data:
               status: "success"
               totalGross: 5.20
+    paymentFailure:
+      summary: Report the failure of a payment.
+      payload:
+        type: object
+        properties:
+          event:
+            type: string
+            const: paymentFailure
+          data:
+            oneOf:
+              - $ref: "#/components/schemas/FailedPayment"
+      examples:
         - payload:
             event: paymentResult
             data:
@@ -219,10 +259,34 @@ components:
       summary: Reset the cash register.
       description: >
         Cancel all ongoing transactions and delete all 
-        items from the current basket.
+        articles from the current basket.
       payload:
         type: object
         properties:
           event:
             type: string
             const: reset
+    confirm:
+      summary: Confirm an open dialog.
+      description: >
+        Confirm a dialog that would usually require user interaction.
+      payload:
+        type: object
+        properties:
+          event:
+            type: string
+            const: confirm
+        required:
+          - event
+    cancel:
+      summary: Cancel an open dialog.
+      description: >
+        Cancel a dialog that would usually require user interaction.
+      payload:
+        type: object
+        properties:
+          event:
+            type: string
+            const: cancel
+        required:
+          - event
