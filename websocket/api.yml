@@ -47,6 +47,7 @@ channels:
           - $ref: "#/components/messages/setBasket"
           - $ref: "#/components/messages/startPayment"
           - $ref: "#/components/messages/userInput"
+          - $ref: "#/components/messages/reset"
 
 components:
   schemas:
@@ -104,9 +105,6 @@ components:
     SuccessfulPayment:
       type: object
       properties:
-        status:
-          type: string
-          const: success
         cashRegisterId:
           type: string
         receiptId:
@@ -148,6 +146,10 @@ components:
         de:
           type: string
           description: The German text.
+      required:
+        - reason
+        - message
+      additionalProperties: false
     Dialog:
       type: object
       properties:
@@ -171,7 +173,6 @@ components:
               label:
                 $ref: "#/components/schemas/I18ned"
                 description: Label to display on the button.
-
   messages:
     syncArticles:
       summary: Synchronize available articles in the cash register.
@@ -186,9 +187,12 @@ components:
             properties:
               articles:
                 $ref: "#/components/schemas/Articles"
+            required:
+              - articles
         required:
           - event
           - data
+        additionalProperties: false
       examples:
         - payload:
             event: syncArticles
@@ -223,6 +227,12 @@ components:
                 items:
                   type: object
                   $ref: "#/components/schemas/BasketArticle"
+            required:
+              - articles
+        required:
+          - event
+          - data
+        additionalProperties: false
       examples:
         - payload:
             event: setBasket
@@ -252,6 +262,10 @@ components:
                 type: string
             required:
               - paymentMethod
+        required:
+          - event
+          - data
+        additionalProperties: false
       examples:
         - payload:
             event: startPayment
@@ -267,6 +281,10 @@ components:
             const: paymentSuccess
           data:
             $ref: "#/components/schemas/SuccessfulPayment"
+        required:
+          - event
+          - data
+        additionalProperties: false
       examples:
         - payload:
             event: paymentResult
@@ -283,6 +301,10 @@ components:
             const: paymentFailure
           data:
             $ref: "#/components/schemas/FailedPayment"
+        required:
+          - event
+          - data
+        additionalProperties: false
       examples:
         - payload:
             event: paymentResult
@@ -300,6 +322,9 @@ components:
           event:
             type: string
             const: reset
+        required:
+          - event
+        additionalProperties: false
     showDialog:
       summary: Show a dialog that requires user interaction.
       description: >
@@ -319,6 +344,7 @@ components:
         required:
           - event
           - data
+        additionalProperties: false
     closeDialog:
       summary: Close any currently open dialog.
       payload:
@@ -335,6 +361,8 @@ components:
                 description: Identifier for this kind of dialog. E.g. `cardReaderError`.
         required:
           - event
+          - data
+        additionalProperties: false
     userInput:
       summary: Report the user's response to a dialog.
       description: >
@@ -353,3 +381,4 @@ components:
                 type: string
         required:
           - event
+        additionalProperties: false
