@@ -37,6 +37,8 @@ channels:
           - $ref: "#/components/messages/syncArticles"
           - $ref: "#/components/messages/paymentSuccess"
           - $ref: "#/components/messages/paymentFailure"
+          - $ref: "#/components/messages/showDialog"
+          - $ref: "#/components/messages/closeDialog"
     subscribe:
       summary: Messages the sever can send.
       operationId: processMessage
@@ -44,6 +46,7 @@ channels:
         oneOf:
           - $ref: "#/components/messages/setBasket"
           - $ref: "#/components/messages/startPayment"
+          - $ref: "#/components/messages/userInput"
 
 components:
   schemas:
@@ -136,6 +139,39 @@ components:
       required:
         - reason
         - message
+    I18ned:
+      type: object
+      properties:
+        en:
+          type: string
+          description: The English text.
+        de:
+          type: string
+          description: The German text.
+    Dialog:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Identifier for this kind of dialog. E.g. `cardReaderError`.
+        title:
+          $ref: "#/components/schemas/I18ned"
+          description: Title of the dialog.
+        body:
+          $ref: "#/components/schemas/I18ned"
+          description: Dialog body to display to the customer.
+        buttons:
+          type: array
+          items:
+            type: object
+            properties:
+              action:
+                type: string
+                description: Action the button will trigger when pressed.
+              label:
+                $ref: "#/components/schemas/I18ned"
+                description: Label to display on the button.
+
   messages:
     syncArticles:
       summary: Synchronize available articles in the cash register.
@@ -230,8 +266,7 @@ components:
             type: string
             const: paymentSuccess
           data:
-            oneOf:
-              - $ref: "#/components/schemas/SuccessfulPayment"
+            $ref: "#/components/schemas/SuccessfulPayment"
       examples:
         - payload:
             event: paymentResult
@@ -247,8 +282,7 @@ components:
             type: string
             const: paymentFailure
           data:
-            oneOf:
-              - $ref: "#/components/schemas/FailedPayment"
+            $ref: "#/components/schemas/FailedPayment"
       examples:
         - payload:
             event: paymentResult
@@ -266,27 +300,56 @@ components:
           event:
             type: string
             const: reset
-    confirm:
-      summary: Confirm an open dialog.
+    showDialog:
+      summary: Show a dialog that requires user interaction.
       description: >
-        Confirm a dialog that would usually require user interaction.
+        The dialog will be rendered based on the data, including all buttons.
+        It will report back the button that was pressed with the action that is 
+        attached to the button. The dialog will be closed automatically after
+        a button was pressed. In case a new dialog should be opened, a new 
+        message has to be sent.
       payload:
         type: object
         properties:
           event:
             type: string
-            const: confirm
+            const: showDialog
+          data:
+            $ref: "#/components/schemas/Dialog"
         required:
           - event
-    cancel:
-      summary: Cancel an open dialog.
-      description: >
-        Cancel a dialog that would usually require user interaction.
+          - data
+    closeDialog:
+      summary: Close any currently open dialog.
       payload:
         type: object
         properties:
           event:
             type: string
-            const: cancel
+            const: closeDialog
+          data:
+            type: object
+            properties:
+              id:
+                type: string
+                description: Identifier for this kind of dialog. E.g. `cardReaderError`.
+        required:
+          - event
+    userInput:
+      summary: Report the user's response to a dialog.
+      description: >
+        Reports the action the button that was pressed in a dialog. 
+        The actions corresponds to what was set in the `showDialog` message.
+      payload:
+        type: object
+        properties:
+          event:
+            type: string
+            const: userInput
+          data:
+            type: object
+            properties:
+              action:
+                type: string
         required:
           - event
