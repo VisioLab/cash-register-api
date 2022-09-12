@@ -123,7 +123,7 @@ components:
     FailedPayment:
       type: object
       properties:
-        status:
+        reason:
           enum:
             - cancelled
             - cardRemovedTooQuickly
@@ -147,8 +147,8 @@ components:
           type: string
           description: The German text.
       required:
-        - reason
-        - message
+        - en
+        - de
       additionalProperties: false
     Dialog:
       type: object
@@ -173,6 +173,13 @@ components:
               label:
                 $ref: "#/components/schemas/I18ned"
                 description: Label to display on the button.
+            required:
+              - action
+              - label
+      required:
+        - id
+        - title
+        - body
   messages:
     syncArticles:
       summary: Synchronize available articles in the cash register.
@@ -377,8 +384,14 @@ components:
           data:
             type: object
             properties:
+              id:
+                type: string
               action:
                 type: string
+            required:
+              - id
+              - action
         required:
           - event
+          - data
         additionalProperties: false

@@ -1,7 +1,8 @@
-import { Button, TextField } from "@mui/material";
+import { Button, Chip, TextField } from "@mui/material";
 import { useState } from "react";
 import { CashRegister } from "./client";
 import Stack from "@mui/material/Stack";
+import Basket from "./Basket";
 
 interface Props {
   ipAddress: string;
@@ -27,6 +28,12 @@ const ConnectionForm = ({ ipAddress }: Props) => {
       <Button variant="contained" onClick={() => cashRegister.closeDialog()}>
         Close Dialog
       </Button>
+      <Basket articles={cashRegister.basket} />
+      <Chip
+        label="Payment in progress"
+        color="primary"
+        variant={cashRegister.paymentInProgress ? "filled" : "outlined"}
+      />
     </Stack>
   );
 };

@@ -54,7 +54,7 @@ export interface PaymentFailure {
     /**
      * Reason for the payment failure.
      */
-    status?: "cancelled" | "cardRemovedTooQuickly" | "notEnoughBalance" | "other";
+    reason: "cancelled" | "cardRemovedTooQuickly" | "notEnoughBalance" | "other";
     /**
      * Message for the customer on how to proceed with the payment.
      */
@@ -68,50 +68,50 @@ export interface ShowDialog {
     /**
      * Identifier for this kind of dialog. E.g. `cardReaderError`.
      */
-    id?: string;
+    id: string;
     /**
      * Title of the dialog.
      */
-    title?: {
+    title: {
       /**
        * The English text.
        */
-      en?: string;
+      en: string;
       /**
        * The German text.
        */
-      de?: string;
+      de: string;
     };
     /**
      * Dialog body to display to the customer.
      */
-    body?: {
+    body: {
       /**
        * The English text.
        */
-      en?: string;
+      en: string;
       /**
        * The German text.
        */
-      de?: string;
+      de: string;
     };
     buttons?: {
       /**
        * Action the button will trigger when pressed.
        */
-      action?: string;
+      action: string;
       /**
        * Label to display on the button.
        */
-      label?: {
+      label: {
         /**
          * The English text.
          */
-        en?: string;
+        en: string;
         /**
          * The German text.
          */
-        de?: string;
+        de: string;
       };
     }[];
   };
@@ -158,8 +158,9 @@ export interface StartPayment {
 
 export interface UserInput {
   event: "userInput";
-  data?: {
-    action?: string;
+  data: {
+    id: string;
+    action: string;
   };
 }
 
