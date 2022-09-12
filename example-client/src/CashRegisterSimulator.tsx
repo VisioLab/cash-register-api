@@ -4,7 +4,7 @@ import Stack from "@mui/material/Stack";
 import Basket from "./Basket";
 
 interface Props {
-  socket: WebSocket;
+  cashRegister: CashRegister;
 }
 
 const readyState = new Map([
@@ -14,13 +14,11 @@ const readyState = new Map([
   [3, "CLOSED"],
 ]);
 
-const ConnectionForm = ({ socket }: Props) => {
-  const cashRegister = new CashRegister(socket);
-
+const CashRegisterSimulator = ({ cashRegister }: Props) => {
   return (
     <Stack spacing={2}>
       <Chip
-        label={`Connection: ${readyState.get(socket.readyState)}`}
+        label={`Connection: ${readyState.get(cashRegister.connectionState)}`}
         color="success"
       />
       <Divider>Actions</Divider>
@@ -54,4 +52,4 @@ const ConnectionForm = ({ socket }: Props) => {
   );
 };
 
-export default ConnectionForm;
+export default CashRegisterSimulator;

@@ -25,6 +25,7 @@ export class CashRegister {
     basket: SetBasket["data"]["articles"]
     paymentInProgress: boolean
     surveyResult: number
+    connectionState: number
 
     constructor(ws: WebSocket) {
         this.#ws = ws;
@@ -32,6 +33,7 @@ export class CashRegister {
         this.basket = []
         this.paymentInProgress = false
         this.surveyResult = 0
+        this.connectionState = ws.readyState
     }
 
     async syncArticles() {
