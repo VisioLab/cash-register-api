@@ -9,7 +9,7 @@
     "build": "tsc && vite build",
     "preview": "vite preview",
     "generateTypes": "node --loader ts-node/esm ./src/generateTypes.ts",
-    "generateDocs": "npx -p @asyncapi/generator ag ../api.yml @asyncapi/html-template -o ../docs"
+    "generateDocs": "npx -p @asyncapi/generator ag -p singleFile=true ../api.yml @asyncapi/html-template -o ../docs"
   },
   "dependencies": {
     "@asyncapi/generator": "^1.9.8",
