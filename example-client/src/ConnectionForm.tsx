@@ -28,7 +28,7 @@ const ConnectionForm = ({ setIpAddress }: Props) => {
     <form onSubmit={handleSubmit}>
       <TextField
         name="ipAddress"
-        label="IP Address"
+        label="IP Address of iPad"
         value={formValues.ipAddress}
         onChange={handleInputChange}
       >
