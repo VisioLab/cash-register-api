@@ -75,8 +75,8 @@ export class CashRegister {
                     de: "Umfrage",
                 },
                 body: {
-                    en: "How satisfied are you with the flexibility of the interface?",
-                    de: "Wie zufrieden sind Sie mit der Flexibilität der Schnittstelle?",
+                    en: "How satisfied are you with the interface?",
+                    de: "Wie zufrieden sind Sie mit der Schnittstelle?",
                 },
                 buttons: [
                     {
