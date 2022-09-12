@@ -6,11 +6,23 @@ import Basket from "./Basket";
 interface Props {
   socket: WebSocket;
 }
+
+const readyState = new Map([
+  [0, "CONNECTING"],
+  [1, "OPEN"],
+  [2, "CLOSING"],
+  [3, "CLOSED"],
+]);
+
 const ConnectionForm = ({ socket }: Props) => {
   const cashRegister = new CashRegister(socket);
 
   return (
     <Stack spacing={2}>
+      <Chip
+        label={`Connection: ${readyState.get(socket.readyState)}`}
+        color="success"
+      />
       <Divider>Actions</Divider>
       <Button variant="contained" onClick={() => cashRegister.paymentSuccess()}>
         Payment Success
