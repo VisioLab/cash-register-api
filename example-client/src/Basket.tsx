@@ -7,13 +7,10 @@ import {
   TableHead,
   TableRow,
 } from "@mui/material";
-import { SetBasket } from "./types";
+import useCashRegisterStore from "./store";
 
-interface Props {
-  articles: SetBasket["data"]["articles"];
-}
-
-const Basket = ({ articles }: Props) => {
+const Basket = () => {
+  const articles = useCashRegisterStore((state) => state.basket);
   return (
     <TableContainer component={Paper}>
       <Table sx={{ minWidth: 650 }} aria-label="simple table">

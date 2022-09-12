@@ -14,7 +14,7 @@ const App = () => {
       {ipAddress === "" && <ConnectionForm setIpAddress={setIpAddress} />}
       {ipAddress !== "" && (
         <CashRegisterSimulator
-          socket={
+          cashRegister={
             new CashRegister(
               new WebSocket(`ws://${ipAddress}:5173/visiolab-cash-register`)
             )

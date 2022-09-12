@@ -1,4 +1,5 @@
 import _ from "lodash";
+import useCashRegisterStore from "./store";
 import { PaymentFailure, PaymentSuccess, StartPayment, Reset, CloseDialog, SetBasket, ShowDialog, SyncArticles, UserInput } from "./types";
 
 const articles: SyncArticles["data"]["articles"] = [
@@ -20,20 +21,21 @@ const articles: SyncArticles["data"]["articles"] = [
     }
 ]
 
+const readyStateMap = new Map([
+    [0, "CONNECTING"],
+    [1, "OPEN"],
+    [2, "CLOSING"],
+    [3, "CLOSED"],
+] as const);
+
 export class CashRegister {
     #ws: WebSocket;
-    basket: SetBasket["data"]["articles"]
-    paymentInProgress: boolean
-    surveyResult: number
-    connectionState: number
 
     constructor(ws: WebSocket) {
         this.#ws = ws;
         this.#ws.onmessage = this.receiveMessage
-        this.basket = []
-        this.paymentInProgress = false
-        this.surveyResult = 0
-        this.connectionState = ws.readyState
+        this.#ws.onopen = this.onConnectionChange.bind(this)
+        this.#ws.onclose = this.onConnectionChange.bind(this)
     }
 
     async syncArticles() {
@@ -53,6 +55,8 @@ export class CashRegister {
                 totalGross: 100,
             }
         }
+        useCashRegisterStore.setState({ paymentInProgress: false })
+
         await this.send(message)
 
     }
@@ -119,22 +123,26 @@ export class CashRegister {
                 this.paymentFailure()
             }
         }
-        this.basket = message.data.articles
+        useCashRegisterStore.setState({ basket: message.data.articles })
     }
 
     async onStartPayment(message: StartPayment) {
-        if (!this.paymentInProgress && !_.isEmpty(this.basket)) {
-            this.paymentInProgress = true
+        const { paymentInProgress, basket } = useCashRegisterStore.getState()
+        if (!paymentInProgress && !_.isEmpty(basket)) {
+            useCashRegisterStore.setState({ paymentInProgress: true })
         }
     }
 
     async onReset(message: Reset) {
-        this.basket = []
+        useCashRegisterStore.setState({ basket: [] })
     }
 
     async onUserInput(message: UserInput) {
         if (message.data.id === "survey") {
-            this.surveyResult += parseInt(message.data.action)
+            useCashRegisterStore.setState({
+                surveyResult: useCashRegisterStore.getState().surveyResult
+                    + parseInt(message.data.action)
+            })
         }
     }
 
@@ -159,5 +167,18 @@ export class CashRegister {
             default:
                 throw Error("Unknown event")
         }
+    }
+
+    private onConnectionChange(event: unknown) {
+        useCashRegisterStore.setState(
+            { connectionState: readyStateMap.get(this.#ws.readyState as any) ?? "CONNECTING" }
+        )
+    }
+    get connectionState() {
+        return this.#ws.readyState
+    }
+
+    get ws() {
+        return this.#ws
     }
 }

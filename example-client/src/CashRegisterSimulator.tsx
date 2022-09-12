@@ -2,25 +2,21 @@ import { Button, Chip, Divider } from "@mui/material";
 import { CashRegister } from "./client";
 import Stack from "@mui/material/Stack";
 import Basket from "./Basket";
+import ConnectionState from "./ConnectionState";
+import useCashRegisterStore from "./store";
 
 interface Props {
   cashRegister: CashRegister;
 }
 
-const readyState = new Map([
-  [0, "CONNECTING"],
-  [1, "OPEN"],
-  [2, "CLOSING"],
-  [3, "CLOSED"],
-]);
-
 const CashRegisterSimulator = ({ cashRegister }: Props) => {
+  window.cr = cashRegister;
+
+  cashRegister.ws;
+  const state = useCashRegisterStore();
   return (
     <Stack spacing={2}>
-      <Chip
-        label={`Connection: ${readyState.get(cashRegister.connectionState)}`}
-        color="success"
-      />
+      <ConnectionState />
       <Divider>Actions</Divider>
       <Button variant="contained" onClick={() => cashRegister.paymentSuccess()}>
         Payment Success
@@ -38,16 +34,13 @@ const CashRegisterSimulator = ({ cashRegister }: Props) => {
         Close Dialog
       </Button>
       <Divider>State</Divider>
-      <Basket articles={cashRegister.basket} />
+      <Basket />
       <Chip
-        label={`Payment in progress: ${cashRegister.paymentInProgress} `}
+        label={`Payment in progress: ${state.paymentInProgress} `}
         color="primary"
-        variant={cashRegister.paymentInProgress ? "filled" : "outlined"}
+        variant={state.paymentInProgress ? "filled" : "outlined"}
       />
-      <Chip
-        label={`Survey result: ${cashRegister.surveyResult}`}
-        color="primary"
-      />
+      <Chip label={`Survey result: ${state.surveyResult}`} color="primary" />
     </Stack>
   );
 };

@@ -18,7 +18,8 @@
     "@mui/material": "^5.10.4",
     "lodash": "^4.17.21",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "zustand": "^4.1.1"
   },
   "devDependencies": {
     "@asyncapi/parser": "^1.15.1",
