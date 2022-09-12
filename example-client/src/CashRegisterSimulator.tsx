@@ -4,10 +4,9 @@ import Stack from "@mui/material/Stack";
 import Basket from "./Basket";
 
 interface Props {
-  ipAddress: string;
+  socket: WebSocket;
 }
-const ConnectionForm = ({ ipAddress }: Props) => {
-  const socket = new WebSocket(`ws://${ipAddress}/visiolab-cash-register`);
+const ConnectionForm = ({ socket }: Props) => {
   const cashRegister = new CashRegister(socket);
 
   return (

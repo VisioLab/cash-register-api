@@ -12,7 +12,11 @@ const App = () => {
     <div className="App">
       <h1>VisioLab Example Client</h1>
       {ipAddress === "" && <ConnectionForm setIpAddress={setIpAddress} />}
-      {ipAddress !== "" && <CashRegisterSimulator ipAddress={ipAddress} />}
+      {ipAddress !== "" && (
+        <CashRegisterSimulator
+          socket={new WebSocket(`ws://${ipAddress}/visiolab-cash-register`)}
+        />
+      )}
     </div>
   );
 };
