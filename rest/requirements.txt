@@ -1,4 +1,0 @@
-fastapi==0.78.0
-uvicorn[standard]==0.18.1
-mypy
-black

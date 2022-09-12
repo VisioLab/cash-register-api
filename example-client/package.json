@@ -8,9 +8,11 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "generateTypes": "node --loader ts-node/esm ./src/generateTypes.ts"
+    "generateTypes": "node --loader ts-node/esm ./src/generateTypes.ts",
+    "generateDocs": "npx -p @asyncapi/generator ag --force-write ../api.yml @asyncapi/html-template -o ../docs"
   },
   "dependencies": {
+    "@asyncapi/generator": "^1.9.8",
     "@emotion/react": "^11.10.4",
     "@emotion/styled": "^11.10.4",
     "@mui/material": "^5.10.4",
