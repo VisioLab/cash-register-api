@@ -17,6 +17,7 @@ const App = () => {
           cashRegister={
             new CashRegister(
               new WebSocket(`ws://${ipAddress}:5173/visiolab-cash-register`)
+              // new WebSocket("wss://ws.postman-echo.com/raw")
             )
           }
         />

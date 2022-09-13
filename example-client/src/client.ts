@@ -150,22 +150,24 @@ export class CashRegister {
         this.#ws.send(JSON.stringify(message))
     }
 
-    private async receiveMessage(message: MessageEvent<SetBasket | StartPayment | Reset | UserInput>) {
-        switch (message.data.event) {
+    private async receiveMessage(message: MessageEvent<string>) {
+        const parsedMessage = JSON.parse(message.data) as SetBasket | StartPayment | Reset | UserInput
+        console.log("Received message:", message)
+        switch (parsedMessage.event) {
             case "setBasket":
-                await this.onSetBasket(message.data)
+                await this.onSetBasket(parsedMessage)
                 break;
             case "startPayment":
-                await this.onStartPayment(message.data)
+                await this.onStartPayment(parsedMessage)
                 break;
             case "reset":
-                await this.onReset(message.data)
+                await this.onReset(parsedMessage)
                 break;
             case "userInput":
-                await this.onUserInput(message.data)
+                await this.onUserInput(parsedMessage)
                 break;
             default:
-                throw Error("Unknown event")
+                console.error("Unknown event", parsedMessage)
         }
     }
 
