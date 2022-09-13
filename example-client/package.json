@@ -9,7 +9,7 @@
     "build": "tsc && vite build",
     "preview": "vite preview",
     "generateTypes": "node --loader ts-node/esm ./src/generateTypes.ts",
-    "generateDocs": "npx -p @asyncapi/generator ag -p singleFile=true ../api.yml @asyncapi/html-template -o ../docs"
+    "generateDocs": "npx -p @asyncapi/generator ag -p singleFile=true -p favicon=\"https://uploads-ssl.webflow.com/610e8d4e5e20c21539aec950/612686a1377160481ec27630_Favicon.png\" ../api.yml https://github.com/JarnoRFB/html-template/tree/feat-favicon -o ../docs"
   },
   "dependencies": {
     "@asyncapi/generator": "^1.9.8",
