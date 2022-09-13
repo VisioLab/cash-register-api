@@ -1,7 +1,7 @@
 asyncapi: 2.4.0
 info:
   title: VisioLab Cash Register API
-  version: 0.1.1
+  version: 0.2.0
   description: >
     ### Enables communication between the VisioLab food scanner and a cash register
 
@@ -64,7 +64,7 @@ components:
         priceLookup:
           type: string
           description: >
-            The price lookup code for the article. Whatever identifier is used in the cash register,
+            The price lookup code for the article. Whatever identifier is used in the cash register
             to identify the price group of articles, such as an article ID.
         price:
           type: number
@@ -115,9 +115,9 @@ components:
         totalVat:
           type: number
           description: The amount of taxes that was payed for the transaction.
-        receiptQrCode:
+        receiptUrl:
           type: string
-          description: QR Code for pointing to the digital receipt for the transaction.
+          description: URL pointing to the digital receipt for the transaction. Will be rendered as QR code.
       required:
         - totalGross
     FailedPayment:
@@ -132,11 +132,12 @@ components:
           type: string
           description: Reason for the payment failure.
         message:
-          type: string
+          $ref: "#/components/schemas/I18ned"
           description: Message for the customer on how to proceed with the payment.
       required:
         - reason
         - message
+      additionalProperties: false
     I18ned:
       type: object
       properties:
@@ -248,12 +249,10 @@ components:
               articles:
                 - id: "abc"
                   name: "Caesar Salad"
-                  price_lookup: "123"
-                  price: 1.20
+                  priceLookup: "123"
                 - id: "def"
                   name: "Beef Stroganoff"
-                  price_lookup: "456"
-                  price: 2.40
+                  priceLookup: "456"
     startPayment:
       summary: Initiate the payment for the current basket.
       payload:
@@ -294,9 +293,8 @@ components:
         additionalProperties: false
       examples:
         - payload:
-            event: paymentResult
+            event: paymentSuccess
             data:
-              status: "success"
               totalGross: 5.20
     paymentFailure:
       summary: Report the failure of a payment.
@@ -314,10 +312,12 @@ components:
         additionalProperties: false
       examples:
         - payload:
-            event: paymentResult
+            event: paymentFailure
             data:
-              status: "cancelled"
-              message: "Please tap your card again."
+              reason: "cancelled"
+              message:
+                en: "Please tap your card again."
+                de: "Bitte legen Sie Ihre Karte erneut auf."
     reset:
       summary: Reset the cash register.
       description: >
@@ -352,6 +352,26 @@ components:
           - event
           - data
         additionalProperties: false
+      examples:
+        - payload:
+            event: "showDialog"
+            data:
+              id: "survey"
+              title:
+                en: "Survey"
+                de: "Umfrage"
+              body:
+                en: "How satisfied are you with the interface?"
+                de: "Wie zufrieden sind Sie mit der Schnittstelle?"
+                buttons:
+                  - action: "-1"
+                    label:
+                      en: "Not at all"
+                      de: "Gar nicht"
+                  - action: "+1"
+                    label:
+                      en: "A lot"
+                      de: "Sehr"
     closeDialog:
       summary: Close any currently open dialog.
       payload:
@@ -370,10 +390,15 @@ components:
           - event
           - data
         additionalProperties: false
+      examples:
+        - payload:
+            event: "closeDialog"
+            data:
+              id: "survey"
     userInput:
       summary: Report the user's response to a dialog.
       description: >
-        Reports the action the button that was pressed in a dialog. 
+        Reports the action of the button that was pressed in a dialog. 
         The actions corresponds to what was set in the `showDialog` message.
       payload:
         type: object
@@ -395,3 +420,9 @@ components:
           - event
           - data
         additionalProperties: false
+      examples:
+        - payload:
+            event: "userInput"
+            data:
+              id: "survey"
+              action: "+1"
