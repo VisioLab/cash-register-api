@@ -65,7 +65,10 @@ export class CashRegister {
             event: "paymentFailure",
             data: {
                 reason: "cancelled",
-                message: "Payment cancelled"
+                message: {
+                    en: "Payment cancelled",
+                    de: "Zahlung abgebrochen",
+                },
             }
         }
         await this.send(message)

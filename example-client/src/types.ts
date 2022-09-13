@@ -7,7 +7,7 @@ export interface SyncArticles {
        */
       name: string;
       /**
-       * The price lookup code for the article. Whatever identifier is used in the cash register, to identify the price group of articles, such as an article ID.
+       * The price lookup code for the article. Whatever identifier is used in the cash register to identify the price group of articles, such as an article ID.
        *
        */
       priceLookup: string;
@@ -42,9 +42,9 @@ export interface PaymentSuccess {
      */
     totalVat?: number;
     /**
-     * QR Code for pointing to the digital receipt for the transaction.
+     * URL pointing to the digital receipt for the transaction. Will be rendered as QR code.
      */
-    receiptQrCode?: string;
+    receiptUrl?: string;
   };
 }
 
@@ -58,7 +58,16 @@ export interface PaymentFailure {
     /**
      * Message for the customer on how to proceed with the payment.
      */
-    message: string;
+    message: {
+      /**
+       * The English text.
+       */
+      en: string;
+      /**
+       * The German text.
+       */
+      de: string;
+    };
   };
 }
 
