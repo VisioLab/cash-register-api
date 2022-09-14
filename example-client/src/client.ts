@@ -33,7 +33,7 @@ export class CashRegister {
 
     constructor(ws: WebSocket) {
         this.#ws = ws;
-        this.#ws.onmessage = this.receiveMessage
+        this.#ws.onmessage = this.receiveMessage.bind(this)
         this.#ws.onopen = this.onConnectionChange.bind(this)
         this.#ws.onclose = this.onConnectionChange.bind(this)
     }

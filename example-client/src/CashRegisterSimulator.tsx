@@ -12,8 +12,8 @@ interface Props {
 
 const CashRegisterSimulator = ({ ipAddress }: Props) => {
   const cashRegister = useMemo(() => new CashRegister(
-    new WebSocket(`ws://${ipAddress}:5173/visiolab-cash-register`)), [ipAddress]);
-  window.cr = cashRegister;
+    new WebSocket(`ws://${ipAddress}:8080/visiolab-cash-register`)), [ipAddress]);
+  // window.cr = cashRegister;
 
   cashRegister.ws;
   const state = useCashRegisterStore();
