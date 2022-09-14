@@ -11,17 +11,16 @@ interface Props {
 }
 
 const CashRegisterSimulator = ({ ipAddress }: Props) => {
-  const cashRegister = new CashRegister(
-    new WebSocket(`ws://${ipAddress}/visiolab-cash-register`)
-  );
-
+  let cashRegister: CashRegister
   useEffect(() => {
+    cashRegister = new CashRegister(
+      new WebSocket(`ws://${ipAddress}/visiolab-cash-register`)
+    );
     return () => {
       cashRegister.ws.close();
     }
-  })
+  }, [ipAddress]);
   
-  cashRegister.ws;
   const state = useCashRegisterStore();
   return (
     <Stack spacing={2}>
