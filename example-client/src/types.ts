@@ -132,7 +132,7 @@ export interface CloseDialog {
     /**
      * Identifier for this kind of dialog. E.g. `cardReaderError`.
      */
-    id?: string;
+    id: string;
   };
 }
 

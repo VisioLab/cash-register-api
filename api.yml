@@ -386,6 +386,8 @@ components:
               id:
                 type: string
                 description: Identifier for this kind of dialog. E.g. `cardReaderError`.
+            required:
+              - id
         required:
           - event
           - data
