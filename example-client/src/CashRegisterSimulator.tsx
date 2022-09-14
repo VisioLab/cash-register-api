@@ -4,12 +4,15 @@ import Stack from "@mui/material/Stack";
 import Basket from "./Basket";
 import ConnectionState from "./ConnectionState";
 import useCashRegisterStore from "./store";
+import { useMemo } from "react";
 
 interface Props {
-  cashRegister: CashRegister;
+  ipAddress: string;
 }
 
-const CashRegisterSimulator = ({ cashRegister }: Props) => {
+const CashRegisterSimulator = ({ ipAddress }: Props) => {
+  const cashRegister = useMemo(() => new CashRegister(
+    new WebSocket(`ws://${ipAddress}:5173/visiolab-cash-register`)), [ipAddress]);
   window.cr = cashRegister;
 
   cashRegister.ws;
