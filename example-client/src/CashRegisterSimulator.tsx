@@ -1,27 +1,25 @@
-import { Button, Chip, Divider } from "@mui/material";
-import { CashRegister } from "./client";
-import Stack from "@mui/material/Stack";
-import Basket from "./Basket";
-import ConnectionState from "./ConnectionState";
-import useCashRegisterStore from "./store";
-import { useEffect, useMemo } from "react";
+import {Button, Chip, Divider} from "@mui/material"
+import {CashRegister} from "./client"
+import Stack from "@mui/material/Stack"
+import Basket from "./Basket"
+import ConnectionState from "./ConnectionState"
+import useCashRegisterStore from "./store"
+import {useEffect} from "react"
 
 interface Props {
-  ipAddress: string;
+  ipAddress: string
 }
 
-const CashRegisterSimulator = ({ ipAddress }: Props) => {
+const CashRegisterSimulator = ({ipAddress}: Props) => {
   let cashRegister: CashRegister
   useEffect(() => {
-    cashRegister = new CashRegister(
-      new WebSocket(`ws://${ipAddress}/visiolab-cash-register`)
-    );
+    cashRegister = new CashRegister(new WebSocket(`ws://${ipAddress}/visiolab-cash-register`))
     return () => {
-      cashRegister.ws.close();
+      cashRegister.ws.close()
     }
-  }, [ipAddress]);
-  
-  const state = useCashRegisterStore();
+  }, [ipAddress])
+
+  const state = useCashRegisterStore()
   return (
     <Stack spacing={2}>
       <ConnectionState />
@@ -50,7 +48,7 @@ const CashRegisterSimulator = ({ ipAddress }: Props) => {
       />
       <Chip label={`Survey result: ${state.surveyResult}`} color="primary" />
     </Stack>
-  );
-};
+  )
+}
 
-export default CashRegisterSimulator;
+export default CashRegisterSimulator
