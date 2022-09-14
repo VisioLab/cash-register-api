@@ -1,0 +1,430 @@
+asyncapi: 2.4.0
+info:
+  title: VisioLab Cash Register API
+  version: 0.2.0
+  description: >
+    ### Enables communication between the VisioLab food scanner and a cash register
+
+    The iPad running the VisioLab scanner runs a Websocket server in the local
+    network on `ws:/<local-ip>/visiolab-cash-register`.
+
+
+    Once the cash register has established a connection, it should synchronize
+    its articles using the `syncArticles` operation. Afterwards
+    the scanner is ready to detect food.
+
+
+    Once something is detected, `setBasket` will be send, followed by 
+    `startPayment`. The cash register should handle the transaction and 
+    "respond" by sending either `paymentSuccess` or `paymentFailure`.
+
+
+    Each message contains an `event` and a `data` property at the top level. The `event`
+    property identifies the type of the message, so that actions can be dispatched
+    based on it. The `data` property contains the actual content of the message.
+servers:
+  visiolab:
+    url: "ws://<local-ip>/visiolab-cash-register"
+    protocol: ws
+defaultContentType: application/json
+channels:
+  /visiolab-cash-register:
+    publish:
+      summary: Messages the client can send.
+      operationId: sendMessage
+      message:
+        oneOf:
+          - $ref: "#/components/messages/syncArticles"
+          - $ref: "#/components/messages/paymentSuccess"
+          - $ref: "#/components/messages/paymentFailure"
+          - $ref: "#/components/messages/showDialog"
+          - $ref: "#/components/messages/closeDialog"
+    subscribe:
+      summary: Messages the sever can send.
+      operationId: processMessage
+      message:
+        oneOf:
+          - $ref: "#/components/messages/setBasket"
+          - $ref: "#/components/messages/startPayment"
+          - $ref: "#/components/messages/userInput"
+          - $ref: "#/components/messages/reset"
+
+components:
+  schemas:
+    Article:
+      type: object
+      required:
+        - name
+        - priceLookup
+        - price
+      properties:
+        name:
+          type: string
+          description: Name of the article.
+        priceLookup:
+          type: string
+          description: >
+            The price lookup code for the article. Whatever identifier is used in the cash register
+            to identify the price group of articles, such as an article ID.
+        price:
+          type: number
+          description: The default price for the articles. Is disregarded for price calculation if priceLookup is present.
+        id:
+          type: string
+          description: >
+            Optional unique identifier for the article, such as a GUID.
+            Different articles with the same price on different days should still have different IDs.
+            If not set, a unique ID will be generated internally.
+        previewImage:
+          type: string
+          description: Preview image for the article as base64 encoded string.
+    Articles:
+      type: array
+      items:
+        type: object
+        $ref: "#/components/schemas/Article"
+    BasketArticle:
+      type: object
+      required:
+        - name
+        - priceLookup
+        - id
+      properties:
+        name:
+          type: string
+          description: Name of the article.
+        priceLookup:
+          type: string
+          description: >
+            The price lookup code for the article. Whatever identifier is used in the cash register,
+            to identify the price group of articles, such as an article ID.
+        id:
+          type: string
+          description: >
+            Unique identifier for the article, such as a GUID.
+    SuccessfulPayment:
+      type: object
+      properties:
+        cashRegisterId:
+          type: string
+        receiptId:
+          type: string
+        totalGross:
+          type: number
+          description: The amount that was payed for the transaction.
+        totalVat:
+          type: number
+          description: The amount of taxes that was payed for the transaction.
+        receiptUrl:
+          type: string
+          description: URL pointing to the digital receipt for the transaction. Will be rendered as QR code.
+      required:
+        - totalGross
+    FailedPayment:
+      type: object
+      properties:
+        reason:
+          enum:
+            - cancelled
+            - cardRemovedTooQuickly
+            - notEnoughBalance
+            - other
+          type: string
+          description: Reason for the payment failure.
+        message:
+          $ref: "#/components/schemas/I18ned"
+          description: Message for the customer on how to proceed with the payment.
+      required:
+        - reason
+        - message
+      additionalProperties: false
+    I18ned:
+      type: object
+      properties:
+        en:
+          type: string
+          description: The English text.
+        de:
+          type: string
+          description: The German text.
+      required:
+        - en
+        - de
+      additionalProperties: false
+    Dialog:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Identifier for this kind of dialog. E.g. `cardReaderError`.
+        title:
+          $ref: "#/components/schemas/I18ned"
+          description: Title of the dialog.
+        body:
+          $ref: "#/components/schemas/I18ned"
+          description: Dialog body to display to the customer.
+        buttons:
+          type: array
+          items:
+            type: object
+            properties:
+              action:
+                type: string
+                description: Action the button will trigger when pressed.
+              label:
+                $ref: "#/components/schemas/I18ned"
+                description: Label to display on the button.
+            required:
+              - action
+              - label
+      required:
+        - id
+        - title
+        - body
+  messages:
+    syncArticles:
+      summary: Synchronize available articles in the cash register.
+      payload:
+        type: object
+        properties:
+          event:
+            type: string
+            const: syncArticles
+          data:
+            type: object
+            properties:
+              articles:
+                $ref: "#/components/schemas/Articles"
+            required:
+              - articles
+        required:
+          - event
+          - data
+        additionalProperties: false
+      examples:
+        - payload:
+            event: syncArticles
+            data:
+              articles:
+                - id: "a"
+                  name: "Eggs Benedict"
+                  priceLookup: "1"
+                  price: 1.00
+                - id: "b"
+                  name: "Waldorf Salad"
+                  priceLookup: "2"
+                  price: 2.00
+                - id: "c"
+                  name: "Caesar Salad"
+                  priceLookup: "3"
+                  price: 3.00
+    setBasket:
+      summary: Set the current basket.
+      description: The contents of the basket are completely replaced by the new contents.
+      payload:
+        type: object
+        properties:
+          event:
+            type: string
+            const: setBasket
+          data:
+            type: object
+            properties:
+              articles:
+                type: array
+                items:
+                  type: object
+                  $ref: "#/components/schemas/BasketArticle"
+            required:
+              - articles
+        required:
+          - event
+          - data
+        additionalProperties: false
+      examples:
+        - payload:
+            event: setBasket
+            data:
+              checkoutId: string
+              articles:
+                - id: "abc"
+                  name: "Caesar Salad"
+                  priceLookup: "123"
+                - id: "def"
+                  name: "Beef Stroganoff"
+                  priceLookup: "456"
+    startPayment:
+      summary: Initiate the payment for the current basket.
+      payload:
+        type: object
+        properties:
+          event:
+            type: string
+            const: startPayment
+          data:
+            type: object
+            properties:
+              paymentMethod:
+                type: string
+            required:
+              - paymentMethod
+        required:
+          - event
+          - data
+        additionalProperties: false
+      examples:
+        - payload:
+            event: startPayment
+            data:
+              paymentMethod: "CreditCard"
+    paymentSuccess:
+      summary: Report the success of a payment.
+      payload:
+        type: object
+        properties:
+          event:
+            type: string
+            const: paymentSuccess
+          data:
+            $ref: "#/components/schemas/SuccessfulPayment"
+        required:
+          - event
+          - data
+        additionalProperties: false
+      examples:
+        - payload:
+            event: paymentSuccess
+            data:
+              totalGross: 5.20
+    paymentFailure:
+      summary: Report the failure of a payment.
+      payload:
+        type: object
+        properties:
+          event:
+            type: string
+            const: paymentFailure
+          data:
+            $ref: "#/components/schemas/FailedPayment"
+        required:
+          - event
+          - data
+        additionalProperties: false
+      examples:
+        - payload:
+            event: paymentFailure
+            data:
+              reason: "cancelled"
+              message:
+                en: "Please tap your card again."
+                de: "Bitte legen Sie Ihre Karte erneut auf."
+    reset:
+      summary: Reset the cash register.
+      description: >
+        Cancel all ongoing transactions and delete all 
+        articles from the current basket.
+      payload:
+        type: object
+        properties:
+          event:
+            type: string
+            const: reset
+        required:
+          - event
+        additionalProperties: false
+    showDialog:
+      summary: Show a dialog that requires user interaction.
+      description: >
+        The dialog will be rendered based on the data, including all buttons.
+        It will report back the button that was pressed with the action that is 
+        attached to the button. The dialog will be closed automatically after
+        a button was pressed. In case a new dialog should be opened, a new 
+        message has to be sent.
+      payload:
+        type: object
+        properties:
+          event:
+            type: string
+            const: showDialog
+          data:
+            $ref: "#/components/schemas/Dialog"
+        required:
+          - event
+          - data
+        additionalProperties: false
+      examples:
+        - payload:
+            event: "showDialog"
+            data:
+              id: "survey"
+              title:
+                en: "Survey"
+                de: "Umfrage"
+              body:
+                en: "How satisfied are you with the interface?"
+                de: "Wie zufrieden sind Sie mit der Schnittstelle?"
+                buttons:
+                  - action: "-1"
+                    label:
+                      en: "Not at all"
+                      de: "Gar nicht"
+                  - action: "+1"
+                    label:
+                      en: "A lot"
+                      de: "Sehr"
+    closeDialog:
+      summary: Close any currently open dialog.
+      payload:
+        type: object
+        properties:
+          event:
+            type: string
+            const: closeDialog
+          data:
+            type: object
+            properties:
+              id:
+                type: string
+                description: Identifier for this kind of dialog. E.g. `cardReaderError`.
+            required:
+              - id
+        required:
+          - event
+          - data
+        additionalProperties: false
+      examples:
+        - payload:
+            event: "closeDialog"
+            data:
+              id: "survey"
+    userInput:
+      summary: Report the user's response to a dialog.
+      description: >
+        Reports the action of the button that was pressed in a dialog. 
+        The actions corresponds to what was set in the `showDialog` message.
+      payload:
+        type: object
+        properties:
+          event:
+            type: string
+            const: userInput
+          data:
+            type: object
+            properties:
+              id:
+                type: string
+              action:
+                type: string
+            required:
+              - id
+              - action
+        required:
+          - event
+          - data
+        additionalProperties: false
+      examples:
+        - payload:
+            event: "userInput"
+            data:
+              id: "survey"
+              action: "+1"
