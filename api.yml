@@ -24,7 +24,7 @@ info:
     based on it. The `data` property contains the actual content of the message.
 servers:
   visiolab:
-    url: "ws://localhost/visiolab-cash-register"
+    url: "ws://<local-ip>/visiolab-cash-register"
     protocol: ws
 defaultContentType: application/json
 channels:

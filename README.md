@@ -1,11 +1,11 @@
-# Cash Register Integration Interface Spec
+# Cash Register Integration API
 
 Describes a Websocket API, where VisioLab acts as a server.
 
 Uses the [`AsyncAPI`](https://www.asyncapi.com/) standard to describe the
-interface.
+API.
 
-To visualize the documentation, go to https://studio.asyncapi.com/
+View the [documentation](https://cash-register-api.visiolab.io/) or visualize it live at https://studio.asyncapi.com/
 and paste the contents of `api.yml` into the editor.
 
 ## Further references
