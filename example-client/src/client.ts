@@ -150,7 +150,9 @@ export class CashRegister {
     }
 
     private async send(message: object) {
-        this.#ws.send(JSON.stringify(message))
+        const encodedMessage = JSON.stringify(message)
+        console.log("Sending message:", encodedMessage)
+        this.#ws.send(encodedMessage)
     }
 
     private async receiveMessage(message: MessageEvent<string>) {

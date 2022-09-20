@@ -4,18 +4,20 @@ import Stack from "@mui/material/Stack"
 import Basket from "./Basket"
 import ConnectionState from "./ConnectionState"
 import useCashRegisterStore from "./store"
-import {useEffect} from "react"
+import {useEffect, useState} from "react"
 
 interface Props {
   ipAddress: string
 }
 
 const CashRegisterSimulator = ({ipAddress}: Props) => {
-  let cashRegister: CashRegister
+  const [cashRegister, setCashRegister] = useState<CashRegister>()
+  // let cashRegister: CashRegister
   useEffect(() => {
-    cashRegister = new CashRegister(new WebSocket(`ws://${ipAddress}/visiolab-cash-register`))
+    setCashRegister(new CashRegister(new WebSocket(`ws://${ipAddress}/visiolab-cash-register`)))
+
     return () => {
-      cashRegister.ws.close()
+      cashRegister?.ws.close()
     }
   }, [ipAddress])
 
@@ -24,19 +26,19 @@ const CashRegisterSimulator = ({ipAddress}: Props) => {
     <Stack spacing={2}>
       <ConnectionState />
       <Divider>Actions</Divider>
-      <Button variant="contained" onClick={() => cashRegister.paymentSuccess()}>
+      <Button variant="contained" onClick={() => cashRegister?.paymentSuccess()}>
         Payment Success
       </Button>
-      <Button variant="contained" onClick={() => cashRegister.paymentFailure()}>
+      <Button variant="contained" onClick={() => cashRegister?.paymentFailure()}>
         Payment Failure
       </Button>
-      <Button variant="contained" onClick={() => cashRegister.syncArticles()}>
+      <Button variant="contained" onClick={() => cashRegister?.syncArticles()}>
         Sync Articles
       </Button>
-      <Button variant="contained" onClick={() => cashRegister.showDialog()}>
+      <Button variant="contained" onClick={() => cashRegister?.showDialog()}>
         Show Dialog
       </Button>
-      <Button variant="contained" onClick={() => cashRegister.closeDialog()}>
+      <Button variant="contained" onClick={() => cashRegister?.closeDialog()}>
         Close Dialog
       </Button>
       <Divider>State</Divider>
