@@ -11,7 +11,7 @@ npm install
 npm run dev
 ```
 
-A web interface will start on http://localhost:5173/.
+A web interface will start on http://localhost:4173/.
 
 ### Generating the message types
 
