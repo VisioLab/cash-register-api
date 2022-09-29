@@ -52,10 +52,10 @@ export class CashRegister {
         const message: PaymentSuccess = {
             event: "paymentSuccess",
             data: {
-                totalGross: 100,
+                totalGross: useCashRegisterStore.getState().basket.length,
             }
         }
-        useCashRegisterStore.setState({ paymentInProgress: false })
+        useCashRegisterStore.setState({ paymentInProgress: false, basket: [] })
 
         await this.send(message)
 
