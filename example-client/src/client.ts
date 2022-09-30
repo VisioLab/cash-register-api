@@ -176,7 +176,8 @@ export class CashRegister {
         }
     }
 
-    private onConnectionChange(event: unknown) {
+    private onConnectionChange(event: Event) {
+        console.log(`WebSocket connection event: ${event.type}`)
         useCashRegisterStore.setState(
             { connectionState: readyStateMap.get(this.#ws.readyState as any) ?? "CONNECTING" }
         )

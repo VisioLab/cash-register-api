@@ -2,7 +2,9 @@
 
 Example client implementation of the websocket API.
 
-## Usage
+A hosted version of the client is available at http://cash-register-api-example-client.visiolab.io/.
+
+## Running locally
 
 You need [NodeJS 16+](https://nodejs.org/en/)
 

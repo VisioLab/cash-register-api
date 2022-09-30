@@ -1,4 +1,4 @@
-import {Button, Stack, TextField} from "@mui/material"
+import {Button, Card, Stack, TextField} from "@mui/material"
 import {useState} from "react"
 import useCashRegisterStore from "./store"
 
@@ -37,6 +37,14 @@ const ConnectionForm = () => {
         <Button variant="contained" type="submit">
           Connect
         </Button>
+
+        <Card variant="outlined" sx={{padding: "1rem"}}>
+          When using the hosted version, you will need to enable{" "}
+          <a href="https://experienceleague.adobe.com/docs/target/using/experiences/vec/troubleshoot-composer/mixed-content.html?lang=en">
+            mixed content
+          </a>{" "}
+          for this site to connect to the websocket in your local network.
+        </Card>
       </Stack>
     </form>
   )

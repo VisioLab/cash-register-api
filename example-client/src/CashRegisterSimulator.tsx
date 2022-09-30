@@ -5,6 +5,7 @@ import Basket from "./Basket"
 import ConnectionState from "./ConnectionState"
 import useCashRegisterStore from "./store"
 import {useEffect, useState} from "react"
+import {HiOutlineRefresh} from "react-icons/hi"
 
 interface Props {
   ipAddress: string
@@ -12,15 +13,21 @@ interface Props {
 
 const CashRegisterSimulator = ({ipAddress}: Props) => {
   const [cashRegister, setCashRegister] = useState<CashRegister>()
-  useEffect(() => {
-    setCashRegister(
-      new CashRegister(
-        ipAddress === "echo"
-          ? new WebSocket("wss://ws.postman-echo.com/raw")
-          : new WebSocket(`ws://${ipAddress}/visiolab-cash-register`)
-      )
-    )
 
+  const connect = () => {
+    const ws = new WebSocket(
+      ipAddress === "echo" ? "wss://ws.postman-echo.com/raw" : `ws://${ipAddress}/visiolab-cash-register`
+    )
+    setCashRegister(new CashRegister(ws))
+  }
+
+  const reconnect = () => {
+    console.log("reconnecting")
+    connect()
+  }
+
+  useEffect(() => {
+    connect()
     return () => cashRegister?.ws.close()
   }, [ipAddress])
 
@@ -28,6 +35,9 @@ const CashRegisterSimulator = ({ipAddress}: Props) => {
   return (
     <Stack spacing={2}>
       <ConnectionState />
+      <Button variant="contained" onClick={reconnect}>
+        Reconnect <HiOutlineRefresh />
+      </Button>
       <Divider>Actions</Divider>
       <Button variant="contained" onClick={() => cashRegister?.paymentSuccess()}>
         Payment Success
