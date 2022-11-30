@@ -1,7 +1,7 @@
-asyncapi: 2.4.0
+asyncapi: 2.5.0
 info:
   title: VisioLab Cash Register API
-  version: 0.2.0
+  version: 0.3.0
   description: >
     ### Enables communication between the VisioLab food scanner and a cash register
 
@@ -72,7 +72,7 @@ components:
         id:
           type: string
           description: >
-            Optional unique identifier for the article, such as a GUID.
+            Optional unique identifier for the article, such as a GUID. Must not contain any "." or "/" characters.
             Different articles with the same price on different days should still have different IDs.
             If not set, a unique ID will be generated internally.
         previewImage:
@@ -101,14 +101,18 @@ components:
         id:
           type: string
           description: >
-            Unique identifier for the article, such as a GUID.
+            Unique identifier for the article, such as a GUID. Must not contain any "." or "/" characters.
     SuccessfulPayment:
       type: object
       properties:
         cashRegisterId:
           type: string
+          description: >
+            Identifier for the cash register that processed the payment.
         receiptId:
           type: string
+          description: >
+            Unique identifier for the receipt, such as a GUID. Must not contain any "." or "/" characters.
         totalGross:
           type: number
           description: The amount that was payed for the transaction.
@@ -266,6 +270,11 @@ components:
             properties:
               paymentMethod:
                 type: string
+              identifier:
+                type: string
+                description: >
+                  Identifier for the guest, such as provided by a QR code or an employee card.
+                  Can be used if a QR code is directly scanned by VisioLab.
             required:
               - paymentMethod
         required:
