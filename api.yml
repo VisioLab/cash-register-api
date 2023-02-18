@@ -15,7 +15,7 @@ info:
 
 
     Once something is detected, `setBasket` will be send, followed by 
-    `startPayment`. The cash register should handle the transaction and 
+    `startPayment`. The cash register can optionally report actual article prices after recalculation based on guest identification using `updateBasket`. Finally, it should handle the transaction and 
     "respond" by sending either `paymentSuccess` or `paymentFailure`.
 
 
@@ -35,6 +35,7 @@ channels:
       message:
         oneOf:
           - $ref: "#/components/messages/syncArticles"
+          - $ref: "#/components/messages/updateBasket"
           - $ref: "#/components/messages/paymentSuccess"
           - $ref: "#/components/messages/paymentFailure"
           - $ref: "#/components/messages/showDialog"
@@ -102,6 +103,41 @@ components:
           type: string
           description: >
             Unique identifier for the article, such as a GUID. Must not contain any "." or "/" characters.
+    BasketArticles:
+      type: array
+      items:
+        type: object
+        $ref: "#/components/schemas/BasketArticle"
+    ArticleUpdate:
+      type: object
+      required:
+        - id
+        - name
+        - priceLookup
+        - price
+      properties:
+        name:
+          type: string
+          description: Name of the article.
+        priceLookup:
+          type: string
+          description: >
+            The price lookup code for the article. Whatever identifier is used in the cash register
+            to identify the price group of articles, such as an article ID.
+        price:
+          type: number
+          description: The updated price for the article after recalculation with discounts.
+        id:
+          type: string
+          description: >
+            Optional unique identifier for the article, such as a GUID. Must not contain any "." or "/" characters.
+            Must match the IDs that were sent in the original basket.
+            Different articles with the same price on different days should still have different IDs.
+    ArticleUpdates:
+      type: array
+      items:
+        type: object
+        $ref: "#/components/schemas/ArticleUpdate"
     SuccessfulPayment:
       type: object
       properties:
@@ -222,6 +258,42 @@ components:
                   name: "Caesar Salad"
                   priceLookup: "3"
                   price: 3.00
+    updateBasket:
+      summary: Report a change in article prices in the current basket after guest identification.
+      payload:
+        type: object
+        properties:
+          event:
+            type: string
+            const: updateBasket
+          data:
+            type: object
+            properties:
+              articles:
+                $ref: "#/components/schemas/ArticleUpdates"
+            required:
+              - articles
+        required:
+          - event
+          - data
+        additionalProperties: false
+      examples:
+        - payload:
+            event: updateBasket
+            data:
+              articles:
+                - id: "a"
+                  name: "Eggs Benedict"
+                  priceLookup: "1"
+                  price: 2.00
+                - id: "b"
+                  name: "Waldorf Salad"
+                  priceLookup: "2"
+                  price: 4.00
+                - id: "c"
+                  name: "Caesar Salad"
+                  priceLookup: "3"
+                  price: 6.00
     setBasket:
       summary: Set the current basket.
       description: The contents of the basket are completely replaced by the new contents.
@@ -382,15 +454,15 @@ components:
               body:
                 en: "How satisfied are you with the interface?"
                 de: "Wie zufrieden sind Sie mit der Schnittstelle?"
-                buttons:
-                  - action: "-1"
-                    label:
-                      en: "Not at all"
-                      de: "Gar nicht"
-                  - action: "+1"
-                    label:
-                      en: "A lot"
-                      de: "Sehr"
+              buttons:
+                - action: "-1"
+                  label:
+                    en: "Not at all"
+                    de: "Gar nicht"
+                - action: "+1"
+                  label:
+                    en: "A lot"
+                    de: "Sehr"
     closeDialog:
       summary: Close any currently open dialog.
       payload:
