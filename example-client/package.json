@@ -12,7 +12,7 @@
     "generateDocs": "npx -p @asyncapi/generator ag -p singleFile=true -p favicon=\"https://uploads-ssl.webflow.com/610e8d4e5e20c21539aec950/612686a1377160481ec27630_Favicon.png\" ../api.yml @asyncapi/html-template -o ../docs"
   },
   "dependencies": {
-    "@asyncapi/generator": "^1.9.13",
+    "@asyncapi/generator": "^1.9.17",
     "@emotion/react": "^11.10.4",
     "@emotion/styled": "^11.10.4",
     "@mui/material": "^5.10.4",

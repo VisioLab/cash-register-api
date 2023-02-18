@@ -1,4 +1,4 @@
-asyncapi: 2.5.0
+asyncapi: 2.6.0
 info:
   title: VisioLab Cash Register API
   version: 0.4.0
@@ -342,6 +342,14 @@ components:
             properties:
               paymentMethod:
                 type: string
+                description: >
+                  Method used to complete the transaction, e.g. `KEY_CARD` or `CREDIT_CARD`. 
+                  Exact values depend on the cash register.
+              checkoutId:
+                type: string
+                description: >
+                  Unique ID for the checkout. Useful for reconciliation between the scanner and the 
+                  cash register.
               identifier:
                 type: string
                 description: >
@@ -349,6 +357,7 @@ components:
                   Can be used if a QR code is directly scanned by VisioLab.
             required:
               - paymentMethod
+              - checkoutId
         required:
           - event
           - data
@@ -357,7 +366,8 @@ components:
         - payload:
             event: startPayment
             data:
-              paymentMethod: "CreditCard"
+              paymentMethod: CREDIT_CARD
+              checkoutId: 7KhiQJfcA5pdyzPofILF
     paymentSuccess:
       summary: Report the success of a payment.
       payload:
