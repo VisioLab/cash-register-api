@@ -16,7 +16,7 @@ export interface SyncArticles {
        */
       price: number;
       /**
-       * Optional unique identifier for the article, such as a GUID. Different articles with the same price on different days should still have different IDs. If not set, a unique ID will be generated internally.
+       * Optional unique identifier for the article, such as a GUID. Must not contain any "." or "/" characters. Different articles with the same price on different days should still have different IDs. If not set, a unique ID will be generated internally.
        *
        */
       id?: string;
@@ -28,10 +28,44 @@ export interface SyncArticles {
   };
 }
 
+export interface UpdateBasket {
+  event: "updateBasket";
+  data: {
+    articles: {
+      /**
+       * Name of the article.
+       */
+      name: string;
+      /**
+       * The price lookup code for the article. Whatever identifier is used in the cash register to identify the price group of articles, such as an article ID.
+       *
+       */
+      priceLookup: string;
+      /**
+       * The updated price for the article after recalculation with discounts.
+       */
+      price: number;
+      /**
+       * Optional unique identifier for the article, such as a GUID. Must not contain any "." or "/" characters. Must match the IDs that were sent in the original basket. Different articles with the same price on different days should still have different IDs.
+       *
+       */
+      id: string;
+    }[];
+  };
+}
+
 export interface PaymentSuccess {
   event: "paymentSuccess";
   data: {
+    /**
+     * Identifier for the cash register that processed the payment.
+     *
+     */
     cashRegisterId?: string;
+    /**
+     * Unique identifier for the receipt, such as a GUID. Must not contain any "." or "/" characters.
+     *
+     */
     receiptId?: string;
     /**
      * The amount that was payed for the transaction.
@@ -150,7 +184,7 @@ export interface SetBasket {
        */
       priceLookup: string;
       /**
-       * Unique identifier for the article, such as a GUID.
+       * Unique identifier for the article, such as a GUID. Must not contain any "." or "/" characters.
        *
        */
       id: string;
@@ -161,7 +195,21 @@ export interface SetBasket {
 export interface StartPayment {
   event: "startPayment";
   data: {
+    /**
+     * Method used to complete the transaction, e.g. `KEY_CARD` or `CREDIT_CARD`.  Exact values depend on the cash register.
+     *
+     */
     paymentMethod: string;
+    /**
+     * Unique ID for the checkout. Useful for reconciliation between the scanner and the  cash register.
+     *
+     */
+    checkoutId: string;
+    /**
+     * Identifier for the guest, such as provided by a QR code or an employee card. Can be used if a QR code is directly scanned by VisioLab.
+     *
+     */
+    identifier?: string;
   };
 }
 

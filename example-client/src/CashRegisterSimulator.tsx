@@ -55,13 +55,23 @@ const CashRegisterSimulator = ({ipAddress}: Props) => {
         Close Dialog
       </Button>
       <Divider>State</Divider>
-      <Basket />
       <Chip
         label={`Payment in progress: ${state.paymentInProgress} `}
         color="primary"
         variant={state.paymentInProgress ? "filled" : "outlined"}
       />
+      <Chip
+        label={`Payment method: ${state.paymentMethod ?? ""}`}
+        color="primary"
+        variant={state.paymentMethod ? "filled" : "outlined"}
+      />
+      <Chip
+        label={`QR code content: ${state.qrCodeContent ?? ""}`}
+        color="primary"
+        variant={state.qrCodeContent ? "filled" : "outlined"}
+      />
       <Chip label={`Survey result: ${state.surveyResult}`} color="primary" />
+      <Basket />
     </Stack>
   )
 }
