@@ -55,22 +55,24 @@ export class CashRegister {
                 totalGross: useCashRegisterStore.getState().basket.length,
             }
         }
-        useCashRegisterStore.setState({ paymentInProgress: false, basket: [] })
+        useCashRegisterStore.setState({ paymentInProgress: false })
+        useCashRegisterStore.getState().reset()
 
         await this.send(message)
 
     }
-    async paymentFailure() {
+    async paymentFailure(messageText: PaymentFailure["data"]["message"] = {
+        en: "Payment cancelled",
+        de: "Zahlung abgebrochen",
+    }) {
         const message: PaymentFailure = {
             event: "paymentFailure",
             data: {
                 reason: "cancelled",
-                message: {
-                    en: "Payment cancelled",
-                    de: "Zahlung abgebrochen",
-                },
-            }
+                message: messageText
+            },
         }
+
         await this.send(message)
     }
 
@@ -123,7 +125,10 @@ export class CashRegister {
         for (const article of message.data.articles) {
             const found = articles.find(a => a.priceLookup === article.priceLookup)
             if (!found) {
-                this.paymentFailure()
+                this.paymentFailure({
+                    en: `Unknown PLU ${article.priceLookup}`,
+                    de: "Unbekannte PLU ${article.priceLookup}",
+                })
             }
         }
         useCashRegisterStore.setState({ basket: message.data.articles })
@@ -132,12 +137,14 @@ export class CashRegister {
     async onStartPayment(message: StartPayment) {
         const { paymentInProgress, basket } = useCashRegisterStore.getState()
         if (!paymentInProgress && !_.isEmpty(basket)) {
-            useCashRegisterStore.setState({ paymentInProgress: true })
+            useCashRegisterStore.setState({
+                paymentInProgress: true, paymentMethod: message.data.paymentMethod, qrCodeContent: message.data.identifier
+            })
         }
     }
 
     async onReset(message: Reset) {
-        useCashRegisterStore.setState({ basket: [] })
+        useCashRegisterStore.getState().reset()
     }
 
     async onUserInput(message: UserInput) {
@@ -157,7 +164,7 @@ export class CashRegister {
 
     private async receiveMessage(message: MessageEvent<string>) {
         const parsedMessage = JSON.parse(message.data) as SetBasket | StartPayment | Reset | UserInput
-        console.log("Received message:", message)
+        console.log("Received message:", message.data)
         switch (parsedMessage.event) {
             case "setBasket":
                 await this.onSetBasket(parsedMessage)

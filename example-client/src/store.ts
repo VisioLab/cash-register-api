@@ -1,4 +1,5 @@
-import create from 'zustand'
+import { omit } from 'lodash'
+import { create } from 'zustand'
 import { SetBasket } from './types'
 
 interface CashRegisterState {
@@ -6,16 +7,20 @@ interface CashRegisterState {
     paymentInProgress: boolean
     connectionState: "CONNECTING" | "OPEN" | "CLOSING" | "CLOSED"
     basket: SetBasket["data"]["articles"]
-    surveyResult: number
+    surveyResult: number,
+    paymentMethod?: string,
+    qrCodeContent?: string,
+    reset: () => void,
 }
 
-const useCashRegisterStore = create<CashRegisterState>(() => (
+const useCashRegisterStore = create<CashRegisterState>((set) => (
     {
         ipAddress: "",
         connectionState: "CONNECTING",
         paymentInProgress: false,
         basket: [],
         surveyResult: 0,
+        reset: () => set(state => ({ ...omit(state, ["paymentMethod", "qrCodeContent"]), basket: [] }), true),
     }
 ))
 
