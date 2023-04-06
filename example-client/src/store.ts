@@ -20,7 +20,7 @@ const useCashRegisterStore = create<CashRegisterState>((set) => (
         paymentInProgress: false,
         basket: [],
         surveyResult: 0,
-        reset: () => set(state => ({ ...omit(state, ["paymentMethod", "qrCodeContent"]), basket: [] }), true),
+        reset: () => set(state => ({ ...omit(state, ["paymentMethod", "qrCodeContent"]), paymentInProgress: false, basket: [] }), true),
     }
 ))
 

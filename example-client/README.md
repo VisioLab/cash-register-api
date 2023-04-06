@@ -10,7 +10,7 @@ You need [NodeJS 16+](https://nodejs.org/en/)
 
 ```bash
 npm install
-npm run dev
+npm start
 ```
 
 A web interface will start on http://localhost:4173/.

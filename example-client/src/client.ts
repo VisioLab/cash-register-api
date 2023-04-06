@@ -55,7 +55,6 @@ export class CashRegister {
                 totalGross: useCashRegisterStore.getState().basket.length,
             }
         }
-        useCashRegisterStore.setState({ paymentInProgress: false })
         useCashRegisterStore.getState().reset()
 
         await this.send(message)
