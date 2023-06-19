@@ -7,7 +7,6 @@ const articles: SyncArticles["data"]["articles"] = [
         name: "Eggs Benedict",
         priceLookup: "1",
         price: 1.00,
-
     },
     {
         name: "Waldorf Salad",
@@ -126,7 +125,7 @@ export class CashRegister {
             if (!found) {
                 this.paymentFailure({
                     en: `Unknown PLU ${article.priceLookup}`,
-                    de: "Unbekannte PLU ${article.priceLookup}",
+                    de: `Unbekannte PLU ${article.priceLookup}`,
                 })
             }
         }

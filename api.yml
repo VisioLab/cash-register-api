@@ -1,11 +1,11 @@
 asyncapi: 2.6.0
 info:
   title: VisioLab Cash Register API
-  version: 0.4.0
+  version: 0.5.0
   description: >
-    ### Enables communication between the VisioLab food scanner and a cash register
+    ### Enables communication between VisioLab's Blink app and a cash register
 
-    The iPad running the VisioLab scanner runs a Websocket server in the local
+    The iPad running VisioLab's Blink app runs a websocket server in the local
     network on `ws:/<local-ip>/visiolab-cash-register`.
 
 
@@ -14,8 +14,10 @@ info:
     the scanner is ready to detect food.
 
 
-    Once something is detected, `setBasket` will be send, followed by 
-    `startPayment`. The cash register can optionally report actual article prices after recalculation based on guest identification using `updateBasket`. Finally, it should handle the transaction and 
+    Once something is detected and the "Pay" button is pressed to initiate the checkout, 
+    `setBasket` will be send, followed by  `startPayment`. 
+    The cash register can optionally report actual article prices after recalculation based
+    on guest identification using `updateBasket`. Finally, it should handle the transaction and 
     "respond" by sending either `paymentSuccess` or `paymentFailure`.
 
 
@@ -47,6 +49,7 @@ channels:
         oneOf:
           - $ref: "#/components/messages/setBasket"
           - $ref: "#/components/messages/startPayment"
+          - $ref: "#/components/messages/printReceipt"
           - $ref: "#/components/messages/userInput"
           - $ref: "#/components/messages/reset"
 
@@ -224,6 +227,9 @@ components:
   messages:
     syncArticles:
       summary: Synchronize available articles in the cash register.
+      description: >
+        The synchronized articles are currently used to updated the prices of articles 
+        already available in the Blink app, based on matching PLUs.
       payload:
         type: object
         properties:
@@ -260,6 +266,7 @@ components:
                   price: 3.00
     updateBasket:
       summary: Report a change in article prices in the current basket after guest identification.
+      description: This message is not implemented yet. Sending it to the server has no effect.
       payload:
         type: object
         properties:
@@ -348,8 +355,8 @@ components:
               checkoutId:
                 type: string
                 description: >
-                  Unique ID for the checkout. Useful for reconciliation between the scanner and the 
-                  cash register.
+                  Unique ID for the checkout assigned by the Blink app. 
+                  Useful for reconciliation between the scanner and the cash register.
               identifier:
                 type: string
                 description: >
@@ -368,6 +375,38 @@ components:
             data:
               paymentMethod: CREDIT_CARD
               checkoutId: 7KhiQJfcA5pdyzPofILF
+    printReceipt:
+      summary: Print a physical receipt for a checkout.
+      description: This message is not implemented yet. The server will never send it.
+      payload:
+        type: object
+        properties:
+          event:
+            type: string
+            const: printReceipt
+          data:
+            type: object
+            properties:
+              checkoutId:
+                type: string
+                description: >
+                  Unique ID for the checkout assigned by the Blink app. 
+              receiptId:
+                type: string
+                description: >
+                  Unique ID for the checkout assigned by the cash register. 
+            required:
+              - checkoutId
+        required:
+          - event
+          - data
+        additionalProperties: false
+      examples:
+        - payload:
+            event: printReceipt
+            data:
+              checkoutId: 7KhiQJfcA5pdyzPofILF
+              receiptId: 32eab9d1-bacb-4363-a88b-bcd9315ae897
     paymentSuccess:
       summary: Report the success of a payment.
       payload:
@@ -430,7 +469,8 @@ components:
         It will report back the button that was pressed with the action that is 
         attached to the button. The dialog will be closed automatically after
         a button was pressed. In case a new dialog should be opened, a new 
-        message has to be sent.
+        message has to be sent. The dialog can only be shown during checkout
+        and not during scanning.
       payload:
         type: object
         properties:
