@@ -129,7 +129,6 @@ components:
     ArticleUpdate:
       type: object
       required:
-        - id
         - name
         - priceLookup
         - price
@@ -365,6 +364,9 @@ components:
                   priceLookup: "456"
     weighArticle:
       summary: Initiate a weighing operation for an article.
+      description: >
+        This event should activate the scale and either way the article if it is already placed on the scale
+        or placed afterwards.
       payload: 
         type: object
         properties:
