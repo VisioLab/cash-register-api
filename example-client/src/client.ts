@@ -52,6 +52,7 @@ export class CashRegister {
             event: "paymentSuccess",
             data: {
                 totalGross: useCashRegisterStore.getState().basket.length,
+                receiptUrl: "https://receipts-dev.visiolab.io/"
             }
         }
         useCashRegisterStore.getState().reset()
