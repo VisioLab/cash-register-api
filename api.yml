@@ -1,29 +1,39 @@
 asyncapi: 2.6.0
 info:
   title: VisioLab Cash Register API
-  version: 0.5.0
+  version: 1.1.0
   description: >
     ### Enables communication between VisioLab's Blink app and a cash register
 
     The iPad running VisioLab's Blink app runs a websocket server in the local
     network on `ws:/<local-ip>/visiolab-cash-register`.
 
+    Each message contains an `event` and a `data` property at the top level. The `event`
+    property identifies the type of the message, so that actions can be dispatched
+    based on it. The `data` property contains the actual content of the message.
+    Messages constitute events and there is no fixed request-response relation between them.
+    Still the events are expected to follow a certain sequence as described below.
 
-    Once the cash register has established a connection, it should synchronize
+    Once the register has established a connection, it should synchronize
     its articles using the `syncArticles` operation. Afterwards
     the scanner is ready to detect food.
 
 
-    Once something is detected and the "Pay" button is pressed to initiate the checkout, 
-    `setBasket` will be send, followed by  `startPayment`. 
-    The cash register can optionally report actual article prices after recalculation based
+    Once articles are detected and the "Pay" button is pressed to initiate the checkout, 
+    `setBasket` will be sent. 
+    The register can optionally report actual article prices after recalculation based
+    on guest identification using `updateBasket` at any time.
+    If scale articles are detected, they are not send in the initial `setBasket` event. Instead
+    they are send individually with the `weighArticle` command, to which the register should "respond"
+    with a `articleWeighed` event in a case of success or with a `weighingFailed` event in a case of failure.
+    After all articles are added the basket, the payment is initiated by sending `startPayment`.
+    The register can optionally report actual article prices after recalculation based
     on guest identification using `updateBasket`. Finally, it should handle the transaction and 
     "respond" by sending either `paymentSuccess` or `paymentFailure`.
 
-
-    Each message contains an `event` and a `data` property at the top level. The `event`
-    property identifies the type of the message, so that actions can be dispatched
-    based on it. The `data` property contains the actual content of the message.
+    In case of malformed messages or other errors, the register or the scanner can send an `error` event.
+    
+    
 servers:
   visiolab:
     url: "ws://<local-ip>/visiolab-cash-register"
@@ -44,6 +54,7 @@ channels:
           - $ref: "#/components/messages/paymentFailure"
           - $ref: "#/components/messages/showDialog"
           - $ref: "#/components/messages/closeDialog"
+          - $ref: "#/components/messages/apiError"
     subscribe:
       summary: Messages the sever can send.
       operationId: processMessage
@@ -55,6 +66,7 @@ channels:
           - $ref: "#/components/messages/printReceipt"
           - $ref: "#/components/messages/userInput"
           - $ref: "#/components/messages/reset"
+          - $ref: "#/components/messages/apiError"
 
 components:
   schemas:
@@ -196,7 +208,7 @@ components:
           enum:
             - cancelled
             - cardRemovedTooQuickly
-            - notEnoughBalance
+            - insufficientBalance
             - other
           type: string
           description: Reason for the payment failure.
@@ -220,6 +232,21 @@ components:
         - en
         - de
       additionalProperties: false
+    ApiError:
+      type: object
+      properties:
+        reason:
+          enum:
+            - malformed
+            - internal
+            - unexpectedEvent
+            - unknown
+        message:
+          type: string
+      required:
+        - reason
+        - message
+    additionalProperties: false
     Dialog:
       type: object
       properties:
@@ -395,7 +422,7 @@ components:
                 price: 0.75
                 priceLookup: "123"
                 scale:
-                  unit: "g"
+                  unit: "100g"
     startPayment:
       summary: Initiate the payment for the current basket.
       payload:
@@ -467,6 +494,27 @@ components:
             data:
               checkoutId: 7KhiQJfcA5pdyzPofILF
               receiptId: 32eab9d1-bacb-4363-a88b-bcd9315ae897
+    apiError:
+      summary: Report an error.
+      description: >
+        Report an error that occurred either in response to a received event or due to some
+        external factor.
+      payload:
+        type: object
+        properties:
+          event:
+            type: string
+            const: error
+          data:
+            $ref: "#/components/schemas/ApiError"
+            
+      examples:
+        - payload:
+            event: error
+            data:
+              reason: malformed
+              message: "Event data could not be decoded."
+                
     articleWeighed:
       summary: Report the result of a weighing operation.
       payload:

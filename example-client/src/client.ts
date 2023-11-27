@@ -1,6 +1,6 @@
 import _ from "lodash";
 import useCashRegisterStore from "./store";
-import { PaymentFailure, PaymentSuccess, StartPayment, Reset, CloseDialog, SetBasket, ShowDialog, SyncArticles, UserInput } from "./types";
+import { PaymentFailure, PaymentSuccess, StartPayment, Reset, CloseDialog, SetBasket, ShowDialog, SyncArticles, UserInput, ArticleWeighed, WeighingFailed, WeighArticle, ApiError } from "./types";
 
 const articles: SyncArticles["data"]["articles"] = [
     {
@@ -52,14 +52,14 @@ export class CashRegister {
             event: "paymentSuccess",
             data: {
                 totalGross: useCashRegisterStore.getState().basket.length,
-                receiptUrl: "https://receipts-dev.visiolab.io/"
+                receiptUrl: "https://receipts.visiolab.io/"
             }
         }
         useCashRegisterStore.getState().reset()
 
         await this.send(message)
-
     }
+
     async paymentFailure(messageText: PaymentFailure["data"]["message"] = {
         en: "Payment cancelled",
         de: "Zahlung abgebrochen",
@@ -74,6 +74,40 @@ export class CashRegister {
 
         await this.send(message)
     }
+
+    async articleWeighed() {
+        const scaleArticle = useCashRegisterStore.getState().scaleArticle
+        if (scaleArticle === undefined) {
+            return
+        }
+        const message: ArticleWeighed = {
+            event: "articleWeighed",
+            data: {
+               article: {
+                ...scaleArticle, 
+                scale: {weight: 500, unit: scaleArticle.scale?.unit ?? "g"}},
+            },
+        }
+
+        await this.send(message)
+    }
+
+    async weighingFailed() {
+        const message: WeighingFailed = {
+            event: "weighingFailed",
+            data: {
+               message: {
+                de: "Waage nicht verfügbar",
+                en: "Scale not available"
+              }
+            },
+        }
+        useCashRegisterStore.setState({scaleArticle: undefined})
+
+        await this.send(message)
+    }
+
+    
 
     async showDialog() {
         const message: ShowDialog = {
@@ -155,6 +189,10 @@ export class CashRegister {
         }
     }
 
+    private async weighArticle(parsedMessage: WeighArticle) {
+        useCashRegisterStore.setState({scaleArticle: parsedMessage.data.article})
+    }
+
     private async send(message: object) {
         const encodedMessage = JSON.stringify(message)
         console.log("Sending message:", encodedMessage)
@@ -162,7 +200,7 @@ export class CashRegister {
     }
 
     private async receiveMessage(message: MessageEvent<string>) {
-        const parsedMessage = JSON.parse(message.data) as SetBasket | StartPayment | Reset | UserInput
+        const parsedMessage = JSON.parse(message.data) as SetBasket | StartPayment | Reset | UserInput | WeighArticle | ApiError
         console.log("Received message:", message.data)
         switch (parsedMessage.event) {
             case "setBasket":
@@ -177,8 +215,13 @@ export class CashRegister {
             case "userInput":
                 await this.onUserInput(parsedMessage)
                 break;
+            case "weighArticle":
+                await this.weighArticle(parsedMessage)
+                break;
+            case "error":
+                console.log("Received error:", parsedMessage.data)
             default:
-                console.error("Unknown event", parsedMessage)
+                await this.send({ event: "error", data: { reason: "unexpectedEvent", message: `Received unexpected event ${(parsedMessage as any).event}` } })
         }
     }
 

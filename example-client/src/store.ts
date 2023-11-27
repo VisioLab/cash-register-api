@@ -1,6 +1,6 @@
 import { omit } from 'lodash'
 import { create } from 'zustand'
-import { SetBasket } from './types'
+import { SetBasket, WeighArticle } from './types'
 
 interface CashRegisterState {
     ipAddress: string
@@ -8,6 +8,7 @@ interface CashRegisterState {
     connectionState: "CONNECTING" | "OPEN" | "CLOSING" | "CLOSED"
     basket: SetBasket["data"]["articles"]
     surveyResult: number,
+    scaleArticle?: WeighArticle["data"]["article"]
     paymentMethod?: string,
     qrCodeContent?: string,
     reset: () => void,

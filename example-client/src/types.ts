@@ -76,7 +76,7 @@ export interface UpdateBasket {
        * Optional unique identifier for the article, such as a GUID. Must not contain any "." or "/" characters. Must match the IDs that were sent in the original basket. Different articles with the same price on different days should still have different IDs.
        *
        */
-      id: string;
+      id?: string;
     }[];
   };
 }
@@ -117,7 +117,7 @@ export interface ArticleWeighed {
        * Optional unique identifier for the article, such as a GUID. Must not contain any "." or "/" characters. Must match the IDs that were sent in the original basket. Different articles with the same price on different days should still have different IDs.
        *
        */
-      id: string;
+      id?: string;
     };
   };
 }
@@ -172,7 +172,7 @@ export interface PaymentFailure {
     /**
      * Reason for the payment failure.
      */
-    reason: "cancelled" | "cardRemovedTooQuickly" | "notEnoughBalance" | "other";
+    reason: "cancelled" | "cardRemovedTooQuickly" | "insufficientBalance" | "other";
     /**
      * Message for the customer on how to proceed with the payment.
      */
@@ -251,6 +251,14 @@ export interface CloseDialog {
      * Identifier for this kind of dialog. E.g. `cardReaderError`.
      */
     id: string;
+  };
+}
+
+export interface ApiError {
+  event?: "error";
+  data?: {
+    reason: "malformed" | "internal" | "unexpectedEvent" | "unknown";
+    message: string;
   };
 }
 
