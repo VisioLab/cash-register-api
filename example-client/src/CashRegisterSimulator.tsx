@@ -33,61 +33,59 @@ const CashRegisterSimulator = ({ipAddress}: Props) => {
 
   const state = useCashRegisterStore()
   return (
+    <Stack direction="row" spacing={4} divider={<Divider orientation="vertical" flexItem />}>
+      <Stack spacing={2} sx={{minWidth: 450}}>
+        <Divider>Connection</Divider>
 
-    <Stack direction="row" spacing={4}  divider={<Divider orientation="vertical" flexItem />}  >
-<Stack spacing={2} sx={{ minWidth: 450 }} >
-<Divider>Connection</Divider>
-
-      <ConnectionState />
-      <Button variant="contained" onClick={reconnect}>
-        Reconnect <HiOutlineRefresh />
-      </Button>
-      <Divider>Actions</Divider>
-      <Button variant="contained" onClick={() => cashRegister?.paymentSuccess()}>
-        Payment Success
-      </Button>
-      <Button variant="contained" onClick={() => cashRegister?.paymentFailure()}>
-        Payment Failure
-      </Button>
-      <Button variant="contained" onClick={() => cashRegister?.articleWeighed()}>
-        Article Weighed
-      </Button>
-      <Button variant="contained" onClick={() => cashRegister?.weighingFailed()}>
-        Weighing Failed
-      </Button>
-      <Button variant="contained" onClick={() => cashRegister?.syncArticles()}>
-        Sync Articles
-      </Button>
-      <Button variant="contained" onClick={() => cashRegister?.showDialog()}>
-        Show Dialog
-      </Button>
-      <Button variant="contained" onClick={() => cashRegister?.closeDialog()}>
-        Close Dialog
-      </Button>
-      
+        <ConnectionState />
+        <Button variant="contained" onClick={reconnect}>
+          Reconnect <HiOutlineRefresh />
+        </Button>
+        <Divider>Actions</Divider>
+        <Button variant="contained" onClick={() => cashRegister?.paymentSuccess()}>
+          Payment Success
+        </Button>
+        <Button variant="contained" onClick={() => cashRegister?.paymentFailure()}>
+          Payment Failure
+        </Button>
+        <Button variant="contained" onClick={() => cashRegister?.articleWeighed()}>
+          Article Weighed
+        </Button>
+        <Button variant="contained" onClick={() => cashRegister?.weighingFailed()}>
+          Weighing Failed
+        </Button>
+        <Button variant="contained" onClick={() => cashRegister?.syncArticles()}>
+          Sync Articles
+        </Button>
+        <Button variant="contained" onClick={() => cashRegister?.showDialog()}>
+          Show Dialog
+        </Button>
+        <Button variant="contained" onClick={() => cashRegister?.closeDialog()}>
+          Close Dialog
+        </Button>
       </Stack>
-      <Stack spacing={2} sx={{ minWidth: 450 }}>
-      <Divider>Basket</Divider>
+      <Stack spacing={2} sx={{minWidth: 450}}>
+        <Divider>Basket</Divider>
 
-      <Basket />
+        <Basket />
 
-      <Divider>State</Divider>
-      <Chip
-        label={`Payment in progress: ${state.paymentInProgress} `}
-        color="primary"
-        variant={state.paymentInProgress ? "filled" : "outlined"}
-      />
-      <Chip
-        label={`Payment method: ${state.paymentMethod ?? ""}`}
-        color="primary"
-        variant={state.paymentMethod ? "filled" : "outlined"}
-      />
-      <Chip
-        label={`QR code content: ${state.qrCodeContent ?? ""}`}
-        color="primary"
-        variant={state.qrCodeContent ? "filled" : "outlined"}
-      />
-      <Chip label={`Survey result: ${state.surveyResult}`} color="primary" />
+        <Divider>State</Divider>
+        <Chip
+          label={`Payment in progress: ${state.paymentInProgress} `}
+          color="primary"
+          variant={state.paymentInProgress ? "filled" : "outlined"}
+        />
+        <Chip
+          label={`Payment method: ${state.paymentMethod ?? ""}`}
+          color="primary"
+          variant={state.paymentMethod ? "filled" : "outlined"}
+        />
+        <Chip
+          label={`QR code content: ${state.qrCodeContent ?? ""}`}
+          color="primary"
+          variant={state.qrCodeContent ? "filled" : "outlined"}
+        />
+        <Chip label={`Survey result: ${state.surveyResult}`} color="primary" />
       </Stack>
     </Stack>
   )

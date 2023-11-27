@@ -26,6 +26,11 @@ export interface SyncArticles {
          *
          */
         unit?: string;
+        /**
+         * The factor by which the unit is multiplied to display the price per unit to the guest. E.g. 100 if the price is denoted in 100g.
+         *
+         */
+        factor?: number;
       };
       /**
        * Optional unique identifier for the article, such as a GUID. Must not contain any "." or "/" characters. Different articles with the same price on different days should still have different IDs. If not set, a unique ID will be generated internally.
@@ -312,6 +317,11 @@ export interface WeighArticle {
          *
          */
         unit?: string;
+        /**
+         * The factor by which the unit is multiplied to display the price per unit to the guest. E.g. 100 if the price is denoted in 100g.
+         *
+         */
+        factor?: number;
       };
       /**
        * Optional unique identifier for the article, such as a GUID. Must not contain any "." or "/" characters. Different articles with the same price on different days should still have different IDs. If not set, a unique ID will be generated internally.

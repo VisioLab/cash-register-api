@@ -17,6 +17,12 @@ const articles: SyncArticles["data"]["articles"] = [
         name: "Caesar Salad",
         priceLookup: "3",
         price: 3.00,
+    },
+    {
+        name: "Saladbar",
+        priceLookup: "4",
+        price: 0.75,
+        scale: {factor: 100, unit: "g"}
     }
 ]
 

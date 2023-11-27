@@ -100,6 +100,11 @@ components:
               type: string
               description: >
                 Unit of the weight, e.g. `g` or `kg`.
+            factor: 
+              type: number
+              description: >
+                The factor by which the unit is multiplied to display the price per unit to the guest.
+                E.g. 100 if the price is denoted in 100g.
         id:
           type: string
           description: >
