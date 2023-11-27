@@ -161,3 +161,4 @@ cython_debug/
 
 # Generate AsyncAPI docs
 docs/
+.DS_Store

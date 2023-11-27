@@ -12,9 +12,26 @@ export interface SyncArticles {
        */
       priceLookup: string;
       /**
-       * The default price for the articles. Is disregarded for price calculation if priceLookup is present.
+       * The default price for the articles. Is disregarded for price calculation if priceLookup is present. For scale items this is the price per unit of weight.
+       *
        */
       price: number;
+      /**
+       * Optional scale configuration for the article. If present, the article will be weighed instead of counted. The price will be calculated based on the weight.
+       *
+       */
+      scale?: {
+        /**
+         * Unit of the weight, e.g. `g` or `kg`.
+         *
+         */
+        unit?: string;
+        /**
+         * The factor by which the unit is multiplied to display the price per unit to the guest. E.g. 100 if the price is denoted in 100g.
+         *
+         */
+        factor?: number;
+      };
       /**
        * Optional unique identifier for the article, such as a GUID. Must not contain any "." or "/" characters. Different articles with the same price on different days should still have different IDs. If not set, a unique ID will be generated internally.
        *
@@ -46,11 +63,83 @@ export interface UpdateBasket {
        */
       price: number;
       /**
+       * Only present if the article is weighed.
+       */
+      scale?: {
+        /**
+         * The weight of the article in units.
+         *
+         */
+        weight?: number;
+        /**
+         * Unit of the weight, e.g. `g` or `kg`. Only present if the article is weighed.
+         *
+         */
+        unit?: string;
+      };
+      /**
        * Optional unique identifier for the article, such as a GUID. Must not contain any "." or "/" characters. Must match the IDs that were sent in the original basket. Different articles with the same price on different days should still have different IDs.
        *
        */
-      id: string;
+      id?: string;
     }[];
+  };
+}
+
+export interface ArticleWeighed {
+  event: "articleWeighed";
+  data: {
+    article: {
+      /**
+       * Name of the article.
+       */
+      name: string;
+      /**
+       * The price lookup code for the article. Whatever identifier is used in the cash register to identify the price group of articles, such as an article ID.
+       *
+       */
+      priceLookup: string;
+      /**
+       * The updated price for the article after recalculation with discounts.
+       */
+      price: number;
+      /**
+       * Only present if the article is weighed.
+       */
+      scale?: {
+        /**
+         * The weight of the article in units.
+         *
+         */
+        weight?: number;
+        /**
+         * Unit of the weight, e.g. `g` or `kg`. Only present if the article is weighed.
+         *
+         */
+        unit?: string;
+      };
+      /**
+       * Optional unique identifier for the article, such as a GUID. Must not contain any "." or "/" characters. Must match the IDs that were sent in the original basket. Different articles with the same price on different days should still have different IDs.
+       *
+       */
+      id?: string;
+    };
+  };
+}
+
+export interface WeighingFailed {
+  event: "weighingFailed";
+  data: {
+    message: {
+      /**
+       * The English text.
+       */
+      en: string;
+      /**
+       * The German text.
+       */
+      de: string;
+    };
   };
 }
 
@@ -88,7 +177,7 @@ export interface PaymentFailure {
     /**
      * Reason for the payment failure.
      */
-    reason: "cancelled" | "cardRemovedTooQuickly" | "notEnoughBalance" | "other";
+    reason: "cancelled" | "cardRemovedTooQuickly" | "insufficientBalance" | "other";
     /**
      * Message for the customer on how to proceed with the payment.
      */
@@ -170,6 +259,14 @@ export interface CloseDialog {
   };
 }
 
+export interface ApiError {
+  event?: "error";
+  data?: {
+    reason: "malformed" | "internal" | "unexpectedEvent" | "unknown";
+    message: string;
+  };
+}
+
 export interface SetBasket {
   event: "setBasket";
   data: {
@@ -192,6 +289,53 @@ export interface SetBasket {
   };
 }
 
+export interface WeighArticle {
+  event: "weighArticle";
+  data: {
+    article: {
+      /**
+       * Name of the article.
+       */
+      name: string;
+      /**
+       * The price lookup code for the article. Whatever identifier is used in the cash register to identify the price group of articles, such as an article ID.
+       *
+       */
+      priceLookup: string;
+      /**
+       * The default price for the articles. Is disregarded for price calculation if priceLookup is present. For scale items this is the price per unit of weight.
+       *
+       */
+      price: number;
+      /**
+       * Optional scale configuration for the article. If present, the article will be weighed instead of counted. The price will be calculated based on the weight.
+       *
+       */
+      scale?: {
+        /**
+         * Unit of the weight, e.g. `g` or `kg`.
+         *
+         */
+        unit?: string;
+        /**
+         * The factor by which the unit is multiplied to display the price per unit to the guest. E.g. 100 if the price is denoted in 100g.
+         *
+         */
+        factor?: number;
+      };
+      /**
+       * Optional unique identifier for the article, such as a GUID. Must not contain any "." or "/" characters. Different articles with the same price on different days should still have different IDs. If not set, a unique ID will be generated internally.
+       *
+       */
+      id?: string;
+      /**
+       * Preview image for the article as base64 encoded string.
+       */
+      previewImage?: string;
+    };
+  };
+}
+
 export interface StartPayment {
   event: "startPayment";
   data: {
@@ -201,7 +345,7 @@ export interface StartPayment {
      */
     paymentMethod: string;
     /**
-     * Unique ID for the checkout. Useful for reconciliation between the scanner and the  cash register.
+     * Unique ID for the checkout assigned by the Blink app.  Useful for reconciliation between the scanner and the cash register.
      *
      */
     checkoutId: string;
@@ -210,6 +354,22 @@ export interface StartPayment {
      *
      */
     identifier?: string;
+  };
+}
+
+export interface PrintReceipt {
+  event: "printReceipt";
+  data: {
+    /**
+     * Unique ID for the checkout assigned by the Blink app.
+     *
+     */
+    checkoutId: string;
+    /**
+     * Unique ID for the checkout assigned by the cash register.
+     *
+     */
+    receiptId?: string;
   };
 }
 

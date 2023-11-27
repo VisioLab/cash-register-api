@@ -1,29 +1,39 @@
 asyncapi: 2.6.0
 info:
   title: VisioLab Cash Register API
-  version: 0.5.0
+  version: 1.1.0
   description: >
     ### Enables communication between VisioLab's Blink app and a cash register
 
     The iPad running VisioLab's Blink app runs a websocket server in the local
     network on `ws:/<local-ip>/visiolab-cash-register`.
 
+    Each message contains an `event` and a `data` property at the top level. The `event`
+    property identifies the type of the message, so that actions can be dispatched
+    based on it. The `data` property contains the actual content of the message.
+    Messages constitute events and there is no fixed request-response relation between them.
+    Still the events are expected to follow a certain sequence as described below.
 
-    Once the cash register has established a connection, it should synchronize
+    Once the register has established a connection, it should synchronize
     its articles using the `syncArticles` operation. Afterwards
     the scanner is ready to detect food.
 
 
-    Once something is detected and the "Pay" button is pressed to initiate the checkout, 
-    `setBasket` will be send, followed by  `startPayment`. 
-    The cash register can optionally report actual article prices after recalculation based
+    Once articles are detected and the "Pay" button is pressed to initiate the checkout, 
+    `setBasket` will be sent. 
+    The register can optionally report actual article prices after recalculation based
+    on guest identification using `updateBasket` at any time.
+    If scale articles are detected, they are not send in the initial `setBasket` event. Instead
+    they are send individually with the `weighArticle` command, to which the register should "respond"
+    with a `articleWeighed` event in a case of success or with a `weighingFailed` event in a case of failure.
+    After all articles are added the basket, the payment is initiated by sending `startPayment`.
+    The register can optionally report actual article prices after recalculation based
     on guest identification using `updateBasket`. Finally, it should handle the transaction and 
     "respond" by sending either `paymentSuccess` or `paymentFailure`.
 
-
-    Each message contains an `event` and a `data` property at the top level. The `event`
-    property identifies the type of the message, so that actions can be dispatched
-    based on it. The `data` property contains the actual content of the message.
+    In case of malformed messages or other errors, the register or the scanner can send an `error` event.
+    
+    
 servers:
   visiolab:
     url: "ws://<local-ip>/visiolab-cash-register"
@@ -38,20 +48,25 @@ channels:
         oneOf:
           - $ref: "#/components/messages/syncArticles"
           - $ref: "#/components/messages/updateBasket"
+          - $ref: "#/components/messages/articleWeighed"
+          - $ref: "#/components/messages/weighingFailed"
           - $ref: "#/components/messages/paymentSuccess"
           - $ref: "#/components/messages/paymentFailure"
           - $ref: "#/components/messages/showDialog"
           - $ref: "#/components/messages/closeDialog"
+          - $ref: "#/components/messages/apiError"
     subscribe:
       summary: Messages the sever can send.
       operationId: processMessage
       message:
         oneOf:
           - $ref: "#/components/messages/setBasket"
+          - $ref: "#/components/messages/weighArticle"
           - $ref: "#/components/messages/startPayment"
           - $ref: "#/components/messages/printReceipt"
           - $ref: "#/components/messages/userInput"
           - $ref: "#/components/messages/reset"
+          - $ref: "#/components/messages/apiError"
 
 components:
   schemas:
@@ -72,7 +87,24 @@ components:
             to identify the price group of articles, such as an article ID.
         price:
           type: number
-          description: The default price for the articles. Is disregarded for price calculation if priceLookup is present.
+          description: >
+            The default price for the articles. Is disregarded for price calculation if priceLookup is present.
+            For scale items this is the price per unit of weight.
+        scale:
+          type: object
+          description: >
+            Optional scale configuration for the article. If present, the article will be weighed
+            instead of counted. The price will be calculated based on the weight.
+          properties:
+            unit:
+              type: string
+              description: >
+                Unit of the weight, e.g. `g` or `kg`.
+            factor: 
+              type: number
+              description: >
+                The factor by which the unit is multiplied to display the price per unit to the guest.
+                E.g. 100 if the price is denoted in 100g.
         id:
           type: string
           description: >
@@ -114,7 +146,6 @@ components:
     ArticleUpdate:
       type: object
       required:
-        - id
         - name
         - priceLookup
         - price
@@ -130,6 +161,18 @@ components:
         price:
           type: number
           description: The updated price for the article after recalculation with discounts.
+        scale:
+          type: object
+          description: Only present if the article is weighed.
+          properties:
+            weight:
+              type: number
+              description: >
+                The weight of the article in units. 
+            unit:
+              type: string
+              description: >
+                Unit of the weight, e.g. `g` or `kg`. Only present if the article is weighed.
         id:
           type: string
           description: >
@@ -170,7 +213,7 @@ components:
           enum:
             - cancelled
             - cardRemovedTooQuickly
-            - notEnoughBalance
+            - insufficientBalance
             - other
           type: string
           description: Reason for the payment failure.
@@ -194,6 +237,21 @@ components:
         - en
         - de
       additionalProperties: false
+    ApiError:
+      type: object
+      properties:
+        reason:
+          enum:
+            - malformed
+            - internal
+            - unexpectedEvent
+            - unknown
+        message:
+          type: string
+      required:
+        - reason
+        - message
+    additionalProperties: false
     Dialog:
       type: object
       properties:
@@ -336,6 +394,40 @@ components:
                 - id: "def"
                   name: "Beef Stroganoff"
                   priceLookup: "456"
+    weighArticle:
+      summary: Initiate a weighing operation for an article.
+      description: >
+        This event should activate the scale and either way the article if it is already placed on the scale
+        or placed afterwards.
+      payload: 
+        type: object
+        properties:
+          event: 
+            type: string
+            const: weighArticle
+          data:
+            type: object
+            properties:
+              article:
+                type: object
+                $ref: "#/components/schemas/Article"
+            required:
+              - article
+        required:
+          - event
+          - data
+        additionalProperties: false
+      examples:
+        - payload:
+            event: weighArticle
+            data:
+              article:
+                id: "ghi"
+                name: "Salad bar"
+                price: 0.75
+                priceLookup: "123"
+                scale:
+                  unit: "100g"
     startPayment:
       summary: Initiate the payment for the current basket.
       payload:
@@ -407,6 +499,85 @@ components:
             data:
               checkoutId: 7KhiQJfcA5pdyzPofILF
               receiptId: 32eab9d1-bacb-4363-a88b-bcd9315ae897
+    apiError:
+      summary: Report an error.
+      description: >
+        Report an error that occurred either in response to a received event or due to some
+        external factor.
+      payload:
+        type: object
+        properties:
+          event:
+            type: string
+            const: error
+          data:
+            $ref: "#/components/schemas/ApiError"
+            
+      examples:
+        - payload:
+            event: error
+            data:
+              reason: malformed
+              message: "Event data could not be decoded."
+                
+    articleWeighed:
+      summary: Report the result of a weighing operation.
+      payload:
+        type: object
+        properties:
+          event:
+            type: string
+            const: articleWeighed
+          data:
+            type: object
+            properties:
+              article:
+                type: object
+                $ref: "#/components/schemas/ArticleUpdate"
+            required:
+              - article
+        required:
+          - event
+          - data
+        additionalProperties: false
+      examples:
+        - payload:
+            event: articleWeighed
+            data:
+              article:
+                id: "ghi"
+                name: "Salad bar"
+                priceLookup: "123"
+                price: 3.75
+                scale:
+                  unit: "g"
+                  weight: 500
+    weighingFailed:
+      summary: Report an error during a weighing operation.
+      payload:
+        type: object
+        properties:
+          event:
+            type: string
+            const: weighingFailed
+          data:
+            type: object
+            properties:
+              message:
+                $ref: "#/components/schemas/I18ned"    
+            required:
+              - message
+        required:
+          - event
+          - data
+        additionalProperties: false
+      examples:
+        - payload:
+            event: weighingFailed
+            data:
+              message:
+                en: "Weight not stable."
+                de: "Gewicht nicht stabil."
     paymentSuccess:
       summary: Report the success of a payment.
       payload:
