@@ -1,7 +1,5 @@
 import {
-  Divider,
   Paper,
-  Stack,
   Table,
   TableBody,
   TableCell,

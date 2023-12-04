@@ -8,7 +8,7 @@ const defaultValues = {
 
 const ConnectionForm = () => {
   const [formValues, setFormValues] = useState(defaultValues)
-  const handleInputChange = (e: {target: {name: any; value: any}}) => {
+  const handleInputChange = (e: {target: {name: string; value: string}}) => {
     const {name, value} = e.target
     setFormValues({
       ...formValues,

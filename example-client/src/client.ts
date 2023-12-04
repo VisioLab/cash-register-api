@@ -1,6 +1,6 @@
 import _ from "lodash";
 import useCashRegisterStore from "./store";
-import { PaymentFailure, PaymentSuccess, StartPayment, Reset, CloseDialog, SetBasket, ShowDialog, SyncArticles, UserInput, ArticleWeighed, WeighingFailed, WeighArticle, ApiError, AddToBasket, GuestAuthenticated, GuestRemoved } from "./types";
+import { PaymentFailure, PaymentSuccess, StartPayment, Reset, CloseDialog, SetBasket, ShowDialog, SyncArticles, UserInput, ArticleWeighed, WeighingFailed, WeighArticle, ApiError, AddToBasket, GuestAuthenticated, GuestRemoved, ApiWarning } from "./types";
 
 const articles: SyncArticles["data"]["articles"] = [
     {
@@ -88,6 +88,7 @@ export class CashRegister {
                 identifier: "42"
             }
         }
+        await this.send(message)
     }
 
     async guestRemoved() {
@@ -97,6 +98,7 @@ export class CashRegister {
                 identifier: "42"
             }
         }
+        await this.send(message)
     }
 
     async articleWeighed() {
@@ -209,7 +211,7 @@ export class CashRegister {
         }
     }
 
-    async onReset(message: Reset) {
+    async onReset() {
         useCashRegisterStore.getState().reset()
     }
 
@@ -233,7 +235,7 @@ export class CashRegister {
     }
 
     private async receiveMessage(message: MessageEvent<string>) {
-        const parsedMessage = JSON.parse(message.data) as SetBasket | AddToBasket | StartPayment | Reset | UserInput | WeighArticle | ApiError
+        const parsedMessage = JSON.parse(message.data) as SetBasket | AddToBasket | StartPayment | Reset | UserInput | WeighArticle | ApiError | ApiWarning
         console.log("Received message:", message.data)
         switch (parsedMessage.event) {
             case "setBasket":
@@ -246,7 +248,7 @@ export class CashRegister {
                 await this.onStartPayment(parsedMessage)
                 break;
             case "reset":
-                await this.onReset(parsedMessage)
+                await this.onReset()
                 break;
             case "userInput":
                 await this.onUserInput(parsedMessage)
@@ -256,15 +258,19 @@ export class CashRegister {
                 break;
             case "error":
                 console.log("Received error:", parsedMessage.data)
+                break;
+            case "warning":
+                console.log("Received error:", parsedMessage.data)
+                break;
             default:
-                await this.send({ event: "error", data: { reason: "unexpectedEvent", message: `Received unexpected event ${(parsedMessage as any).event}` } })
+                await this.send({ event: "error", data: { reason: "unexpectedEvent", message: `Received unexpected event ${parsedMessage.event}` } })
         }
     }
 
     private onConnectionChange(event: Event) {
         console.log(`WebSocket connection event: ${event.type}`)
         useCashRegisterStore.setState(
-            { connectionState: readyStateMap.get(this.#ws.readyState as any) ?? "CONNECTING" }
+            { connectionState: readyStateMap.get(this.#ws.readyState as 0 | 1 | 2 | 3) ?? "CONNECTING" }
         )
     }
     get connectionState() {
