@@ -8,6 +8,8 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
+    "format": "npx prettier . --write",
+    "format:check": "npx prettier . --check",
     "generateTypes": "node --loader ts-node/esm ./src/generateTypes.ts",
     "generateDocs": "npx asyncapi generate fromTemplate ../api.yml @asyncapi/html-template@0.28.4 -p singleFile=true -p favicon=public/favicon.png  -o ../docs"  
   },

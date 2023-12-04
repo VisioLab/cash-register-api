@@ -130,6 +130,10 @@ export interface ArticleWeighed {
 export interface WeighingFailed {
   event: "weighingFailed";
   data: {
+    /**
+     * Reason code for the weighing failure.
+     */
+    reason: string;
     message: {
       /**
        * The English text.
@@ -159,15 +163,33 @@ export interface PaymentSuccess {
     /**
      * The amount that was payed for the transaction.
      */
-    totalGross: number;
-    /**
-     * The amount of taxes that was payed for the transaction.
-     */
-    totalVat?: number;
+    totalGross?: number;
     /**
      * URL pointing to the digital receipt for the transaction. Will be rendered as QR code.
      */
     receiptUrl?: string;
+    /**
+     * The remaining balance on the card after the transaction.
+     */
+    remainingBalance?: number;
+    /**
+     * Total amounts of the transaction.
+     *
+     */
+    total: {
+      /**
+       * The amount that was payed for the transaction.
+       */
+      gross: number;
+      /**
+       * The amount of taxes that was payed for the transaction.
+       */
+      vat?: number;
+      /**
+       * The amount without taxes that was payed for the transaction.
+       */
+      net?: number;
+    };
   };
 }
 
@@ -263,6 +285,14 @@ export interface ApiError {
   event?: "error";
   data?: {
     reason: "malformed" | "internal" | "unexpectedEvent" | "unknown";
+    message: string;
+  };
+}
+
+export interface ApiWarning {
+  event?: "warning";
+  data?: {
+    reason: "deprecated";
     message: string;
   };
 }
@@ -383,4 +413,58 @@ export interface UserInput {
 
 export interface Reset {
   event: "reset";
+}
+
+export interface AddToBasket {
+  event: "addToBasket";
+  data: {
+    articles: {
+      /**
+       * Name of the article.
+       */
+      name: string;
+      /**
+       * The price lookup code for the article. Whatever identifier is used in the cash register, to identify the price group of articles, such as an article ID.
+       *
+       */
+      priceLookup: string;
+      /**
+       * Unique identifier for the article, such as a GUID. Must not contain any "." or "/" characters.
+       *
+       */
+      id: string;
+    }[];
+  };
+}
+
+export interface GuestAuthenticated {
+  event: "guestAuthenticated";
+  data: {
+    /**
+     * Identifier for the guest, such as provided by a QR code or an employee card.
+     *
+     */
+    identifier: string;
+    /**
+     * The price group of the guest. Whatever identifier is used in the cash register to identify the price group of guests, e.g. "employee" or "student".
+     *
+     */
+    group?: string;
+    /**
+     * The current balance on the card.
+     *
+     */
+    balance?: number;
+  };
+}
+
+export interface GuestRemoved {
+  event: "guestRemoved";
+  data: {
+    /**
+     * Identifier for the guest, such as provided by a QR code or an employee card.
+     *
+     */
+    identifier: string;
+  };
 }

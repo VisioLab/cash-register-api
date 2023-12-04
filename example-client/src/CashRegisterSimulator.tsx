@@ -33,10 +33,9 @@ const CashRegisterSimulator = ({ipAddress}: Props) => {
 
   const state = useCashRegisterStore()
   return (
-    <Stack direction="row" spacing={4} divider={<Divider orientation="vertical" flexItem />}>
+    <Stack direction="row" spacing={6}>
       <Stack spacing={2} sx={{minWidth: 450}}>
         <Divider>Connection</Divider>
-
         <ConnectionState />
         <Button variant="contained" onClick={reconnect}>
           Reconnect <HiOutlineRefresh />
@@ -57,6 +56,12 @@ const CashRegisterSimulator = ({ipAddress}: Props) => {
         <Button variant="contained" onClick={() => cashRegister?.syncArticles()}>
           Sync Articles
         </Button>
+        <Button variant="contained" onClick={() => cashRegister?.guestAuthenticated()}>
+          Guest Authenticated
+        </Button>
+        <Button variant="contained" onClick={() => cashRegister?.guestRemoved()}>
+          Guest Removed
+        </Button>
         <Button variant="contained" onClick={() => cashRegister?.showDialog()}>
           Show Dialog
         </Button>
@@ -66,9 +71,7 @@ const CashRegisterSimulator = ({ipAddress}: Props) => {
       </Stack>
       <Stack spacing={2} sx={{minWidth: 450}}>
         <Divider>Basket</Divider>
-
         <Basket />
-
         <Divider>State</Divider>
         <Chip
           label={`Payment in progress: ${state.paymentInProgress} `}

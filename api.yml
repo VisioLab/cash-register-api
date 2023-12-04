@@ -55,6 +55,7 @@ channels:
           - $ref: "#/components/messages/showDialog"
           - $ref: "#/components/messages/closeDialog"
           - $ref: "#/components/messages/apiError"
+          - $ref: "#/components/messages/apiWarning"
     subscribe:
       summary: Messages the sever can send.
       operationId: processMessage
@@ -67,6 +68,7 @@ channels:
           - $ref: "#/components/messages/userInput"
           - $ref: "#/components/messages/reset"
           - $ref: "#/components/messages/apiError"
+          - $ref: "#/components/messages/apiWarning"
 
 components:
   schemas:
@@ -198,14 +200,33 @@ components:
         totalGross:
           type: number
           description: The amount that was payed for the transaction.
-        totalVat:
-          type: number
-          description: The amount of taxes that was payed for the transaction.
+          deprecated: true
         receiptUrl:
           type: string
           description: URL pointing to the digital receipt for the transaction. Will be rendered as QR code.
+        remainingBalance:
+          type: number
+          description: The remaining balance on the card after the transaction.
+        total:
+          type: object
+          description: >
+            Total amounts of the transaction.
+          properties:
+            gross:
+              type: number
+              description: The amount that was payed for the transaction.
+            vat:
+              type: number
+              description: The amount of taxes that was payed for the transaction.
+            net:
+              type: number
+              description: The amount without taxes that was payed for the transaction.
+          required:
+            - gross
+          additionalProperties: false
       required:
-        - totalGross
+        - total
+      additionalProperties: false
     FailedPayment:
       type: object
       properties:
@@ -251,7 +272,19 @@ components:
       required:
         - reason
         - message
-    additionalProperties: false
+      additionalProperties: false
+    ApiWarning:
+      type: object
+      properties:
+        reason:
+          enum:
+            - deprecated
+        message:
+          type: string
+      required:
+        - reason
+        - message
+      additionalProperties: false
     Dialog:
       type: object
       properties:
@@ -322,6 +355,7 @@ components:
                   name: "Caesar Salad"
                   priceLookup: "3"
                   price: 3.00
+
     updateBasket:
       summary: Report a change in article prices in the current basket after guest identification.
       description: This message is not implemented yet. Sending it to the server has no effect.
@@ -359,6 +393,7 @@ components:
                   name: "Caesar Salad"
                   priceLookup: "3"
                   price: 6.00
+
     setBasket:
       summary: Set the current basket.
       description: The contents of the basket are completely replaced by the new contents.
@@ -394,6 +429,43 @@ components:
                 - id: "def"
                   name: "Beef Stroganoff"
                   priceLookup: "456"
+
+    addToBasket:
+      summary: Add articles to the current basket.
+      description: Previous contents of the basket are kept.
+      payload:
+        type: object
+        properties:
+          event:
+            type: string
+            const: addToBasket
+          data:
+            type: object
+            properties:
+              articles:
+                type: array
+                items:
+                  type: object
+                  $ref: "#/components/schemas/BasketArticle"
+            required:
+              - articles
+        required:
+          - event
+          - data
+        additionalProperties: false
+      examples:
+        - payload:
+            event: addToBasket
+            data:
+              checkoutId: string
+              articles:
+                - id: "abc"
+                  name: "Caesar Salad"
+                  priceLookup: "123"
+                - id: "def"
+                  name: "Beef Stroganoff"
+                  priceLookup: "456"
+
     weighArticle:
       summary: Initiate a weighing operation for an article.
       description: >
@@ -428,6 +500,7 @@ components:
                 priceLookup: "123"
                 scale:
                   unit: "100g"
+
     startPayment:
       summary: Initiate the payment for the current basket.
       payload:
@@ -467,6 +540,7 @@ components:
             data:
               paymentMethod: CREDIT_CARD
               checkoutId: 7KhiQJfcA5pdyzPofILF
+
     printReceipt:
       summary: Print a physical receipt for a checkout.
       description: This message is not implemented yet. The server will never send it.
@@ -499,6 +573,7 @@ components:
             data:
               checkoutId: 7KhiQJfcA5pdyzPofILF
               receiptId: 32eab9d1-bacb-4363-a88b-bcd9315ae897
+
     apiError:
       summary: Report an error.
       description: >
@@ -512,13 +587,32 @@ components:
             const: error
           data:
             $ref: "#/components/schemas/ApiError"
-            
       examples:
         - payload:
             event: error
             data:
               reason: malformed
               message: "Event data could not be decoded."
+  
+    apiWarning:
+      summary: Report a warning.
+      description: >
+        Report a warning that occurred either in response to a received event or due to some
+        external factor.
+      payload:
+        type: object
+        properties:
+          event:
+            type: string
+            const: warning
+          data:
+            $ref: "#/components/schemas/ApiWarning"
+      examples:
+        - payload:
+            event: error
+            data:
+              reason: deprecated
+              message: "Field totalGross is deprecated, use `total.gross` instead."
                 
     articleWeighed:
       summary: Report the result of a weighing operation.
@@ -552,6 +646,7 @@ components:
                 scale:
                   unit: "g"
                   weight: 500
+
     weighingFailed:
       summary: Report an error during a weighing operation.
       payload:
@@ -563,9 +658,13 @@ components:
           data:
             type: object
             properties:
+              reason:
+                type: string
+                description: Reason code for the weighing failure.
               message:
-                $ref: "#/components/schemas/I18ned"    
+                $ref: "#/components/schemas/I18ned"
             required:
+              - reason
               - message
         required:
           - event
@@ -578,6 +677,74 @@ components:
               message:
                 en: "Weight not stable."
                 de: "Gewicht nicht stabil."
+
+    guestAuthenticated:
+      summary: Report that a guest has been authenticated.
+      description: >
+        This message is not implemented yet. The server will never send it.
+      payload:
+        type: object
+        properties:
+          event:
+            type: string
+            const: guestAuthenticated
+          data:
+            type: object
+            properties:
+              identifier:
+                type: string
+                description: >
+                  Identifier for the guest, such as provided by a QR code or an employee card.
+              group:
+                type: string
+                description: >
+                  The price group of the guest. Whatever identifier is used in the cash register
+                  to identify the price group of guests, e.g. "employee" or "student".
+              balance:
+                type: number
+                description: >
+                  The current balance on the card.
+            required:
+              - identifier
+        required:
+          - event
+          - data
+        additionalProperties: false
+      examples:
+        - payload:
+            event: guestAuthenticated
+            data:
+              identifier: "1234567890"
+
+    guestRemoved:
+      summary: Report a previously authenticated guest has been removed again.
+      description: >
+        This message is not implemented yet. The server will never send it.
+      payload:
+        type: object
+        properties:
+          event:
+            type: string
+            const: guestRemoved
+          data:
+            type: object
+            properties:
+              identifier:
+                type: string
+                description: >
+                  Identifier for the guest, such as provided by a QR code or an employee card.
+            required:
+              - identifier
+        required:
+          - event
+          - data
+        additionalProperties: false
+      examples:
+        - payload:
+            event: guestRemoved
+            data:
+              identifier: "1234567890"
+
     paymentSuccess:
       summary: Report the success of a payment.
       payload:
@@ -596,7 +763,9 @@ components:
         - payload:
             event: paymentSuccess
             data:
-              totalGross: 5.20
+              total:
+                gross: 5.20
+
     paymentFailure:
       summary: Report the failure of a payment.
       payload:
@@ -619,6 +788,7 @@ components:
               message:
                 en: "Please tap your card again."
                 de: "Bitte legen Sie Ihre Karte erneut auf."
+
     reset:
       summary: Reset the cash register.
       description: >
@@ -633,6 +803,7 @@ components:
         required:
           - event
         additionalProperties: false
+
     showDialog:
       summary: Show a dialog that requires user interaction.
       description: >
@@ -674,6 +845,7 @@ components:
                   label:
                     en: "A lot"
                     de: "Sehr"
+
     closeDialog:
       summary: Close any currently open dialog.
       payload:
@@ -699,6 +871,7 @@ components:
             event: "closeDialog"
             data:
               id: "survey"
+
     userInput:
       summary: Report the user's response to a dialog.
       description: >
