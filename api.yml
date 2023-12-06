@@ -215,7 +215,7 @@ components:
             gross:
               type: number
               description: The amount that was payed for the transaction.
-            vat:
+            tax:
               type: number
               description: The amount of taxes that was payed for the transaction.
             net:

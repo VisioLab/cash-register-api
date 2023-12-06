@@ -184,7 +184,7 @@ export interface PaymentSuccess {
       /**
        * The amount of taxes that was payed for the transaction.
        */
-      vat?: number;
+      tax?: number;
       /**
        * The amount without taxes that was payed for the transaction.
        */
