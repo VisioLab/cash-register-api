@@ -10,7 +10,7 @@ const main = async (): Promise<void> => {
     const parsedDoc = await parser.parse(asyncApiDocument.toString());
     const types = await Promise.all(
         [...parsedDoc.allMessages().entries()].map(([name, message]) =>
-            compile(message.json().payload as any, name, { bannerComment: "", additionalProperties: false }))
+            compile(message.json().payload, name, { bannerComment: "", additionalProperties: false }))
     )
     await fs.writeFile("./src/types.ts", types.join("\n"))
 }
