@@ -26,12 +26,14 @@ info:
     If scale articles are detected, they are not send in the initial `setBasket` event. Instead
     they are send individually with the `weighArticle` command, to which the register should *respond*
     with a `articleWeighed` event in a case of success or with a `weighingFailed` event in a case of failure.
-    The scanner can add additional aricles to the basket after weighing using the `addArticles` event.
-
+    The scanner can add additional articles to the basket after weighing using the `addArticles` event.
+    The `guestAuthenticated` event should be send when a guest is identified, e.g. by putting their card on the reader,
+    to inform the scanner that payment flows that require upfront authentication can proceed. 
 
     After all articles are added to the basket, the payment is initiated by sending `startPayment`.
     The register can optionally report actual article prices after recalculation based
-    on guest identification using `updateBasket`. Finally, it should handle the transaction and 
+    on guest identification using `updateBasket`. 
+    Finally, it should handle the transaction and 
     *respond* by sending either `paymentSuccess` or `paymentFailure`.
 
 
@@ -53,6 +55,7 @@ channels:
         oneOf:
           - $ref: "#/components/messages/syncArticles"
           - $ref: "#/components/messages/updateBasket"
+          - $ref: "#/components/messages/guestAuthenticated"
           - $ref: "#/components/messages/articleWeighed"
           - $ref: "#/components/messages/weighingFailed"
           - $ref: "#/components/messages/paymentSuccess"
@@ -702,7 +705,7 @@ components:
     guestAuthenticated:
       summary: Report that a guest has been authenticated.
       description: >
-        This message is not implemented yet. The server will never send it.
+        Inform the scanner that payment flows that require upfront authentication can proceed.
       payload:
         type: object
         properties:
