@@ -5,7 +5,7 @@ info:
   description: >
     ### Enables communication between VisioLab's Blink app and a cash register
 
-    The iPad running VisioLab's Blink app runs a websocket server in the local
+    The iPad running VisioLab's Blink app (scanner) runs a websocket server in the local
     network on `ws:/<local-ip>/visiolab-cash-register`.
 
     Each message contains an `event` and a `data` property at the top level. The `event`
@@ -24,14 +24,19 @@ info:
     The register can optionally report actual article prices after recalculation based
     on guest identification using `updateBasket` at any time.
     If scale articles are detected, they are not send in the initial `setBasket` event. Instead
-    they are send individually with the `weighArticle` command, to which the register should "respond"
+    they are send individually with the `weighArticle` command, to which the register should *respond*
     with a `articleWeighed` event in a case of success or with a `weighingFailed` event in a case of failure.
-    After all articles are added the basket, the payment is initiated by sending `startPayment`.
+    The scanner can add additional aricles to the basket after weighing using the `addArticles` event.
+
+
+    After all articles are added to the basket, the payment is initiated by sending `startPayment`.
     The register can optionally report actual article prices after recalculation based
     on guest identification using `updateBasket`. Finally, it should handle the transaction and 
-    "respond" by sending either `paymentSuccess` or `paymentFailure`.
+    *respond* by sending either `paymentSuccess` or `paymentFailure`.
+
 
     In case of malformed messages or other errors, the register or the scanner can send an `error` event.
+    If deprecated events are being received, both sides can send a `warining` event.
     
     
 servers:
@@ -62,6 +67,7 @@ channels:
       message:
         oneOf:
           - $ref: "#/components/messages/setBasket"
+          - $ref: "#/components/messages/addArticles"
           - $ref: "#/components/messages/weighArticle"
           - $ref: "#/components/messages/startPayment"
           - $ref: "#/components/messages/printReceipt"
@@ -116,11 +122,13 @@ components:
         previewImage:
           type: string
           description: Preview image for the article as base64 encoded string.
+
     Articles:
       type: array
       items:
         type: object
         $ref: "#/components/schemas/Article"
+
     BasketArticle:
       type: object
       required:
@@ -140,11 +148,13 @@ components:
           type: string
           description: >
             Unique identifier for the article, such as a GUID. Must not contain any "." or "/" characters.
+
     BasketArticles:
       type: array
       items:
         type: object
         $ref: "#/components/schemas/BasketArticle"
+
     ArticleUpdate:
       type: object
       required:
@@ -181,11 +191,13 @@ components:
             Optional unique identifier for the article, such as a GUID. Must not contain any "." or "/" characters.
             Must match the IDs that were sent in the original basket.
             Different articles with the same price on different days should still have different IDs.
+
     ArticleUpdates:
       type: array
       items:
         type: object
         $ref: "#/components/schemas/ArticleUpdate"
+
     SuccessfulPayment:
       type: object
       properties:
@@ -227,6 +239,7 @@ components:
       required:
         - total
       additionalProperties: false
+
     FailedPayment:
       type: object
       properties:
@@ -245,6 +258,7 @@ components:
         - reason
         - message
       additionalProperties: false
+
     I18ned:
       type: object
       properties:
@@ -258,6 +272,7 @@ components:
         - en
         - de
       additionalProperties: false
+
     ApiError:
       type: object
       properties:
@@ -273,6 +288,7 @@ components:
         - reason
         - message
       additionalProperties: false
+
     ApiWarning:
       type: object
       properties:
@@ -285,6 +301,7 @@ components:
         - reason
         - message
       additionalProperties: false
+
     Dialog:
       type: object
       properties:
@@ -315,6 +332,8 @@ components:
         - id
         - title
         - body
+      additionalProperties: false
+
   messages:
     syncArticles:
       summary: Synchronize available articles in the cash register.
@@ -430,15 +449,16 @@ components:
                   name: "Beef Stroganoff"
                   priceLookup: "456"
 
-    addToBasket:
+    addArticles:
       summary: Add articles to the current basket.
-      description: Previous contents of the basket are kept.
+      description: >
+        Previous contents of the basket are kept. If no previous basket was open on the cash register side, it should be opened by the message. 
       payload:
         type: object
         properties:
           event:
             type: string
-            const: addToBasket
+            const: addArticles
           data:
             type: object
             properties:
@@ -455,7 +475,7 @@ components:
         additionalProperties: false
       examples:
         - payload:
-            event: addToBasket
+            event: addArticles
             data:
               checkoutId: string
               articles:
@@ -609,7 +629,7 @@ components:
             $ref: "#/components/schemas/ApiWarning"
       examples:
         - payload:
-            event: error
+            event: warning
             data:
               reason: deprecated
               message: "Field totalGross is deprecated, use `total.gross` instead."
@@ -674,6 +694,7 @@ components:
         - payload:
             event: weighingFailed
             data:
+              reason: "unstable"
               message:
                 en: "Weight not stable."
                 de: "Gewicht nicht stabil."
