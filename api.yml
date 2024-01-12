@@ -71,7 +71,7 @@ channels:
       operationId: processMessage
       message:
         oneOf:
-          - $ref: "#/components/messages/setBaskets"
+          - $ref: "#/components/messages/setBasket"
           - $ref: "#/components/messages/addArticles"
           - $ref: "#/components/messages/weighArticle"
           - $ref: "#/components/messages/startPayment"
