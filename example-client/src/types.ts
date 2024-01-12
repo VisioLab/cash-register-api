@@ -86,6 +86,27 @@ export interface UpdateBasket {
   };
 }
 
+export interface GuestAuthenticated {
+  event: "guestAuthenticated";
+  data: {
+    /**
+     * Identifier for the guest, such as provided by a QR code or an employee card.
+     *
+     */
+    identifier: string;
+    /**
+     * The price group of the guest. Whatever identifier is used in the cash register to identify the price group of guests, e.g. "employee" or "student".
+     *
+     */
+    group?: string;
+    /**
+     * The current balance on the card.
+     *
+     */
+    balance?: number;
+  };
+}
+
 export interface ArticleWeighed {
   event: "articleWeighed";
   data: {
@@ -319,6 +340,28 @@ export interface SetBasket {
   };
 }
 
+export interface AddArticles {
+  event: "addArticles";
+  data: {
+    articles: {
+      /**
+       * Name of the article.
+       */
+      name: string;
+      /**
+       * The price lookup code for the article. Whatever identifier is used in the cash register, to identify the price group of articles, such as an article ID.
+       *
+       */
+      priceLookup: string;
+      /**
+       * Unique identifier for the article, such as a GUID. Must not contain any "." or "/" characters.
+       *
+       */
+      id: string;
+    }[];
+  };
+}
+
 export interface WeighArticle {
   event: "weighArticle";
   data: {
@@ -415,49 +458,6 @@ export interface Reset {
   event: "reset";
 }
 
-export interface AddToBasket {
-  event: "addToBasket";
-  data: {
-    articles: {
-      /**
-       * Name of the article.
-       */
-      name: string;
-      /**
-       * The price lookup code for the article. Whatever identifier is used in the cash register, to identify the price group of articles, such as an article ID.
-       *
-       */
-      priceLookup: string;
-      /**
-       * Unique identifier for the article, such as a GUID. Must not contain any "." or "/" characters.
-       *
-       */
-      id: string;
-    }[];
-  };
-}
-
-export interface GuestAuthenticated {
-  event: "guestAuthenticated";
-  data: {
-    /**
-     * Identifier for the guest, such as provided by a QR code or an employee card.
-     *
-     */
-    identifier: string;
-    /**
-     * The price group of the guest. Whatever identifier is used in the cash register to identify the price group of guests, e.g. "employee" or "student".
-     *
-     */
-    group?: string;
-    /**
-     * The current balance on the card.
-     *
-     */
-    balance?: number;
-  };
-}
-
 export interface GuestRemoved {
   event: "guestRemoved";
   data: {
@@ -467,4 +467,330 @@ export interface GuestRemoved {
      */
     identifier: string;
   };
+}
+
+export type Articles = {
+  /**
+   * Name of the article.
+   */
+  name: string;
+  /**
+   * The price lookup code for the article. Whatever identifier is used in the cash register to identify the price group of articles, such as an article ID.
+   *
+   */
+  priceLookup: string;
+  /**
+   * The default price for the articles. Is disregarded for price calculation if priceLookup is present. For scale items this is the price per unit of weight.
+   *
+   */
+  price: number;
+  /**
+   * Optional scale configuration for the article. If present, the article will be weighed instead of counted. The price will be calculated based on the weight.
+   *
+   */
+  scale?: {
+    /**
+     * Unit of the weight, e.g. `g` or `kg`.
+     *
+     */
+    unit?: string;
+    /**
+     * The factor by which the unit is multiplied to display the price per unit to the guest. E.g. 100 if the price is denoted in 100g.
+     *
+     */
+    factor?: number;
+  };
+  /**
+   * Optional unique identifier for the article, such as a GUID. Must not contain any "." or "/" characters. Different articles with the same price on different days should still have different IDs. If not set, a unique ID will be generated internally.
+   *
+   */
+  id?: string;
+  /**
+   * Preview image for the article as base64 encoded string.
+   */
+  previewImage?: string;
+}[];
+
+export type ArticleUpdates = {
+  /**
+   * Name of the article.
+   */
+  name: string;
+  /**
+   * The price lookup code for the article. Whatever identifier is used in the cash register to identify the price group of articles, such as an article ID.
+   *
+   */
+  priceLookup: string;
+  /**
+   * The updated price for the article after recalculation with discounts.
+   */
+  price: number;
+  /**
+   * Only present if the article is weighed.
+   */
+  scale?: {
+    /**
+     * The weight of the article in units.
+     *
+     */
+    weight?: number;
+    /**
+     * Unit of the weight, e.g. `g` or `kg`. Only present if the article is weighed.
+     *
+     */
+    unit?: string;
+  };
+  /**
+   * Optional unique identifier for the article, such as a GUID. Must not contain any "." or "/" characters. Must match the IDs that were sent in the original basket. Different articles with the same price on different days should still have different IDs.
+   *
+   */
+  id?: string;
+}[];
+
+export interface I18Ned {
+  /**
+   * The English text.
+   */
+  en: string;
+  /**
+   * The German text.
+   */
+  de: string;
+}
+
+export interface SuccessfulPayment {
+  /**
+   * Identifier for the cash register that processed the payment.
+   *
+   */
+  cashRegisterId?: string;
+  /**
+   * Unique identifier for the receipt, such as a GUID. Must not contain any "." or "/" characters.
+   *
+   */
+  receiptId?: string;
+  /**
+   * The amount that was payed for the transaction.
+   */
+  totalGross?: number;
+  /**
+   * URL pointing to the digital receipt for the transaction. Will be rendered as QR code.
+   */
+  receiptUrl?: string;
+  /**
+   * The remaining balance on the card after the transaction.
+   */
+  remainingBalance?: number;
+  /**
+   * Total amounts of the transaction.
+   *
+   */
+  total: {
+    /**
+     * The amount that was payed for the transaction.
+     */
+    gross: number;
+    /**
+     * The amount of taxes that was payed for the transaction.
+     */
+    tax?: number;
+    /**
+     * The amount without taxes that was payed for the transaction.
+     */
+    net?: number;
+  };
+}
+
+export interface FailedPayment {
+  /**
+   * Reason for the payment failure.
+   */
+  reason: "cancelled" | "cardRemovedTooQuickly" | "insufficientBalance" | "other";
+  /**
+   * Message for the customer on how to proceed with the payment.
+   */
+  message: {
+    /**
+     * The English text.
+     */
+    en: string;
+    /**
+     * The German text.
+     */
+    de: string;
+  };
+}
+
+export interface Dialog {
+  /**
+   * Identifier for this kind of dialog. E.g. `cardReaderError`.
+   */
+  id: string;
+  /**
+   * Title of the dialog.
+   */
+  title: {
+    /**
+     * The English text.
+     */
+    en: string;
+    /**
+     * The German text.
+     */
+    de: string;
+  };
+  /**
+   * Dialog body to display to the customer.
+   */
+  body: {
+    /**
+     * The English text.
+     */
+    en: string;
+    /**
+     * The German text.
+     */
+    de: string;
+  };
+  buttons?: {
+    /**
+     * Action the button will trigger when pressed.
+     */
+    action: string;
+    /**
+     * Label to display on the button.
+     */
+    label: {
+      /**
+       * The English text.
+       */
+      en: string;
+      /**
+       * The German text.
+       */
+      de: string;
+    };
+  }[];
+}
+
+export interface ApiError {
+  reason: "malformed" | "internal" | "unexpectedEvent" | "unknown";
+  message: string;
+}
+
+export interface ApiWarning {
+  reason: "deprecated";
+  message: string;
+}
+
+export interface Article {
+  /**
+   * Name of the article.
+   */
+  name: string;
+  /**
+   * The price lookup code for the article. Whatever identifier is used in the cash register to identify the price group of articles, such as an article ID.
+   *
+   */
+  priceLookup: string;
+  /**
+   * The default price for the articles. Is disregarded for price calculation if priceLookup is present. For scale items this is the price per unit of weight.
+   *
+   */
+  price: number;
+  /**
+   * Optional scale configuration for the article. If present, the article will be weighed instead of counted. The price will be calculated based on the weight.
+   *
+   */
+  scale?: {
+    /**
+     * Unit of the weight, e.g. `g` or `kg`.
+     *
+     */
+    unit?: string;
+    /**
+     * The factor by which the unit is multiplied to display the price per unit to the guest. E.g. 100 if the price is denoted in 100g.
+     *
+     */
+    factor?: number;
+  };
+  /**
+   * Optional unique identifier for the article, such as a GUID. Must not contain any "." or "/" characters. Different articles with the same price on different days should still have different IDs. If not set, a unique ID will be generated internally.
+   *
+   */
+  id?: string;
+  /**
+   * Preview image for the article as base64 encoded string.
+   */
+  previewImage?: string;
+}
+
+export interface BasketArticle {
+  /**
+   * Name of the article.
+   */
+  name: string;
+  /**
+   * The price lookup code for the article. Whatever identifier is used in the cash register, to identify the price group of articles, such as an article ID.
+   *
+   */
+  priceLookup: string;
+  /**
+   * Unique identifier for the article, such as a GUID. Must not contain any "." or "/" characters.
+   *
+   */
+  id: string;
+}
+
+export type BasketArticles = {
+  /**
+   * Name of the article.
+   */
+  name: string;
+  /**
+   * The price lookup code for the article. Whatever identifier is used in the cash register, to identify the price group of articles, such as an article ID.
+   *
+   */
+  priceLookup: string;
+  /**
+   * Unique identifier for the article, such as a GUID. Must not contain any "." or "/" characters.
+   *
+   */
+  id: string;
+}[];
+
+export interface ArticleUpdate {
+  /**
+   * Name of the article.
+   */
+  name: string;
+  /**
+   * The price lookup code for the article. Whatever identifier is used in the cash register to identify the price group of articles, such as an article ID.
+   *
+   */
+  priceLookup: string;
+  /**
+   * The updated price for the article after recalculation with discounts.
+   */
+  price: number;
+  /**
+   * Only present if the article is weighed.
+   */
+  scale?: {
+    /**
+     * The weight of the article in units.
+     *
+     */
+    weight?: number;
+    /**
+     * Unit of the weight, e.g. `g` or `kg`. Only present if the article is weighed.
+     *
+     */
+    unit?: string;
+  };
+  /**
+   * Optional unique identifier for the article, such as a GUID. Must not contain any "." or "/" characters. Must match the IDs that were sent in the original basket. Different articles with the same price on different days should still have different IDs.
+   *
+   */
+  id?: string;
 }

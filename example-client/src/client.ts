@@ -1,6 +1,6 @@
 import _ from "lodash";
 import useCashRegisterStore from "./store";
-import { PaymentFailure, PaymentSuccess, StartPayment, Reset, CloseDialog, SetBasket, ShowDialog, SyncArticles, UserInput, ArticleWeighed, WeighingFailed, WeighArticle, ApiError, AddToBasket, GuestAuthenticated, GuestRemoved, ApiWarning } from "./types";
+import { PaymentFailure, PaymentSuccess, StartPayment, Reset, CloseDialog, SetBasket, ShowDialog, SyncArticles, UserInput, ArticleWeighed, WeighingFailed, WeighArticle, ApiError, AddArticles, GuestAuthenticated, GuestRemoved, ApiWarning, UpdateBasket } from "./types";
 
 const articles: SyncArticles["data"]["articles"] = [
     {
@@ -22,7 +22,7 @@ const articles: SyncArticles["data"]["articles"] = [
         name: "Saladbar",
         priceLookup: "4",
         price: 0.75,
-        scale: {factor: 100, unit: "g"}
+        scale: { factor: 100, unit: "g" }
     }
 ]
 
@@ -53,11 +53,21 @@ export class CashRegister {
         await this.send(message)
     }
 
+    async updateBasket() {
+        const message: UpdateBasket = {
+            event: "updateBasket",
+            data: {
+                articles: useCashRegisterStore.getState().basket,
+            }
+        }
+        await this.send(message)
+    }
+
     async paymentSuccess() {
         const message: PaymentSuccess = {
             event: "paymentSuccess",
             data: {
-                total: {gross: useCashRegisterStore.getState().basket.length},
+                total: { gross: useCashRegisterStore.getState().basket.reduce((acc, next) => acc + next.price, 0) },
                 receiptUrl: "https://receipts.visiolab.io/"
             }
         }
@@ -102,19 +112,28 @@ export class CashRegister {
     }
 
     async articleWeighed() {
-        const scaleArticle = useCashRegisterStore.getState().scaleArticle
-        if (scaleArticle === undefined) {
+        const scaleArticlePlu = useCashRegisterStore.getState().scaleArticlePlu
+        if (!scaleArticlePlu) {
             return
         }
-        const message: ArticleWeighed = {
-            event: "articleWeighed",
-            data: {
-               article: {
-                ...scaleArticle, 
-                scale: {weight: 500, unit: scaleArticle.scale?.unit ?? "g"}},
-            },
+        const scaleArticle = articles.find(a => a.priceLookup === scaleArticlePlu)
+        if (!scaleArticle) {
+            return
+        }
+        const weight = _.random(100, 600)
+        const article = {
+            ...scaleArticle,
+            price: scaleArticle.price * weight / (scaleArticle.scale?.factor ?? 100),
+            scale: { weight, unit: scaleArticle.scale?.unit ?? "g" }
         }
 
+        useCashRegisterStore.setState({ basket: useCashRegisterStore.getState().basket.concat(article) })
+        this.updateBasket()
+
+        const message: ArticleWeighed = {
+            event: "articleWeighed",
+            data: { article },
+        }
         await this.send(message)
     }
 
@@ -123,13 +142,13 @@ export class CashRegister {
             event: "weighingFailed",
             data: {
                 reason: "scaleNotAvailable",
-               message: {
-                de: "Waage nicht verfügbar",
-                en: "Scale not available"
-              }
+                message: {
+                    de: "Waage nicht verfügbar",
+                    en: "Scale not available"
+                }
             },
         }
-        useCashRegisterStore.setState({scaleArticle: undefined})
+        useCashRegisterStore.setState({ scaleArticlePlu: undefined })
 
         await this.send(message)
     }
@@ -181,16 +200,25 @@ export class CashRegister {
 
 
     async onSetBasket(message: SetBasket) {
-        this.checkBasket(message.data.articles)
-        useCashRegisterStore.setState({ basket: message.data.articles })
+        const basketArticles = this.toBasketArticles(message.data.articles)
+        if (_.isEmpty(basketArticles)) {
+            return
+        }
+        useCashRegisterStore.setState({ basket: this.toBasketArticles(message.data.articles) })
     }
 
-    async onAddToBasket(message: AddToBasket) {
-        this.checkBasket(message.data.articles)
-        useCashRegisterStore.setState({ basket: useCashRegisterStore.getState().basket.concat(message.data.articles) })
+    async onAddToBasket(message: AddArticles) {
+        const basketArticles = this.toBasketArticles(message.data.articles)
+        if (_.isEmpty(basketArticles)) {
+            return
+        }
+        useCashRegisterStore.setState({
+            basket: useCashRegisterStore.getState().basket.concat(basketArticles)
+        })
     }
 
-    private checkBasket(basket: SetBasket["data"]["articles"]) {
+    private toBasketArticles(basket: SetBasket["data"]["articles"]): UpdateBasket["data"]["articles"] {
+        const basketArticles: UpdateBasket["data"]["articles"] = []
         for (const article of basket) {
             const found = articles.find(a => a.priceLookup === article.priceLookup)
             if (!found) {
@@ -198,8 +226,18 @@ export class CashRegister {
                     en: `Unknown PLU ${article.priceLookup}`,
                     de: `Unbekannte PLU ${article.priceLookup}`,
                 })
+                return []
             }
+            if (found.scale) {
+                this.paymentFailure({
+                    en: `Scale articles need to be added via weighArticle`,
+                    de: `Waageartikel müssen über weighArticle hinzugefügt werden`,
+                })
+                return []
+            }
+            basketArticles.push(found)
         }
+        return basketArticles
     }
 
     async onStartPayment(message: StartPayment) {
@@ -225,7 +263,7 @@ export class CashRegister {
     }
 
     private async weighArticle(parsedMessage: WeighArticle) {
-        useCashRegisterStore.setState({scaleArticle: parsedMessage.data.article})
+        useCashRegisterStore.setState({ scaleArticlePlu: parsedMessage.data.article.priceLookup })
     }
 
     private async send(message: object) {
@@ -235,13 +273,13 @@ export class CashRegister {
     }
 
     private async receiveMessage(message: MessageEvent<string>) {
-        const parsedMessage = JSON.parse(message.data) as SetBasket | AddToBasket | StartPayment | Reset | UserInput | WeighArticle | ApiError | ApiWarning
+        const parsedMessage = JSON.parse(message.data) as SetBasket | AddArticles | StartPayment | Reset | UserInput | WeighArticle | ApiError | ApiWarning
         console.log("Received message:", message.data)
         switch (parsedMessage.event) {
             case "setBasket":
                 await this.onSetBasket(parsedMessage)
                 break;
-            case "addToBasket":
+            case "addArticles":
                 await this.onAddToBasket(parsedMessage)
                 break;
             case "startPayment":
