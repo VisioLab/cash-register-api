@@ -13,7 +13,8 @@
     "lint": "npx eslint .",
     "lint:fix": "npx eslint --fix .",
     "generateTypes": "node --loader ts-node/esm ./src/generateTypes.ts",
-    "generateDocs": "npx asyncapi generate fromTemplate ../api.yml @asyncapi/html-template@0.28.4 -p singleFile=true -p favicon=public/favicon.png  -o ../docs"
+    "generateDocs": "npx asyncapi generate fromTemplate ../api.yml @asyncapi/html-template@0.28.4 -p singleFile=true -p favicon=public/favicon.png  -o ../docs",
+    "validate": "npx asyncapi validate ../api.yml"
   },
   "dependencies": {
     "@asyncapi/cli": "^1.1.3",

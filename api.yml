@@ -1,7 +1,7 @@
 asyncapi: 2.6.0
 info:
   title: VisioLab Cash Register API
-  version: 1.1.0
+  version: 1.2.0
   description: >
     ### Enables communication between VisioLab's Blink app and a cash register
 
@@ -32,7 +32,8 @@ info:
 
     After all articles are added to the basket, the payment is initiated by sending `startPayment`.
     The register can optionally report actual article prices after recalculation based
-    on guest identification using `updateBasket`. 
+    on guest identification using `updateBasket` and should do so before sending `articleWeighed` to 
+    communicate the total price after weighing.
     Finally, it should handle the transaction and 
     *respond* by sending either `paymentSuccess` or `paymentFailure`.
 
@@ -56,6 +57,7 @@ channels:
           - $ref: "#/components/messages/syncArticles"
           - $ref: "#/components/messages/updateBasket"
           - $ref: "#/components/messages/guestAuthenticated"
+          - $ref: "#/components/messages/guestRemoved"
           - $ref: "#/components/messages/articleWeighed"
           - $ref: "#/components/messages/weighingFailed"
           - $ref: "#/components/messages/paymentSuccess"
@@ -380,7 +382,9 @@ components:
 
     updateBasket:
       summary: Report a change in article prices in the current basket after guest identification.
-      description: This message is not implemented yet. Sending it to the server has no effect.
+      description: >
+        The updated prices are used to already show the correct total price to the guest during payment.
+        The event should always be send before `articleWeighed` and already include the price of the weighed article.
       payload:
         type: object
         properties:
@@ -429,10 +433,7 @@ components:
             type: object
             properties:
               articles:
-                type: array
-                items:
-                  type: object
-                  $ref: "#/components/schemas/ScanArticle"
+                $ref: "#/components/schemas/ScanArticles"
             required:
               - articles
         required:
@@ -466,10 +467,7 @@ components:
             type: object
             properties:
               articles:
-                type: array
-                items:
-                  type: object
-                  $ref: "#/components/schemas/ScanArticle"
+                $ref: "#/components/schemas/ScanArticles"
             required:
               - articles
         required:
@@ -566,7 +564,9 @@ components:
 
     printReceipt:
       summary: Print a physical receipt for a checkout.
-      description: This message is not implemented yet. The server will never send it.
+      description: >
+        Prompts the register to print a receipt for the given checkout.
+        If `receiptId` is not provided, the register should print the last receipt.
       payload:
         type: object
         properties:
@@ -576,16 +576,10 @@ components:
           data:
             type: object
             properties:
-              checkoutId:
-                type: string
-                description: >
-                  Unique ID for the checkout assigned by the Blink app. 
               receiptId:
                 type: string
                 description: >
-                  Unique ID for the checkout assigned by the cash register. 
-            required:
-              - checkoutId
+                  Unique ID for the checkout assigned by the register. 
         required:
           - event
           - data
@@ -743,7 +737,7 @@ components:
     guestRemoved:
       summary: Report a previously authenticated guest has been removed again.
       description: >
-        This message is not implemented yet. The server will never send it.
+        Inform the scanner that payment flows that require upfront authentication can no longer proceed.
       payload:
         type: object
         properties:
