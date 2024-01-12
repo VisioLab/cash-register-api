@@ -1,7 +1,7 @@
 asyncapi: 2.6.0
 info:
   title: VisioLab Cash Register API
-  version: 1.1.0
+  version: 1.2.0
   description: >
     ### Enables communication between VisioLab's Blink app and a cash register
 
@@ -32,7 +32,8 @@ info:
 
     After all articles are added to the basket, the payment is initiated by sending `startPayment`.
     The register can optionally report actual article prices after recalculation based
-    on guest identification using `updateBasket`. 
+    on guest identification using `updateBasket` and should do so before sending `articleWeighed` to 
+    communicate the total price after weighing.
     Finally, it should handle the transaction and 
     *respond* by sending either `paymentSuccess` or `paymentFailure`.
 
@@ -56,6 +57,7 @@ channels:
           - $ref: "#/components/messages/syncArticles"
           - $ref: "#/components/messages/updateBasket"
           - $ref: "#/components/messages/guestAuthenticated"
+          - $ref: "#/components/messages/guestRemoved"
           - $ref: "#/components/messages/articleWeighed"
           - $ref: "#/components/messages/weighingFailed"
           - $ref: "#/components/messages/paymentSuccess"
@@ -81,7 +83,7 @@ channels:
 
 components:
   schemas:
-    Article:
+    SyncedArticle:
       type: object
       required:
         - name
@@ -126,13 +128,13 @@ components:
           type: string
           description: Preview image for the article as base64 encoded string.
 
-    Articles:
+    SyncedArticles:
       type: array
       items:
         type: object
-        $ref: "#/components/schemas/Article"
+        $ref: "#/components/schemas/SyncedArticle"
 
-    BasketArticle:
+    ScanArticle:
       type: object
       required:
         - name
@@ -152,13 +154,13 @@ components:
           description: >
             Unique identifier for the article, such as a GUID. Must not contain any "." or "/" characters.
 
-    BasketArticles:
+    ScanArticles:
       type: array
       items:
         type: object
-        $ref: "#/components/schemas/BasketArticle"
+        $ref: "#/components/schemas/ScanArticle"
 
-    ArticleUpdate:
+    BasketArticle:
       type: object
       required:
         - name
@@ -195,11 +197,11 @@ components:
             Must match the IDs that were sent in the original basket.
             Different articles with the same price on different days should still have different IDs.
 
-    ArticleUpdates:
+    BasketArticles:
       type: array
       items:
         type: object
-        $ref: "#/components/schemas/ArticleUpdate"
+        $ref: "#/components/schemas/BasketArticle"
 
     SuccessfulPayment:
       type: object
@@ -353,7 +355,7 @@ components:
             type: object
             properties:
               articles:
-                $ref: "#/components/schemas/Articles"
+                $ref: "#/components/schemas/SyncedArticles"
             required:
               - articles
         required:
@@ -380,7 +382,9 @@ components:
 
     updateBasket:
       summary: Report a change in article prices in the current basket after guest identification.
-      description: This message is not implemented yet. Sending it to the server has no effect.
+      description: >
+        The updated prices are used to already show the correct total price to the guest during payment.
+        The event should always be send before `articleWeighed` and already include the price of the weighed article.
       payload:
         type: object
         properties:
@@ -391,7 +395,7 @@ components:
             type: object
             properties:
               articles:
-                $ref: "#/components/schemas/ArticleUpdates"
+                $ref: "#/components/schemas/BasketArticles"
             required:
               - articles
         required:
@@ -429,10 +433,7 @@ components:
             type: object
             properties:
               articles:
-                type: array
-                items:
-                  type: object
-                  $ref: "#/components/schemas/BasketArticle"
+                $ref: "#/components/schemas/ScanArticles"
             required:
               - articles
         required:
@@ -466,10 +467,7 @@ components:
             type: object
             properties:
               articles:
-                type: array
-                items:
-                  type: object
-                  $ref: "#/components/schemas/BasketArticle"
+                $ref: "#/components/schemas/ScanArticles"
             required:
               - articles
         required:
@@ -505,7 +503,7 @@ components:
             properties:
               article:
                 type: object
-                $ref: "#/components/schemas/Article"
+                $ref: "#/components/schemas/ScanArticle"
             required:
               - article
         required:
@@ -566,7 +564,9 @@ components:
 
     printReceipt:
       summary: Print a physical receipt for a checkout.
-      description: This message is not implemented yet. The server will never send it.
+      description: >
+        Prompts the register to print a receipt for the given checkout.
+        If `receiptId` is not provided, the register should print the last receipt.
       payload:
         type: object
         properties:
@@ -576,16 +576,10 @@ components:
           data:
             type: object
             properties:
-              checkoutId:
-                type: string
-                description: >
-                  Unique ID for the checkout assigned by the Blink app. 
               receiptId:
                 type: string
                 description: >
-                  Unique ID for the checkout assigned by the cash register. 
-            required:
-              - checkoutId
+                  Unique ID for the checkout assigned by the register. 
         required:
           - event
           - data
@@ -650,7 +644,7 @@ components:
             properties:
               article:
                 type: object
-                $ref: "#/components/schemas/ArticleUpdate"
+                $ref: "#/components/schemas/BasketArticle"
             required:
               - article
         required:
@@ -743,7 +737,7 @@ components:
     guestRemoved:
       summary: Report a previously authenticated guest has been removed again.
       description: >
-        This message is not implemented yet. The server will never send it.
+        Inform the scanner that payment flows that require upfront authentication can no longer proceed.
       payload:
         type: object
         properties:

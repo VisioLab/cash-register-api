@@ -1,14 +1,14 @@
 import { omit } from 'lodash'
 import { create } from 'zustand'
-import { SetBasket, WeighArticle } from './types'
+import { BasketArticle } from './types'
 
 interface CashRegisterState {
     ipAddress: string
     paymentInProgress: boolean
     connectionState: "CONNECTING" | "OPEN" | "CLOSING" | "CLOSED"
-    basket: SetBasket["data"]["articles"]
+    basket: BasketArticle[],
     surveyResult: number,
-    scaleArticle?: WeighArticle["data"]["article"]
+    scaleArticlePlu?: string
     paymentMethod?: string,
     qrCodeContent?: string,
     reset: () => void,

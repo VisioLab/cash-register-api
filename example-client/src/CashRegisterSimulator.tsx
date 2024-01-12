@@ -47,6 +47,9 @@ const CashRegisterSimulator = ({ipAddress}: Props) => {
         <Button variant="contained" onClick={() => cashRegister?.paymentFailure()}>
           Payment Failure
         </Button>
+        <Button variant="contained" onClick={() => cashRegister?.updateBasket()}>
+          Update Basket
+        </Button>
         <Button variant="contained" onClick={() => cashRegister?.articleWeighed()}>
           Article Weighed
         </Button>
