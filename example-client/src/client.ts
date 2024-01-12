@@ -22,11 +22,18 @@ const articles: SyncedArticle[] = [
         price: 3.00,
     },
     {
-        name: "Saladbar",
+        name: "Salad Bar",
         priceLookup: "4",
         price: 0.75,
         scale: { factor: 100, unit: "g" }
+    },
+    {
+        name: "Dessert Bar",
+        priceLookup: "5",
+        price: 1.25,
+        scale: { factor: 100, unit: "g" }
     }
+
 ]
 
 const readyStateMap = new Map([
@@ -123,10 +130,10 @@ export class CashRegister {
         if (!scaleArticle) {
             return
         }
-        const weight = _.random(100, 600)
+        const weight = _.random(100, 500)
         const article = {
             ...scaleArticle,
-            price: scaleArticle.price * weight / (scaleArticle.scale?.factor ?? 100),
+            price: _.round(scaleArticle.price * weight / (scaleArticle.scale?.factor ?? 100), 2),
             scale: { weight, unit: scaleArticle.scale?.unit ?? "g" }
         }
 

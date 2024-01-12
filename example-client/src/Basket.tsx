@@ -19,6 +19,8 @@ const Basket = () => {
             <TableCell>ID</TableCell>
             <TableCell>Name</TableCell>
             <TableCell>PLU</TableCell>
+            <TableCell>Price</TableCell>
+            <TableCell>Weight</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -30,6 +32,8 @@ const Basket = () => {
               <TableCell>{row.id}</TableCell>
               <TableCell>{row.name}</TableCell>
               <TableCell>{row.priceLookup}</TableCell>
+              <TableCell>{row.price.toFixed(2)} €</TableCell>
+              <TableCell>{row.scale?.weight} {row.scale?.unit}</TableCell>
             </TableRow>
           ))}
         </TableBody>
