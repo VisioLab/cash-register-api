@@ -14,10 +14,10 @@
     "lint:fix": "npx eslint --fix .",
     "generateTypes": "node --loader ts-node/esm ./src/generateTypes.ts",
     "generateDocs": "npx asyncapi generate fromTemplate ../api.yml @asyncapi/html-template@0.28.4 -p singleFile=true -p favicon=public/favicon.png  -o ../docs",
-    "validate": "npx asyncapi validate ../api.yml"
+    "validate": "npx asyncapi validate ../api.yml | grep -q \"0 errors\" || (echo \"Error: '0 errors' not found in output\" && exit 1)"
   },
   "dependencies": {
-    "@asyncapi/cli": "^1.1.3",
+    "@asyncapi/cli": "^1.2.35",
     "@asyncapi/generator": "^1.9.17",
     "@emotion/react": "^11.10.4",
     "@emotion/styled": "^11.10.4",
