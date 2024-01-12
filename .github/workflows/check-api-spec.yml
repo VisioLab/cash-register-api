@@ -19,7 +19,7 @@ jobs:
           node-version-file: ".node-version"
           cache: npm
           cache-dependency-path: example-client/package-lock.json
-      - name: Generate
+      - name: Validate
         shell: bash
         working-directory: example-client/
         run: |
