@@ -1,12 +1,12 @@
 import { omit } from 'lodash'
 import { create } from 'zustand'
-import { ArticleUpdate, UpdateBasket } from './types'
+import { BasketArticle } from './types'
 
 interface CashRegisterState {
     ipAddress: string
     paymentInProgress: boolean
     connectionState: "CONNECTING" | "OPEN" | "CLOSING" | "CLOSED"
-    basket: ArticleUpdate[],
+    basket: BasketArticle[],
     surveyResult: number,
     scaleArticlePlu?: string
     paymentMethod?: string,

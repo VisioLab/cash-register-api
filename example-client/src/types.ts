@@ -371,40 +371,15 @@ export interface WeighArticle {
        */
       name: string;
       /**
-       * The price lookup code for the article. Whatever identifier is used in the cash register to identify the price group of articles, such as an article ID.
+       * The price lookup code for the article. Whatever identifier is used in the cash register, to identify the price group of articles, such as an article ID.
        *
        */
       priceLookup: string;
       /**
-       * The default price for the articles. Is disregarded for price calculation if priceLookup is present. For scale items this is the price per unit of weight.
+       * Unique identifier for the article, such as a GUID. Must not contain any "." or "/" characters.
        *
        */
-      price: number;
-      /**
-       * Optional scale configuration for the article. If present, the article will be weighed instead of counted. The price will be calculated based on the weight.
-       *
-       */
-      scale?: {
-        /**
-         * Unit of the weight, e.g. `g` or `kg`.
-         *
-         */
-        unit?: string;
-        /**
-         * The factor by which the unit is multiplied to display the price per unit to the guest. E.g. 100 if the price is denoted in 100g.
-         *
-         */
-        factor?: number;
-      };
-      /**
-       * Optional unique identifier for the article, such as a GUID. Must not contain any "." or "/" characters. Different articles with the same price on different days should still have different IDs. If not set, a unique ID will be generated internally.
-       *
-       */
-      id?: string;
-      /**
-       * Preview image for the article as base64 encoded string.
-       */
-      previewImage?: string;
+      id: string;
     };
   };
 }
@@ -469,7 +444,7 @@ export interface GuestRemoved {
   };
 }
 
-export type Articles = {
+export type SyncedArticles = {
   /**
    * Name of the article.
    */
@@ -511,7 +486,7 @@ export type Articles = {
   previewImage?: string;
 }[];
 
-export type ArticleUpdates = {
+export type BasketArticles = {
   /**
    * Name of the article.
    */
@@ -683,7 +658,7 @@ export interface ApiWarning {
   message: string;
 }
 
-export interface Article {
+export interface SyncedArticle {
   /**
    * Name of the article.
    */
@@ -725,7 +700,7 @@ export interface Article {
   previewImage?: string;
 }
 
-export interface BasketArticle {
+export interface ScanArticle {
   /**
    * Name of the article.
    */
@@ -742,7 +717,7 @@ export interface BasketArticle {
   id: string;
 }
 
-export type BasketArticles = {
+export type ScanArticles = {
   /**
    * Name of the article.
    */
@@ -759,7 +734,7 @@ export type BasketArticles = {
   id: string;
 }[];
 
-export interface ArticleUpdate {
+export interface BasketArticle {
   /**
    * Name of the article.
    */

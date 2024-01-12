@@ -8,7 +8,6 @@ import { compile } from 'json-schema-to-typescript'
 const main = async (): Promise<void> => {
     const asyncApiDocument = await fs.readFile("../api.yml")
     const parsedDoc = await parser.parse(asyncApiDocument.toString());
-    console.log([...parsedDoc.allSchemas().entries()].filter(([name]) => !name.startsWith("<anonymous")).map(([name, message]) => name))
     const types = await Promise.all(
         [...parsedDoc.allMessages().entries()]
             .map(([name, message]) =>

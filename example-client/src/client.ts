@@ -1,8 +1,11 @@
 import _ from "lodash";
 import useCashRegisterStore from "./store";
-import { PaymentFailure, PaymentSuccess, StartPayment, Reset, CloseDialog, SetBasket, ShowDialog, SyncArticles, UserInput, ArticleWeighed, WeighingFailed, WeighArticle, ApiError, AddArticles, GuestAuthenticated, GuestRemoved, ApiWarning, UpdateBasket } from "./types";
+import {
+    PaymentFailure, PaymentSuccess, StartPayment, Reset, CloseDialog, SetBasket, ShowDialog, SyncArticles, UserInput,
+    ArticleWeighed, WeighingFailed, WeighArticle, ApiError, AddArticles, GuestAuthenticated, GuestRemoved, ApiWarning, UpdateBasket, BasketArticle, ScanArticle, SyncedArticle, I18Ned
+} from "./types";
 
-const articles: SyncArticles["data"]["articles"] = [
+const articles: SyncedArticle[] = [
     {
         name: "Eggs Benedict",
         priceLookup: "1",
@@ -76,7 +79,7 @@ export class CashRegister {
         await this.send(message)
     }
 
-    async paymentFailure(messageText: PaymentFailure["data"]["message"] = {
+    async paymentFailure(messageText: I18Ned = {
         en: "Payment cancelled",
         de: "Zahlung abgebrochen",
     }) {
@@ -200,26 +203,26 @@ export class CashRegister {
 
 
     async onSetBasket(message: SetBasket) {
-        const basketArticles = this.toBasketArticles(message.data.articles)
-        if (_.isEmpty(basketArticles)) {
+        const ScanArticles = this.toBasketArticles(message.data.articles)
+        if (_.isEmpty(ScanArticles)) {
             return
         }
         useCashRegisterStore.setState({ basket: this.toBasketArticles(message.data.articles) })
     }
 
     async onAddToBasket(message: AddArticles) {
-        const basketArticles = this.toBasketArticles(message.data.articles)
-        if (_.isEmpty(basketArticles)) {
+        const ScanArticles = this.toBasketArticles(message.data.articles)
+        if (_.isEmpty(ScanArticles)) {
             return
         }
         useCashRegisterStore.setState({
-            basket: useCashRegisterStore.getState().basket.concat(basketArticles)
+            basket: useCashRegisterStore.getState().basket.concat(ScanArticles)
         })
     }
 
-    private toBasketArticles(basket: SetBasket["data"]["articles"]): UpdateBasket["data"]["articles"] {
-        const basketArticles: UpdateBasket["data"]["articles"] = []
-        for (const article of basket) {
+    private toBasketArticles(scanArticles: ScanArticle[]): BasketArticle[] {
+        const basketArticles: BasketArticle[] = []
+        for (const article of scanArticles) {
             const found = articles.find(a => a.priceLookup === article.priceLookup)
             if (!found) {
                 this.paymentFailure({
