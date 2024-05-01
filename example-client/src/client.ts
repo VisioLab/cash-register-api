@@ -78,7 +78,8 @@ export class CashRegister {
             event: "paymentSuccess",
             data: {
                 total: { gross: useCashRegisterStore.getState().basket.reduce((acc, next) => acc + next.price, 0) },
-                receiptUrl: "https://receipts.visiolab.io/"
+                receiptUrl: "https://receipts.visiolab.io/",
+                remainingBalance: 4.90,
             }
         }
         useCashRegisterStore.getState().reset()
