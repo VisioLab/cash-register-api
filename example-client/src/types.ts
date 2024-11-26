@@ -107,6 +107,17 @@ export interface GuestAuthenticated {
   };
 }
 
+export interface GuestRemoved {
+  event: "guestRemoved";
+  data: {
+    /**
+     * Identifier for the guest, such as provided by a QR code or an employee card.
+     *
+     */
+    identifier: string;
+  };
+}
+
 export interface ArticleWeighed {
   event: "articleWeighed";
   data: {
@@ -193,6 +204,10 @@ export interface PaymentSuccess {
      * The remaining balance on the card after the transaction.
      */
     remainingBalance?: number;
+    /**
+     * The remaining allowance for the guest after the transaction.
+     */
+    remainingAllowance?: number;
     /**
      * Total amounts of the transaction.
      *
@@ -409,12 +424,7 @@ export interface PrintReceipt {
   event: "printReceipt";
   data: {
     /**
-     * Unique ID for the checkout assigned by the Blink app.
-     *
-     */
-    checkoutId: string;
-    /**
-     * Unique ID for the checkout assigned by the cash register.
+     * Unique ID for the checkout assigned by the register.
      *
      */
     receiptId?: string;
@@ -431,17 +441,6 @@ export interface UserInput {
 
 export interface Reset {
   event: "reset";
-}
-
-export interface GuestRemoved {
-  event: "guestRemoved";
-  data: {
-    /**
-     * Identifier for the guest, such as provided by a QR code or an employee card.
-     *
-     */
-    identifier: string;
-  };
 }
 
 export type SyncedArticles = {
@@ -557,6 +556,10 @@ export interface SuccessfulPayment {
    */
   remainingBalance?: number;
   /**
+   * The remaining allowance for the guest after the transaction.
+   */
+  remainingAllowance?: number;
+  /**
    * Total amounts of the transaction.
    *
    */
@@ -658,6 +661,23 @@ export interface ApiWarning {
   message: string;
 }
 
+export type ScanArticles = {
+  /**
+   * Name of the article.
+   */
+  name: string;
+  /**
+   * The price lookup code for the article. Whatever identifier is used in the cash register, to identify the price group of articles, such as an article ID.
+   *
+   */
+  priceLookup: string;
+  /**
+   * Unique identifier for the article, such as a GUID. Must not contain any "." or "/" characters.
+   *
+   */
+  id: string;
+}[];
+
 export interface SyncedArticle {
   /**
    * Name of the article.
@@ -716,23 +736,6 @@ export interface ScanArticle {
    */
   id: string;
 }
-
-export type ScanArticles = {
-  /**
-   * Name of the article.
-   */
-  name: string;
-  /**
-   * The price lookup code for the article. Whatever identifier is used in the cash register, to identify the price group of articles, such as an article ID.
-   *
-   */
-  priceLookup: string;
-  /**
-   * Unique identifier for the article, such as a GUID. Must not contain any "." or "/" characters.
-   *
-   */
-  id: string;
-}[];
 
 export interface BasketArticle {
   /**

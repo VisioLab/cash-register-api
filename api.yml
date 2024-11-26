@@ -224,6 +224,9 @@ components:
         remainingBalance:
           type: number
           description: The remaining balance on the card after the transaction.
+        remainingAllowance:
+          type: number
+          description: The remaining allowance for the guest after the transaction.
         total:
           type: object
           description: >
