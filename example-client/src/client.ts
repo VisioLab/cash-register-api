@@ -1,7 +1,7 @@
 import _ from "lodash";
 import useCashRegisterStore from "./store";
 import {
-    PaymentFailure, PaymentSuccess, StartPayment, Reset, SetBasket, SyncArticles, UserInput,
+    PaymentFailure, PaymentSuccess, StartPayment, Reset, SetBasket, SyncArticles,
     ArticleWeighed, WeighingFailed, WeighArticle, ApiError, AddArticles, GuestAuthenticated, GuestRemoved, ApiWarning, UpdateBasket, BasketArticle, ScanArticle, SyncedArticle, I18Ned
 } from "./types";
 
@@ -219,15 +219,6 @@ export class CashRegister {
         useCashRegisterStore.getState().reset()
     }
 
-    async onUserInput(message: UserInput) {
-        if (message.data.id === "survey") {
-            useCashRegisterStore.setState({
-                surveyResult: useCashRegisterStore.getState().surveyResult
-                    + parseInt(message.data.action)
-            })
-        }
-    }
-
     private async weighArticle(parsedMessage: WeighArticle) {
         useCashRegisterStore.setState({ scaleArticlePlu: parsedMessage.data.article.priceLookup })
     }
@@ -239,7 +230,7 @@ export class CashRegister {
     }
 
     private async receiveMessage(message: MessageEvent<string>) {
-        const parsedMessage = JSON.parse(message.data) as SetBasket | AddArticles | StartPayment | Reset | UserInput | WeighArticle | ApiError | ApiWarning
+        const parsedMessage = JSON.parse(message.data) as SetBasket | AddArticles | StartPayment | Reset | WeighArticle | ApiError | ApiWarning
         console.log("Received message:", message.data)
         switch (parsedMessage.event) {
             case "setBasket":
@@ -253,9 +244,6 @@ export class CashRegister {
                 break;
             case "reset":
                 await this.onReset()
-                break;
-            case "userInput":
-                await this.onUserInput(parsedMessage)
                 break;
             case "weighArticle":
                 await this.weighArticle(parsedMessage)
