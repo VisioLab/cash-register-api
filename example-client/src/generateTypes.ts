@@ -1,5 +1,3 @@
-
-
 import * as fs from "fs/promises"
 import parser from '@asyncapi/parser';
 import { compile } from 'json-schema-to-typescript'

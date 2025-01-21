@@ -1,7 +1,7 @@
 import _ from "lodash";
 import useCashRegisterStore from "./store";
 import {
-    PaymentFailure, PaymentSuccess, StartPayment, Reset, CloseDialog, SetBasket, ShowDialog, SyncArticles, UserInput,
+    PaymentFailure, PaymentSuccess, StartPayment, Reset, SetBasket, SyncArticles, UserInput,
     ArticleWeighed, WeighingFailed, WeighArticle, ApiError, AddArticles, GuestAuthenticated, GuestRemoved, ApiWarning, UpdateBasket, BasketArticle, ScanArticle, SyncedArticle, I18Ned
 } from "./types";
 
@@ -164,52 +164,6 @@ export class CashRegister {
 
         await this.send(message)
     }
-
-
-    async showDialog() {
-        const message: ShowDialog = {
-            event: "showDialog",
-            data: {
-                id: "survey",
-                title: {
-                    en: "Survey",
-                    de: "Umfrage",
-                },
-                body: {
-                    en: "How satisfied are you with the interface?",
-                    de: "Wie zufrieden sind Sie mit der Schnittstelle?",
-                },
-                buttons: [
-                    {
-                        action: "-1",
-                        label: {
-                            en: "Not at all",
-                            de: "Gar nicht",
-                        }
-                    },
-                    {
-                        action: "+1",
-                        label: {
-                            en: "A lot",
-                            de: "Sehr",
-                        }
-                    }
-                ],
-            }
-        }
-        await this.send(message)
-    }
-
-    async closeDialog() {
-        const message: CloseDialog = {
-            event: "closeDialog",
-            data: {
-                id: "survey",
-            }
-        }
-        await this.send(message)
-    }
-
 
     async onSetBasket(message: SetBasket) {
         const ScanArticles = this.toBasketArticles(message.data.articles)

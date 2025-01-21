@@ -65,12 +65,6 @@ const CashRegisterSimulator = ({ipAddress}: Props) => {
         <Button variant="contained" onClick={() => cashRegister?.guestRemoved()}>
           Guest Removed
         </Button>
-        <Button variant="contained" onClick={() => cashRegister?.showDialog()}>
-          Show Dialog
-        </Button>
-        <Button variant="contained" onClick={() => cashRegister?.closeDialog()}>
-          Close Dialog
-        </Button>
       </Stack>
       <Stack spacing={2} sx={{minWidth: 450}}>
         <Divider>Basket</Divider>

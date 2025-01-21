@@ -252,71 +252,6 @@ export interface PaymentFailure {
   };
 }
 
-export interface ShowDialog {
-  event: "showDialog";
-  data: {
-    /**
-     * Identifier for this kind of dialog. E.g. `cardReaderError`.
-     */
-    id: string;
-    /**
-     * Title of the dialog.
-     */
-    title: {
-      /**
-       * The English text.
-       */
-      en: string;
-      /**
-       * The German text.
-       */
-      de: string;
-    };
-    /**
-     * Dialog body to display to the customer.
-     */
-    body: {
-      /**
-       * The English text.
-       */
-      en: string;
-      /**
-       * The German text.
-       */
-      de: string;
-    };
-    buttons?: {
-      /**
-       * Action the button will trigger when pressed.
-       */
-      action: string;
-      /**
-       * Label to display on the button.
-       */
-      label: {
-        /**
-         * The English text.
-         */
-        en: string;
-        /**
-         * The German text.
-         */
-        de: string;
-      };
-    }[];
-  };
-}
-
-export interface CloseDialog {
-  event: "closeDialog";
-  data: {
-    /**
-     * Identifier for this kind of dialog. E.g. `cardReaderError`.
-     */
-    id: string;
-  };
-}
-
 export interface ApiError {
   event?: "error";
   data?: {
@@ -428,14 +363,6 @@ export interface PrintReceipt {
      *
      */
     receiptId?: string;
-  };
-}
-
-export interface UserInput {
-  event: "userInput";
-  data: {
-    id: string;
-    action: string;
   };
 }
 
@@ -597,58 +524,6 @@ export interface FailedPayment {
      */
     de: string;
   };
-}
-
-export interface Dialog {
-  /**
-   * Identifier for this kind of dialog. E.g. `cardReaderError`.
-   */
-  id: string;
-  /**
-   * Title of the dialog.
-   */
-  title: {
-    /**
-     * The English text.
-     */
-    en: string;
-    /**
-     * The German text.
-     */
-    de: string;
-  };
-  /**
-   * Dialog body to display to the customer.
-   */
-  body: {
-    /**
-     * The English text.
-     */
-    en: string;
-    /**
-     * The German text.
-     */
-    de: string;
-  };
-  buttons?: {
-    /**
-     * Action the button will trigger when pressed.
-     */
-    action: string;
-    /**
-     * Label to display on the button.
-     */
-    label: {
-      /**
-       * The English text.
-       */
-      en: string;
-      /**
-       * The German text.
-       */
-      de: string;
-    };
-  }[];
 }
 
 export interface ApiError {
