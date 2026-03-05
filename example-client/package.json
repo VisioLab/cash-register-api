@@ -3,46 +3,56 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "packageManager": "pnpm@10.20.0",
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@swc/core",
+      "esbuild",
+      "protobufjs"
+    ]
+  },
   "scripts": {
-    "start": "npm run build && npm run preview",
+    "start": "pnpm run build && pnpm run preview",
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "format": "npx prettier . --write",
-    "format:check": "npx prettier . --check",
-    "lint": "npx eslint .",
-    "lint:fix": "npx eslint --fix .",
+    "format": "prettier . --write",
+    "format:check": "prettier . --check",
+    "lint": "eslint .",
+    "lint:fix": "eslint --fix .",
     "generateTypes": "node --loader ts-node/esm ./src/generateTypes.ts",
-    "generateDocs": "npx asyncapi generate fromTemplate ../api.yml @asyncapi/html-template@0.28.4 -p singleFile=true -p favicon=public/favicon.png  -o ../docs",
-    "validate": "npx asyncapi validate ../api.yml | grep -q \"0 errors\" || (echo \"Error: '0 errors' not found in output\" && exit 1)"
+    "generateDocs": "pnpm exec asyncapi generate fromTemplate ../api.yml @asyncapi/html-template@0.28.4 -p singleFile=true -p favicon=public/favicon.png  -o ../docs",
+    "validate": "pnpm exec asyncapi validate ../api.yml | grep -q \"0 errors\" || (echo \"Error: '0 errors' not found in output\" && exit 1)"
   },
   "dependencies": {
     "@asyncapi/cli": "^1.2.35",
     "@asyncapi/generator": "^1.9.17",
-    "@emotion/react": "^11.10.4",
-    "@emotion/styled": "^11.10.4",
-    "@mui/material": "^5.10.4",
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
+    "@mui/material": "^5.18.0",
     "lodash": "^4.17.21",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-icons": "^4.4.0",
-    "zustand": "^4.1.1"
+    "react-icons": "^5.6.0",
+    "zustand": "^5.0.0"
   },
   "devDependencies": {
     "@asyncapi/parser": "^1.15.1",
     "@types/eslint-config-prettier": "^6.11.3",
+    "@types/lodash": "^4.17.24",
+    "@types/node": "^25.3.3",
     "@types/react": "^18.0.17",
     "@types/react-dom": "^18.0.6",
     "@typescript-eslint/eslint-plugin": "^6.13.2",
     "@typescript-eslint/parser": "^6.13.2",
-    "@vitejs/plugin-react": "^2.1.0",
+    "@vitejs/plugin-react": "^4.5.0",
     "eslint": "^8.55.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-import": "^2.29.0",
-    "json-schema-to-typescript": "^11.0.2",
+    "json-schema-to-typescript": "^15.0.0",
     "prettier": "^3.1.0",
     "ts-node": "^10.9.1",
-    "typescript": "^4.9.5",
-    "vite": "^3.2.7"
+    "typescript": "^5.9.0",
+    "vite": "^6.3.0"
   }
 }

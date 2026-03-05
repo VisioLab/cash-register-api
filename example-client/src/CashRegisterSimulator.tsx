@@ -5,6 +5,7 @@ import Basket from "./Basket"
 import ConnectionState from "./ConnectionState"
 import useCashRegisterStore from "./store"
 import {useEffect, useState} from "react"
+import {useShallow} from "zustand/shallow"
 import {HiOutlineRefresh} from "react-icons/hi"
 
 interface Props {
@@ -31,7 +32,12 @@ const CashRegisterSimulator = ({ipAddress}: Props) => {
     return () => cashRegister?.ws.close()
   }, [ipAddress])
 
-  const state = useCashRegisterStore()
+  const state = useCashRegisterStore(useShallow((s) => ({
+    paymentInProgress: s.paymentInProgress,
+    paymentMethod: s.paymentMethod,
+    qrCodeContent: s.qrCodeContent,
+    surveyResult: s.surveyResult,
+  })))
   return (
     <Stack direction="row" spacing={6}>
       <Stack spacing={2} sx={{minWidth: 450}}>

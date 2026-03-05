@@ -13,15 +13,17 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version-file: ".node-version"
-          cache: npm
-          cache-dependency-path: example-client/package-lock.json
+          cache: pnpm
+          cache-dependency-path: example-client/pnpm-lock.yaml
       - name: Validate
         shell: bash
         working-directory: example-client/
         run: |
-          npm ci
-          npm run validate
+          pnpm install --frozen-lockfile
+          pnpm run validate
