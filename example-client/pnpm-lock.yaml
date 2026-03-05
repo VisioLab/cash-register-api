@@ -10,7 +10,7 @@ importers:
     dependencies:
       '@asyncapi/cli':
         specifier: ^6.0.0
-        version: 6.0.0(@babel/core@7.12.9)(@types/babel__core@7.20.5)(@types/node@25.3.3)(csstype@3.2.3)(encoding@0.1.13)(immer@9.0.21)(ts-node@10.9.2(@types/node@25.3.3)(typescript@5.9.3))
+        version: 6.0.0(@babel/core@7.12.9)(@swc/core@1.15.18)(@types/babel__core@7.20.5)(@types/node@25.3.3)(csstype@3.2.3)(encoding@0.1.13)(immer@9.0.21)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@25.3.3)(typescript@5.9.3))
       '@emotion/react':
         specifier: ^11.14.0
         version: 11.14.0(@types/react@19.2.14)(react@19.2.4)
@@ -80,7 +80,7 @@ importers:
         version: 3.8.1
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@25.3.3)(typescript@5.9.3)
+        version: 10.9.2(@swc/core@1.15.18)(@types/node@25.3.3)(typescript@5.9.3)
       typescript:
         specifier: ^5.9.0
         version: 5.9.3
@@ -2473,11 +2473,83 @@ packages:
     resolution: {integrity: sha512-JZlVFE6/dYpP9tQmV0/ADfn32L9uFarHWxfcRhReKUnljz1ZiUM5zpX+PH8h5CJs6lao3TuFqnPm9IJJCEkE2w==}
     engines: {node: '>=10.8'}
 
+  '@swc/core-darwin-arm64@1.15.18':
+    resolution: {integrity: sha512-+mIv7uBuSaywN3C9LNuWaX1jJJ3SKfiJuE6Lr3bd+/1Iv8oMU7oLBjYMluX1UrEPzwN2qCdY6Io0yVicABoCwQ==}
+    engines: {node: '>=10'}
+    cpu: [arm64]
+    os: [darwin]
+
+  '@swc/core-darwin-x64@1.15.18':
+    resolution: {integrity: sha512-wZle0eaQhnzxWX5V/2kEOI6Z9vl/lTFEC6V4EWcn+5pDjhemCpQv9e/TDJ0GIoiClX8EDWRvuZwh+Z3dhL1NAg==}
+    engines: {node: '>=10'}
+    cpu: [x64]
+    os: [darwin]
+
+  '@swc/core-linux-arm-gnueabihf@1.15.18':
+    resolution: {integrity: sha512-ao61HGXVqrJFHAcPtF4/DegmwEkVCo4HApnotLU8ognfmU8x589z7+tcf3hU+qBiU1WOXV5fQX6W9Nzs6hjxDw==}
+    engines: {node: '>=10'}
+    cpu: [arm]
+    os: [linux]
+
+  '@swc/core-linux-arm64-gnu@1.15.18':
+    resolution: {integrity: sha512-3xnctOBLIq3kj8PxOCgPrGjBLP/kNOddr6f5gukYt/1IZxsITQaU9TDyjeX6jG+FiCIHjCuWuffsyQDL5Ew1bg==}
+    engines: {node: '>=10'}
+    cpu: [arm64]
+    os: [linux]
+
+  '@swc/core-linux-arm64-musl@1.15.18':
+    resolution: {integrity: sha512-0a+Lix+FSSHBSBOA0XznCcHo5/1nA6oLLjcnocvzXeqtdjnPb+SvchItHI+lfeiuj1sClYPDvPMLSLyXFaiIKw==}
+    engines: {node: '>=10'}
+    cpu: [arm64]
+    os: [linux]
+
+  '@swc/core-linux-x64-gnu@1.15.18':
+    resolution: {integrity: sha512-wG9J8vReUlpaHz4KOD/5UE1AUgirimU4UFT9oZmupUDEofxJKYb1mTA/DrMj0s78bkBiNI+7Fo2EgPuvOJfuAA==}
+    engines: {node: '>=10'}
+    cpu: [x64]
+    os: [linux]
+
+  '@swc/core-linux-x64-musl@1.15.18':
+    resolution: {integrity: sha512-4nwbVvCphKzicwNWRmvD5iBaZj8JYsRGa4xOxJmOyHlMDpsvvJ2OR2cODlvWyGFH6BYL1MfIAK3qph3hp0Az6g==}
+    engines: {node: '>=10'}
+    cpu: [x64]
+    os: [linux]
+
+  '@swc/core-win32-arm64-msvc@1.15.18':
+    resolution: {integrity: sha512-zk0RYO+LjiBCat2RTMHzAWaMky0cra9loH4oRrLKLLNuL+jarxKLFDA8xTZWEkCPLjUTwlRN7d28eDLLMgtUcQ==}
+    engines: {node: '>=10'}
+    cpu: [arm64]
+    os: [win32]
+
+  '@swc/core-win32-ia32-msvc@1.15.18':
+    resolution: {integrity: sha512-yVuTrZ0RccD5+PEkpcLOBAuPbYBXS6rslENvIXfvJGXSdX5QGi1ehC4BjAMl5FkKLiam4kJECUI0l7Hq7T1vwg==}
+    engines: {node: '>=10'}
+    cpu: [ia32]
+    os: [win32]
+
+  '@swc/core-win32-x64-msvc@1.15.18':
+    resolution: {integrity: sha512-7NRmE4hmUQNCbYU3Hn9Tz57mK9Qq4c97ZS+YlamlK6qG9Fb5g/BB3gPDe0iLlJkns/sYv2VWSkm8c3NmbEGjbg==}
+    engines: {node: '>=10'}
+    cpu: [x64]
+    os: [win32]
+
+  '@swc/core@1.15.18':
+    resolution: {integrity: sha512-z87aF9GphWp//fnkRsqvtY+inMVPgYW3zSlXH1kJFvRT5H/wiAn+G32qW5l3oEk63KSF1x3Ov0BfHCObAmT8RA==}
+    engines: {node: '>=10'}
+    peerDependencies:
+      '@swc/helpers': '>=0.5.17'
+    peerDependenciesMeta:
+      '@swc/helpers':
+        optional: true
+
   '@swc/counter@0.1.3':
     resolution: {integrity: sha512-e2BR4lsJkkRlKZ/qCHPw9ZaSxc0MVUd7gtbtaB7aMvHeJVYe8sOB8DBZkP2DtISHGSku9sCK6T6cnY0CtXrOCQ==}
 
   '@swc/helpers@0.5.5':
     resolution: {integrity: sha512-KGYxvIOXcceOAbEk4bi/dVLEK9z8sZ0uBB3Il5b1rhfClSpcX0yfRO0KmTkqR2cnQDymwLB+25ZyMzICg/cm/A==}
+
+  '@swc/types@0.1.25':
+    resolution: {integrity: sha512-iAoY/qRhNH8a/hBvm3zKj9qQ4oc2+3w1unPJa2XvTK3XjeLXtzcCingVPw/9e5mn1+0yPqxcBGp9Jf0pkfMb1g==}
 
   '@szmarczak/http-timer@5.0.1':
     resolution: {integrity: sha512-+PmQX0PiAYPMeVYe237LJAYvOMYW1j2rH5YROyS3b4CTVJum34HfRvKvAzozHAQG0TnHNdUfY9nCeUyRAs//cw==}
@@ -6967,21 +7039,21 @@ snapshots:
       js-yaml: 4.1.1
       lodash: 4.17.23
 
-  '@asyncapi/cli@6.0.0(@babel/core@7.12.9)(@types/babel__core@7.20.5)(@types/node@25.3.3)(csstype@3.2.3)(encoding@0.1.13)(immer@9.0.21)(ts-node@10.9.2(@types/node@25.3.3)(typescript@5.9.3))':
+  '@asyncapi/cli@6.0.0(@babel/core@7.12.9)(@swc/core@1.15.18)(@types/babel__core@7.20.5)(@types/node@25.3.3)(csstype@3.2.3)(encoding@0.1.13)(immer@9.0.21)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@25.3.3)(typescript@5.9.3))':
     dependencies:
       '@asyncapi/avro-schema-parser': 3.0.24(encoding@0.1.13)
       '@asyncapi/bundler': 0.6.4
       '@asyncapi/converter': 2.0.1(encoding@0.1.13)
       '@asyncapi/diff': 0.5.0
-      '@asyncapi/generator': 3.2.0(@types/babel__core@7.20.5)(@types/node@25.3.3)(encoding@0.1.13)
-      '@asyncapi/modelina-cli': 5.10.1(@types/node@25.3.3)(encoding@0.1.13)
+      '@asyncapi/generator': 3.2.0(@swc/core@1.15.18)(@types/babel__core@7.20.5)(@types/node@25.3.3)(encoding@0.1.13)
+      '@asyncapi/modelina-cli': 5.10.1(@swc/core@1.15.18)(@types/node@25.3.3)(encoding@0.1.13)
       '@asyncapi/openapi-schema-parser': 3.0.24(encoding@0.1.13)
       '@asyncapi/optimizer': 1.0.4(encoding@0.1.13)
       '@asyncapi/parser': 3.6.0(encoding@0.1.13)
       '@asyncapi/problem': 1.0.0
       '@asyncapi/protobuf-schema-parser': 3.6.0(encoding@0.1.13)
       '@asyncapi/raml-dt-schema-parser': 4.0.24(encoding@0.1.13)
-      '@asyncapi/studio': 1.2.0(@babel/core@7.12.9)(csstype@3.2.3)(encoding@0.1.13)(immer@9.0.21)(ts-node@10.9.2(@types/node@25.3.3)(typescript@5.9.3))
+      '@asyncapi/studio': 1.2.0(@babel/core@7.12.9)(csstype@3.2.3)(encoding@0.1.13)(immer@9.0.21)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@25.3.3)(typescript@5.9.3))
       '@changesets/changelog-git': 0.2.1
       '@clack/prompts': 0.11.0
       '@oclif/core': 4.8.3
@@ -6998,7 +7070,7 @@ snapshots:
       express: 5.2.1
       fast-levenshtein: 3.0.0
       fs-extra: 11.3.4
-      generator-v2: '@asyncapi/generator@3.0.1(@types/babel__core@7.20.5)(@types/node@25.3.3)(encoding@0.1.13)'
+      generator-v2: '@asyncapi/generator@3.0.1(@swc/core@1.15.18)(@types/babel__core@7.20.5)(@types/node@25.3.3)(encoding@0.1.13)'
       helmet: 8.1.0
       https-proxy-agent: 7.0.6
       inquirer: 8.2.7(@types/node@25.3.3)
@@ -7053,11 +7125,11 @@ snapshots:
       js-yaml: 4.1.1
       json2md: 1.13.0
 
-  '@asyncapi/generator-components@0.5.0(@types/babel__core@7.20.5)(encoding@0.1.13)':
+  '@asyncapi/generator-components@0.5.0(@swc/core@1.15.18)(@types/babel__core@7.20.5)(encoding@0.1.13)':
     dependencies:
       '@asyncapi/generator-helpers': 1.1.0
       '@asyncapi/generator-react-sdk': 1.1.3(@types/babel__core@7.20.5)(encoding@0.1.13)
-      '@asyncapi/modelina': 5.10.1(encoding@0.1.13)
+      '@asyncapi/modelina': 5.10.1(@swc/core@1.15.18)(encoding@0.1.13)
     transitivePeerDependencies:
       - '@swc/core'
       - '@swc/wasm'
@@ -7088,9 +7160,9 @@ snapshots:
       - encoding
       - supports-color
 
-  '@asyncapi/generator@3.0.1(@types/babel__core@7.20.5)(@types/node@25.3.3)(encoding@0.1.13)':
+  '@asyncapi/generator@3.0.1(@swc/core@1.15.18)(@types/babel__core@7.20.5)(@types/node@25.3.3)(encoding@0.1.13)':
     dependencies:
-      '@asyncapi/generator-components': 0.5.0(@types/babel__core@7.20.5)(encoding@0.1.13)
+      '@asyncapi/generator-components': 0.5.0(@swc/core@1.15.18)(@types/babel__core@7.20.5)(encoding@0.1.13)
       '@asyncapi/generator-helpers': 1.1.0
       '@asyncapi/generator-hooks': 0.1.0
       '@asyncapi/generator-react-sdk': 1.1.3(@types/babel__core@7.20.5)(encoding@0.1.13)
@@ -7114,7 +7186,7 @@ snapshots:
       resolve-pkg: 2.0.0
       semver: 7.7.4
       simple-git: 3.32.3
-      ts-node: 10.9.2(@types/node@25.3.3)(typescript@4.9.5)
+      ts-node: 10.9.2(@swc/core@1.15.18)(@types/node@25.3.3)(typescript@4.9.5)
       typescript: 4.9.5
     transitivePeerDependencies:
       - '@swc/core'
@@ -7125,9 +7197,9 @@ snapshots:
       - encoding
       - supports-color
 
-  '@asyncapi/generator@3.2.0(@types/babel__core@7.20.5)(@types/node@25.3.3)(encoding@0.1.13)':
+  '@asyncapi/generator@3.2.0(@swc/core@1.15.18)(@types/babel__core@7.20.5)(@types/node@25.3.3)(encoding@0.1.13)':
     dependencies:
-      '@asyncapi/generator-components': 0.5.0(@types/babel__core@7.20.5)(encoding@0.1.13)
+      '@asyncapi/generator-components': 0.5.0(@swc/core@1.15.18)(@types/babel__core@7.20.5)(encoding@0.1.13)
       '@asyncapi/generator-helpers': 1.1.0
       '@asyncapi/generator-hooks': 0.1.0
       '@asyncapi/generator-react-sdk': 1.1.3(@types/babel__core@7.20.5)(encoding@0.1.13)
@@ -7151,7 +7223,7 @@ snapshots:
       resolve-pkg: 2.0.0
       semver: 7.7.4
       simple-git: 3.32.3
-      ts-node: 10.9.2(@types/node@25.3.3)(typescript@4.9.5)
+      ts-node: 10.9.2(@swc/core@1.15.18)(@types/node@25.3.3)(typescript@4.9.5)
       typescript: 4.9.5
     transitivePeerDependencies:
       - '@swc/core'
@@ -7162,9 +7234,9 @@ snapshots:
       - encoding
       - supports-color
 
-  '@asyncapi/modelina-cli@5.10.1(@types/node@25.3.3)(encoding@0.1.13)':
+  '@asyncapi/modelina-cli@5.10.1(@swc/core@1.15.18)(@types/node@25.3.3)(encoding@0.1.13)':
     dependencies:
-      '@asyncapi/modelina': 5.10.1(encoding@0.1.13)
+      '@asyncapi/modelina': 5.10.1(@swc/core@1.15.18)(encoding@0.1.13)
       '@oclif/core': 3.27.0
       '@oclif/errors': 1.3.6
       '@oclif/plugin-autocomplete': 3.2.40
@@ -7181,7 +7253,7 @@ snapshots:
       - encoding
       - supports-color
 
-  '@asyncapi/modelina@5.10.1(encoding@0.1.13)':
+  '@asyncapi/modelina@5.10.1(@swc/core@1.15.18)(encoding@0.1.13)':
     dependencies:
       '@apidevtools/json-schema-ref-parser': 11.9.3
       '@apidevtools/swagger-parser': 10.1.1(openapi-types@12.1.3)
@@ -7192,7 +7264,7 @@ snapshots:
       fast-xml-parser: 5.4.2
       js-yaml: 4.1.1
       openapi-types: 12.1.3
-      typescript-json-schema: 0.58.1
+      typescript-json-schema: 0.58.1(@swc/core@1.15.18)
     transitivePeerDependencies:
       - '@swc/core'
       - '@swc/wasm'
@@ -7353,7 +7425,7 @@ snapshots:
     dependencies:
       '@types/json-schema': 7.0.15
 
-  '@asyncapi/studio@1.2.0(@babel/core@7.12.9)(csstype@3.2.3)(encoding@0.1.13)(immer@9.0.21)(ts-node@10.9.2(@types/node@25.3.3)(typescript@5.9.3))':
+  '@asyncapi/studio@1.2.0(@babel/core@7.12.9)(csstype@3.2.3)(encoding@0.1.13)(immer@9.0.21)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@25.3.3)(typescript@5.9.3))':
     dependencies:
       '@asyncapi/avro-schema-parser': 3.0.24(encoding@0.1.13)
       '@asyncapi/converter': 2.0.1(encoding@0.1.13)
@@ -7389,7 +7461,7 @@ snapshots:
       react-hot-toast: 2.4.0(csstype@3.2.3)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       react-icons: 4.12.0(react@18.2.0)
       reactflow: 11.11.4(@types/react@18.2.18)(immer@9.0.21)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
-      tailwindcss: 3.3.3(ts-node@10.9.2(@types/node@25.3.3)(typescript@5.9.3))
+      tailwindcss: 3.3.3(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@25.3.3)(typescript@5.9.3))
       tippy.js: 6.3.7
       typescript: 5.1.6
       zustand: 4.5.7(@types/react@18.2.18)(immer@9.0.21)(react@18.2.0)
@@ -10417,14 +10489,14 @@ snapshots:
 
   '@stoplight/json-ref-readers@1.2.2(encoding@0.1.13)':
     dependencies:
-      node-fetch: 2.6.7(encoding@0.1.13)
+      node-fetch: 2.7.0(encoding@0.1.13)
       tslib: 1.14.1
     transitivePeerDependencies:
       - encoding
 
   '@stoplight/json-ref-resolver@3.1.6':
     dependencies:
-      '@stoplight/json': 3.21.0
+      '@stoplight/json': 3.21.7
       '@stoplight/path': 1.3.2
       '@stoplight/types': 13.20.0
       '@types/urijs': 1.19.26
@@ -10484,7 +10556,7 @@ snapshots:
   '@stoplight/spectral-core@1.21.0(encoding@0.1.13)':
     dependencies:
       '@stoplight/better-ajv-errors': 1.0.3(ajv@8.18.0)
-      '@stoplight/json': 3.21.0
+      '@stoplight/json': 3.21.7
       '@stoplight/path': 1.3.2
       '@stoplight/spectral-parsers': 1.0.5
       '@stoplight/spectral-ref-resolver': 1.0.5(encoding@0.1.13)
@@ -10509,7 +10581,7 @@ snapshots:
 
   '@stoplight/spectral-formats@1.8.2(encoding@0.1.13)':
     dependencies:
-      '@stoplight/json': 3.21.0
+      '@stoplight/json': 3.21.7
       '@stoplight/spectral-core': 1.21.0(encoding@0.1.13)
       '@types/json-schema': 7.0.15
       tslib: 2.8.1
@@ -10537,7 +10609,7 @@ snapshots:
   '@stoplight/spectral-functions@1.10.1(encoding@0.1.13)':
     dependencies:
       '@stoplight/better-ajv-errors': 1.0.3(ajv@8.18.0)
-      '@stoplight/json': 3.21.0
+      '@stoplight/json': 3.21.7
       '@stoplight/spectral-core': 1.21.0(encoding@0.1.13)
       '@stoplight/spectral-formats': 1.8.2(encoding@0.1.13)
       '@stoplight/spectral-runtime': 1.1.4(encoding@0.1.13)
@@ -10552,7 +10624,7 @@ snapshots:
 
   '@stoplight/spectral-parsers@1.0.5':
     dependencies:
-      '@stoplight/json': 3.21.0
+      '@stoplight/json': 3.21.7
       '@stoplight/types': 14.1.1
       '@stoplight/yaml': 4.3.0
       tslib: 2.8.1
@@ -10629,7 +10701,7 @@ snapshots:
 
   '@stoplight/spectral-runtime@1.1.4(encoding@0.1.13)':
     dependencies:
-      '@stoplight/json': 3.21.0
+      '@stoplight/json': 3.21.7
       '@stoplight/path': 1.3.2
       '@stoplight/types': 13.20.0
       abort-controller: 3.0.0
@@ -10672,12 +10744,64 @@ snapshots:
       '@stoplight/yaml-ast-parser': 0.0.50
       tslib: 2.8.1
 
+  '@swc/core-darwin-arm64@1.15.18':
+    optional: true
+
+  '@swc/core-darwin-x64@1.15.18':
+    optional: true
+
+  '@swc/core-linux-arm-gnueabihf@1.15.18':
+    optional: true
+
+  '@swc/core-linux-arm64-gnu@1.15.18':
+    optional: true
+
+  '@swc/core-linux-arm64-musl@1.15.18':
+    optional: true
+
+  '@swc/core-linux-x64-gnu@1.15.18':
+    optional: true
+
+  '@swc/core-linux-x64-musl@1.15.18':
+    optional: true
+
+  '@swc/core-win32-arm64-msvc@1.15.18':
+    optional: true
+
+  '@swc/core-win32-ia32-msvc@1.15.18':
+    optional: true
+
+  '@swc/core-win32-x64-msvc@1.15.18':
+    optional: true
+
+  '@swc/core@1.15.18':
+    dependencies:
+      '@swc/counter': 0.1.3
+      '@swc/types': 0.1.25
+    optionalDependencies:
+      '@swc/core-darwin-arm64': 1.15.18
+      '@swc/core-darwin-x64': 1.15.18
+      '@swc/core-linux-arm-gnueabihf': 1.15.18
+      '@swc/core-linux-arm64-gnu': 1.15.18
+      '@swc/core-linux-arm64-musl': 1.15.18
+      '@swc/core-linux-x64-gnu': 1.15.18
+      '@swc/core-linux-x64-musl': 1.15.18
+      '@swc/core-win32-arm64-msvc': 1.15.18
+      '@swc/core-win32-ia32-msvc': 1.15.18
+      '@swc/core-win32-x64-msvc': 1.15.18
+    optional: true
+
   '@swc/counter@0.1.3': {}
 
   '@swc/helpers@0.5.5':
     dependencies:
       '@swc/counter': 0.1.3
       tslib: 2.8.1
+
+  '@swc/types@0.1.25':
+    dependencies:
+      '@swc/counter': 0.1.3
+    optional: true
 
   '@szmarczak/http-timer@5.0.1':
     dependencies:
@@ -14102,29 +14226,29 @@ snapshots:
 
   possible-typed-array-names@1.1.0: {}
 
-  postcss-import@15.1.0(postcss@8.4.31):
+  postcss-import@15.1.0(postcss@8.5.8):
     dependencies:
-      postcss: 8.4.31
+      postcss: 8.5.8
       postcss-value-parser: 4.2.0
       read-cache: 1.0.0
       resolve: 1.22.11
 
-  postcss-js@4.1.0(postcss@8.4.31):
+  postcss-js@4.1.0(postcss@8.5.8):
     dependencies:
       camelcase-css: 2.0.1
-      postcss: 8.4.31
+      postcss: 8.5.8
 
-  postcss-load-config@4.0.2(postcss@8.4.31)(ts-node@10.9.2(@types/node@25.3.3)(typescript@5.9.3)):
+  postcss-load-config@4.0.2(postcss@8.5.8)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@25.3.3)(typescript@5.9.3)):
     dependencies:
       lilconfig: 3.1.3
       yaml: 2.8.2
     optionalDependencies:
-      postcss: 8.4.31
-      ts-node: 10.9.2(@types/node@25.3.3)(typescript@5.9.3)
+      postcss: 8.5.8
+      ts-node: 10.9.2(@swc/core@1.15.18)(@types/node@25.3.3)(typescript@5.9.3)
 
-  postcss-nested@6.2.0(postcss@8.4.31):
+  postcss-nested@6.2.0(postcss@8.5.8):
     dependencies:
-      postcss: 8.4.31
+      postcss: 8.5.8
       postcss-selector-parser: 6.1.2
 
   postcss-selector-parser@6.1.2:
@@ -14945,7 +15069,7 @@ snapshots:
 
   symbol-tree@3.2.4: {}
 
-  tailwindcss@3.3.3(ts-node@10.9.2(@types/node@25.3.3)(typescript@5.9.3)):
+  tailwindcss@3.3.3(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@25.3.3)(typescript@5.9.3)):
     dependencies:
       '@alloc/quick-lru': 5.2.0
       arg: 5.0.2
@@ -14961,11 +15085,11 @@ snapshots:
       normalize-path: 3.0.0
       object-hash: 3.0.0
       picocolors: 1.1.1
-      postcss: 8.4.31
-      postcss-import: 15.1.0(postcss@8.4.31)
-      postcss-js: 4.1.0(postcss@8.4.31)
-      postcss-load-config: 4.0.2(postcss@8.4.31)(ts-node@10.9.2(@types/node@25.3.3)(typescript@5.9.3))
-      postcss-nested: 6.2.0(postcss@8.4.31)
+      postcss: 8.5.8
+      postcss-import: 15.1.0(postcss@8.5.8)
+      postcss-js: 4.1.0(postcss@8.5.8)
+      postcss-load-config: 4.0.2(postcss@8.5.8)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@25.3.3)(typescript@5.9.3))
+      postcss-nested: 6.2.0(postcss@8.5.8)
       postcss-selector-parser: 6.1.2
       resolve: 1.22.11
       sucrase: 3.35.1
@@ -15076,7 +15200,7 @@ snapshots:
 
   ts-interface-checker@0.1.13: {}
 
-  ts-node@10.9.2(@types/node@16.18.126)(typescript@4.9.5):
+  ts-node@10.9.2(@swc/core@1.15.18)(@types/node@16.18.126)(typescript@4.9.5):
     dependencies:
       '@cspotcode/source-map-support': 0.8.1
       '@tsconfig/node10': 1.0.12
@@ -15093,8 +15217,10 @@ snapshots:
       typescript: 4.9.5
       v8-compile-cache-lib: 3.0.1
       yn: 3.1.1
+    optionalDependencies:
+      '@swc/core': 1.15.18
 
-  ts-node@10.9.2(@types/node@25.3.3)(typescript@4.9.5):
+  ts-node@10.9.2(@swc/core@1.15.18)(@types/node@25.3.3)(typescript@4.9.5):
     dependencies:
       '@cspotcode/source-map-support': 0.8.1
       '@tsconfig/node10': 1.0.12
@@ -15111,8 +15237,10 @@ snapshots:
       typescript: 4.9.5
       v8-compile-cache-lib: 3.0.1
       yn: 3.1.1
+    optionalDependencies:
+      '@swc/core': 1.15.18
 
-  ts-node@10.9.2(@types/node@25.3.3)(typescript@5.9.3):
+  ts-node@10.9.2(@swc/core@1.15.18)(@types/node@25.3.3)(typescript@5.9.3):
     dependencies:
       '@cspotcode/source-map-support': 0.8.1
       '@tsconfig/node10': 1.0.12
@@ -15129,6 +15257,8 @@ snapshots:
       typescript: 5.9.3
       v8-compile-cache-lib: 3.0.1
       yn: 3.1.1
+    optionalDependencies:
+      '@swc/core': 1.15.18
 
   tsconfig-paths@3.15.0:
     dependencies:
@@ -15200,14 +15330,14 @@ snapshots:
       possible-typed-array-names: 1.1.0
       reflect.getprototypeof: 1.0.10
 
-  typescript-json-schema@0.58.1:
+  typescript-json-schema@0.58.1(@swc/core@1.15.18):
     dependencies:
       '@types/json-schema': 7.0.15
       '@types/node': 16.18.126
       glob: 7.2.3
       path-equal: 1.2.5
       safe-stable-stringify: 2.5.0
-      ts-node: 10.9.2(@types/node@16.18.126)(typescript@4.9.5)
+      ts-node: 10.9.2(@swc/core@1.15.18)(@types/node@16.18.126)(typescript@4.9.5)
       typescript: 4.9.5
       yargs: 17.7.2
     transitivePeerDependencies:
