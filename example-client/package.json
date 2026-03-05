@@ -6,10 +6,17 @@
   "packageManager": "pnpm@10.20.0",
   "pnpm": {
     "onlyBuiltDependencies": [
+      "@asyncapi/cli",
       "@swc/core",
       "esbuild",
       "protobufjs"
-    ]
+    ],
+    "ignoredBuiltDependencies": [
+      "yarn"
+    ],
+    "overrides": {
+      "@asyncapi/studio": "npm:empty-npm-package@1.0.0"
+    }
   },
   "scripts": {
     "start": "pnpm run build && pnpm run preview",
@@ -21,12 +28,11 @@
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
     "generateTypes": "node --loader ts-node/esm ./src/generateTypes.ts",
-    "generateDocs": "pnpm exec asyncapi generate fromTemplate ../api.yml @asyncapi/html-template@0.28.4 -p singleFile=true -p favicon=public/favicon.png  -o ../docs",
-    "validate": "pnpm exec asyncapi validate ../api.yml | grep -q \"0 errors\" || (echo \"Error: '0 errors' not found in output\" && exit 1)"
+    "generateDocs": "pnpm exec asyncapi generate fromTemplate ../api.yml @asyncapi/html-template -p singleFile=true -p favicon=public/favicon.png  -o ../docs",
+    "validate": "pnpm exec asyncapi validate ../api.yml"
   },
   "dependencies": {
-    "@asyncapi/cli": "^1.2.35",
-    "@asyncapi/generator": "^1.9.17",
+    "@asyncapi/cli": "^6.0.0",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
     "@mui/material": "^7.0.0",
@@ -37,7 +43,7 @@
     "zustand": "^5.0.0"
   },
   "devDependencies": {
-    "@asyncapi/parser": "^1.15.1",
+    "@asyncapi/parser": "^3.6.0",
     "@types/eslint-config-prettier": "^6.11.3",
     "@types/lodash": "^4.17.24",
     "@types/node": "^25.3.3",
