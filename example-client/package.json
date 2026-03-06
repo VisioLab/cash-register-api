@@ -9,7 +9,21 @@
       "@swc/core",
       "esbuild",
       "protobufjs"
-    ]
+    ],
+    "overrides": {
+      "@npmcli/run-script@<=7.0.2": "7.0.2",
+      "pacote@<=17.0.4": "17.0.4",
+      "@asyncapi/generator@<=3.2.0": "3.2.0",
+      "tar@<=7.5.4": "7.5.4",
+      "make-fetch-happen@<=14.0.1": "14.0.1",
+      "npm-registry-fetch@<=18.0.1": "18.0.1",
+      "dompurify@<=3.2.4": "3.2.4",
+      "@asyncapi/bundler@<=0.6.4": "0.6.4",
+      "tough-cookie@<=4.1.3": "4.1.3",
+      "form-data@<=2.5.4": "2.5.4",
+      "ajv@<=6.12.3": "6.12.3",
+      "qs@<=6.14.1": "6.14.1"
+    }
   },
   "scripts": {
     "start": "pnpm run build && pnpm run preview",
@@ -25,8 +39,8 @@
     "validate": "pnpm exec asyncapi validate ../api.yml | grep -q \"0 errors\" || (echo \"Error: '0 errors' not found in output\" && exit 1)"
   },
   "dependencies": {
-    "@asyncapi/cli": "^1.2.35",
-    "@asyncapi/generator": "^1.9.17",
+    "@asyncapi/cli": "^5.0.1",
+    "@asyncapi/generator": "^3.2.0",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
     "@mui/material": "^7.0.0",
