@@ -17,10 +17,13 @@ const main = async (): Promise<void> => {
         process.exit(1)
     }
 
+    const toMessageTypeName = (id: string): string =>
+        `${id.charAt(0).toUpperCase()}${id.slice(1)}`
+
     const messageTypes = await Promise.all(
         document.allMessages().all()
             .map((message) =>
-                compile(message.payload()?.json() ?? {}, message.id(), { bannerComment: "", additionalProperties: false }))
+                compile(message.payload()?.json() ?? {}, toMessageTypeName(message.id()), { bannerComment: "", additionalProperties: false }))
     )
 
     const schemaTypes = await Promise.all(

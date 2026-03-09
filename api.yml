@@ -44,7 +44,7 @@ info:
 
     In case of malformed messages or other errors, the register or the scanner
     can send an `error` event. If deprecated events are being received, both
-    sides can send a `warining` event.
+    sides can send a `warning` event.
 defaultContentType: application/json
 servers:
   visiolab:
@@ -332,7 +332,7 @@ components:
         - en
         - de
       additionalProperties: false
-    ApiError:
+    ApiErrorData:
       type: object
       properties:
         reason:
@@ -347,7 +347,7 @@ components:
         - reason
         - message
       additionalProperties: false
-    ApiWarning:
+    ApiWarningData:
       type: object
       properties:
         reason:
@@ -660,7 +660,11 @@ components:
             type: string
             const: error
           data:
-            $ref: '#/components/schemas/ApiError'
+            $ref: '#/components/schemas/ApiErrorData'
+        required:
+          - event
+          - data
+        additionalProperties: false
       examples:
         - payload:
             event: error
@@ -680,7 +684,11 @@ components:
             type: string
             const: warning
           data:
-            $ref: '#/components/schemas/ApiWarning'
+            $ref: '#/components/schemas/ApiWarningData'
+        required:
+          - event
+          - data
+        additionalProperties: false
       examples:
         - payload:
             event: warning

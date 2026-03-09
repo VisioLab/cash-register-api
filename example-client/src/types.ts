@@ -307,16 +307,16 @@ export interface CloseDialog {
 }
 
 export interface ApiError {
-  event?: "error";
-  data?: {
+  event: "error";
+  data: {
     reason: "malformed" | "internal" | "unexpectedEvent" | "unknown";
     message: string;
   };
 }
 
 export interface ApiWarning {
-  event?: "warning";
-  data?: {
+  event: "warning";
+  data: {
     reason: "deprecated";
     message: string;
   };
@@ -707,12 +707,12 @@ export interface Dialog {
   }[];
 }
 
-export interface ApiError {
+export interface ApiErrorData {
   reason: "malformed" | "internal" | "unexpectedEvent" | "unknown";
   message: string;
 }
 
-export interface ApiWarning {
+export interface ApiWarningData {
   reason: "deprecated";
   message: string;
 }
