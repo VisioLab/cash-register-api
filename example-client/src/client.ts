@@ -313,7 +313,7 @@ export class CashRegister {
                 console.log("Received error:", parsedMessage.data)
                 break;
             default:
-                await this.send({ event: "error", data: { reason: "unexpectedEvent", message: `Received unexpected message ${parsedMessage}` } })
+                await this.send({ event: "error", data: { reason: "unexpectedEvent", message: `Received unexpected message ${JSON.stringify(parsedMessage)}` } })
         }
     }
 
