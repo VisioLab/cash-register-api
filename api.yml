@@ -1,86 +1,132 @@
-asyncapi: 2.6.0
+asyncapi: 3.1.0
 info:
   title: VisioLab Cash Register API
   version: 1.2.0
   description: >
     ### Enables communication between VisioLab's Blink app and a cash register
 
-    The iPad running VisioLab's Blink app (scanner) runs a websocket server in the local
-    network on `ws:/<local-ip>/visiolab-cash-register`.
+    The iPad running VisioLab's Blink app (scanner) runs a websocket server in
+    the local network on `ws:/<local-ip>/visiolab-cash-register`.
 
-    Each message contains an `event` and a `data` property at the top level. The `event`
-    property identifies the type of the message, so that actions can be dispatched
-    based on it. The `data` property contains the actual content of the message.
-    Messages constitute events and there is no fixed request-response relation between them.
-    Still the events are expected to follow a certain sequence as described below.
+    Each message contains an `event` and a `data` property at the top level. The
+    `event` property identifies the type of the message, so that actions can be
+    dispatched based on it. The `data` property contains the actual content of
+    the message. Messages constitute events and there is no fixed
+    request-response relation between them. Still the events are expected to
+    follow a certain sequence as described below.
 
-    Once the register has established a connection, it should synchronize
-    its articles using the `syncArticles` operation. Afterwards
-    the scanner is ready to detect food.
-
-
-    Once articles are detected and the "Pay" button is pressed to initiate the checkout, 
-    `setBasket` will be sent. 
-    The register can optionally report actual article prices after recalculation based
-    on guest identification using `updateBasket` at any time.
-    If scale articles are detected, they are not send in the initial `setBasket` event. Instead
-    they are send individually with the `weighArticle` command, to which the register should *respond*
-    with a `articleWeighed` event in a case of success or with a `weighingFailed` event in a case of failure.
-    The scanner can add additional articles to the basket after weighing using the `addArticles` event.
-    The `guestAuthenticated` event should be send when a guest is identified, e.g. by putting their card on the reader,
-    to inform the scanner that payment flows that require upfront authentication can proceed. 
-
-    After all articles are added to the basket, the payment is initiated by sending `startPayment`.
-    The register can optionally report actual article prices after recalculation based
-    on guest identification using `updateBasket` and should do so before sending `articleWeighed` to 
-    communicate the total price after weighing.
-    Finally, it should handle the transaction and 
-    *respond* by sending either `paymentSuccess` or `paymentFailure`.
+    Once the register has established a connection, it should synchronize its
+    articles using the `syncArticles` operation. Afterwards the scanner is ready
+    to detect food.
 
 
-    In case of malformed messages or other errors, the register or the scanner can send an `error` event.
-    If deprecated events are being received, both sides can send a `warining` event.
-    
-    
+    Once articles are detected and the "Pay" button is pressed to initiate the
+    checkout,  `setBasket` will be sent.  The register can optionally report
+    actual article prices after recalculation based on guest identification
+    using `updateBasket` at any time. If scale articles are detected, they are
+    not send in the initial `setBasket` event. Instead they are send
+    individually with the `weighArticle` command, to which the register should
+    *respond* with a `articleWeighed` event in a case of success or with a
+    `weighingFailed` event in a case of failure. The scanner can add additional
+    articles to the basket after weighing using the `addArticles` event. The
+    `guestAuthenticated` event should be send when a guest is identified, e.g.
+    by putting their card on the reader, to inform the scanner that payment
+    flows that require upfront authentication can proceed. 
+
+    After all articles are added to the basket, the payment is initiated by
+    sending `startPayment`. The register can optionally report actual article
+    prices after recalculation based on guest identification using
+    `updateBasket` and should do so before sending `articleWeighed` to 
+    communicate the total price after weighing. Finally, it should handle the
+    transaction and  *respond* by sending either `paymentSuccess` or
+    `paymentFailure`.
+
+
+    In case of malformed messages or other errors, the register or the scanner
+    can send an `error` event. If deprecated events are being received, both
+    sides can send a `warning` event.
+defaultContentType: application/json
 servers:
   visiolab:
-    url: "ws://<local-ip>/visiolab-cash-register"
+    host: <local-ip>
+    pathname: /visiolab-cash-register
     protocol: ws
-defaultContentType: application/json
 channels:
-  /visiolab-cash-register:
-    publish:
-      summary: Messages the client can send.
-      operationId: sendMessage
-      message:
-        oneOf:
-          - $ref: "#/components/messages/syncArticles"
-          - $ref: "#/components/messages/updateBasket"
-          - $ref: "#/components/messages/guestAuthenticated"
-          - $ref: "#/components/messages/guestRemoved"
-          - $ref: "#/components/messages/articleWeighed"
-          - $ref: "#/components/messages/weighingFailed"
-          - $ref: "#/components/messages/paymentSuccess"
-          - $ref: "#/components/messages/paymentFailure"
-          - $ref: "#/components/messages/showDialog"
-          - $ref: "#/components/messages/closeDialog"
-          - $ref: "#/components/messages/apiError"
-          - $ref: "#/components/messages/apiWarning"
-    subscribe:
-      summary: Messages the sever can send.
-      operationId: processMessage
-      message:
-        oneOf:
-          - $ref: "#/components/messages/setBasket"
-          - $ref: "#/components/messages/addArticles"
-          - $ref: "#/components/messages/weighArticle"
-          - $ref: "#/components/messages/startPayment"
-          - $ref: "#/components/messages/printReceipt"
-          - $ref: "#/components/messages/userInput"
-          - $ref: "#/components/messages/reset"
-          - $ref: "#/components/messages/apiError"
-          - $ref: "#/components/messages/apiWarning"
-
+  cashRegister:
+    address: /visiolab-cash-register
+    messages:
+      syncArticles:
+        $ref: '#/components/messages/syncArticles'
+      updateBasket:
+        $ref: '#/components/messages/updateBasket'
+      guestAuthenticated:
+        $ref: '#/components/messages/guestAuthenticated'
+      guestRemoved:
+        $ref: '#/components/messages/guestRemoved'
+      articleWeighed:
+        $ref: '#/components/messages/articleWeighed'
+      weighingFailed:
+        $ref: '#/components/messages/weighingFailed'
+      paymentSuccess:
+        $ref: '#/components/messages/paymentSuccess'
+      paymentFailure:
+        $ref: '#/components/messages/paymentFailure'
+      showDialog:
+        $ref: '#/components/messages/showDialog'
+      closeDialog:
+        $ref: '#/components/messages/closeDialog'
+      apiError:
+        $ref: '#/components/messages/apiError'
+      apiWarning:
+        $ref: '#/components/messages/apiWarning'
+      setBasket:
+        $ref: '#/components/messages/setBasket'
+      addArticles:
+        $ref: '#/components/messages/addArticles'
+      weighArticle:
+        $ref: '#/components/messages/weighArticle'
+      startPayment:
+        $ref: '#/components/messages/startPayment'
+      printReceipt:
+        $ref: '#/components/messages/printReceipt'
+      userInput:
+        $ref: '#/components/messages/userInput'
+      reset:
+        $ref: '#/components/messages/reset'
+operations:
+  receiveFromClient:
+    action: receive
+    channel:
+      $ref: '#/channels/cashRegister'
+    summary: Messages the client can send.
+    messages:
+      - $ref: '#/channels/cashRegister/messages/syncArticles'
+      - $ref: '#/channels/cashRegister/messages/updateBasket'
+      - $ref: '#/channels/cashRegister/messages/guestAuthenticated'
+      - $ref: '#/channels/cashRegister/messages/guestRemoved'
+      - $ref: '#/channels/cashRegister/messages/articleWeighed'
+      - $ref: '#/channels/cashRegister/messages/weighingFailed'
+      - $ref: '#/channels/cashRegister/messages/paymentSuccess'
+      - $ref: '#/channels/cashRegister/messages/paymentFailure'
+      - $ref: '#/channels/cashRegister/messages/showDialog'
+      - $ref: '#/channels/cashRegister/messages/closeDialog'
+      - $ref: '#/channels/cashRegister/messages/apiError'
+      - $ref: '#/channels/cashRegister/messages/apiWarning'
+  sendToClient:
+    action: send
+    channel:
+      $ref: '#/channels/cashRegister'
+    summary: Messages the server can send.
+    messages:
+      - $ref: '#/channels/cashRegister/messages/setBasket'
+      - $ref: '#/channels/cashRegister/messages/addArticles'
+      - $ref: '#/channels/cashRegister/messages/weighArticle'
+      - $ref: '#/channels/cashRegister/messages/startPayment'
+      - $ref: '#/channels/cashRegister/messages/printReceipt'
+      - $ref: '#/channels/cashRegister/messages/userInput'
+      - $ref: '#/channels/cashRegister/messages/reset'
+      - $ref: '#/channels/cashRegister/messages/apiError'
+      - $ref: '#/channels/cashRegister/messages/apiWarning'
 components:
   schemas:
     SyncedArticle:
@@ -96,44 +142,46 @@ components:
         priceLookup:
           type: string
           description: >
-            The price lookup code for the article. Whatever identifier is used in the cash register
-            to identify the price group of articles, such as an article ID.
+            The price lookup code for the article. Whatever identifier is used
+            in the cash register to identify the price group of articles, such
+            as an article ID.
         price:
           type: number
           description: >
-            The default price for the articles. Is disregarded for price calculation if priceLookup is present.
-            For scale items this is the price per unit of weight.
+            The default price for the articles. Is disregarded for price
+            calculation if priceLookup is present. For scale items this is the
+            price per unit of weight.
         scale:
           type: object
           description: >
-            Optional scale configuration for the article. If present, the article will be weighed
-            instead of counted. The price will be calculated based on the weight.
+            Optional scale configuration for the article. If present, the
+            article will be weighed instead of counted. The price will be
+            calculated based on the weight.
           properties:
             unit:
               type: string
-              description: >
+              description: |
                 Unit of the weight, e.g. `g` or `kg`.
-            factor: 
+            factor:
               type: number
               description: >
-                The factor by which the unit is multiplied to display the price per unit to the guest.
-                E.g. 100 if the price is denoted in 100g.
+                The factor by which the unit is multiplied to display the price
+                per unit to the guest. E.g. 100 if the price is denoted in 100g.
         id:
           type: string
           description: >
-            Optional unique identifier for the article, such as a GUID. Must not contain any "." or "/" characters.
-            Different articles with the same price on different days should still have different IDs.
-            If not set, a unique ID will be generated internally.
+            Optional unique identifier for the article, such as a GUID. Must not
+            contain any "." or "/" characters. Different articles with the same
+            price on different days should still have different IDs. If not set,
+            a unique ID will be generated internally.
         previewImage:
           type: string
           description: Preview image for the article as base64 encoded string.
-
     SyncedArticles:
       type: array
       items:
         type: object
-        $ref: "#/components/schemas/SyncedArticle"
-
+        $ref: '#/components/schemas/SyncedArticle'
     ScanArticle:
       type: object
       required:
@@ -147,19 +195,19 @@ components:
         priceLookup:
           type: string
           description: >
-            The price lookup code for the article. Whatever identifier is used in the cash register,
-            to identify the price group of articles, such as an article ID.
+            The price lookup code for the article. Whatever identifier is used
+            in the cash register, to identify the price group of articles, such
+            as an article ID.
         id:
           type: string
           description: >
-            Unique identifier for the article, such as a GUID. Must not contain any "." or "/" characters.
-
+            Unique identifier for the article, such as a GUID. Must not contain
+            any "." or "/" characters.
     ScanArticles:
       type: array
       items:
         type: object
-        $ref: "#/components/schemas/ScanArticle"
-
+        $ref: '#/components/schemas/ScanArticle'
     BasketArticle:
       type: object
       required:
@@ -173,54 +221,60 @@ components:
         priceLookup:
           type: string
           description: >
-            The price lookup code for the article. Whatever identifier is used in the cash register
-            to identify the price group of articles, such as an article ID.
+            The price lookup code for the article. Whatever identifier is used
+            in the cash register to identify the price group of articles, such
+            as an article ID.
         price:
           type: number
-          description: The updated price for the article after recalculation with discounts.
+          description: >-
+            The updated price for the article after recalculation with
+            discounts.
         scale:
           type: object
           description: Only present if the article is weighed.
           properties:
             weight:
               type: number
-              description: >
+              description: |
                 The weight of the article in units. 
             unit:
               type: string
               description: >
-                Unit of the weight, e.g. `g` or `kg`. Only present if the article is weighed.
+                Unit of the weight, e.g. `g` or `kg`. Only present if the
+                article is weighed.
         id:
           type: string
           description: >
-            Optional unique identifier for the article, such as a GUID. Must not contain any "." or "/" characters.
-            Must match the IDs that were sent in the original basket.
-            Different articles with the same price on different days should still have different IDs.
-
+            Optional unique identifier for the article, such as a GUID. Must not
+            contain any "." or "/" characters. Must match the IDs that were sent
+            in the original basket. Different articles with the same price on
+            different days should still have different IDs.
     BasketArticles:
       type: array
       items:
         type: object
-        $ref: "#/components/schemas/BasketArticle"
-
+        $ref: '#/components/schemas/BasketArticle'
     SuccessfulPayment:
       type: object
       properties:
         cashRegisterId:
           type: string
-          description: >
+          description: |
             Identifier for the cash register that processed the payment.
         receiptId:
           type: string
           description: >
-            Unique identifier for the receipt, such as a GUID. Must not contain any "." or "/" characters.
+            Unique identifier for the receipt, such as a GUID. Must not contain
+            any "." or "/" characters.
         totalGross:
           type: number
           description: The amount that was payed for the transaction.
           deprecated: true
         receiptUrl:
           type: string
-          description: URL pointing to the digital receipt for the transaction. Will be rendered as QR code.
+          description: >-
+            URL pointing to the digital receipt for the transaction. Will be
+            rendered as QR code.
         remainingBalance:
           type: number
           description: The remaining balance on the card after the transaction.
@@ -229,7 +283,7 @@ components:
           description: The remaining allowance for the guest after the transaction.
         total:
           type: object
-          description: >
+          description: |
             Total amounts of the transaction.
           properties:
             gross:
@@ -247,7 +301,6 @@ components:
       required:
         - total
       additionalProperties: false
-
     FailedPayment:
       type: object
       properties:
@@ -260,13 +313,12 @@ components:
           type: string
           description: Reason for the payment failure.
         message:
-          $ref: "#/components/schemas/I18ned"
+          $ref: '#/components/schemas/I18ned'
           description: Message for the customer on how to proceed with the payment.
       required:
         - reason
         - message
       additionalProperties: false
-
     I18ned:
       type: object
       properties:
@@ -280,8 +332,7 @@ components:
         - en
         - de
       additionalProperties: false
-
-    ApiError:
+    ApiErrorData:
       type: object
       properties:
         reason:
@@ -296,8 +347,7 @@ components:
         - reason
         - message
       additionalProperties: false
-
-    ApiWarning:
+    ApiWarningData:
       type: object
       properties:
         reason:
@@ -309,7 +359,6 @@ components:
         - reason
         - message
       additionalProperties: false
-
     Dialog:
       type: object
       properties:
@@ -317,10 +366,10 @@ components:
           type: string
           description: Identifier for this kind of dialog. E.g. `cardReaderError`.
         title:
-          $ref: "#/components/schemas/I18ned"
+          $ref: '#/components/schemas/I18ned'
           description: Title of the dialog.
         body:
-          $ref: "#/components/schemas/I18ned"
+          $ref: '#/components/schemas/I18ned'
           description: Dialog body to display to the customer.
         buttons:
           type: array
@@ -331,7 +380,7 @@ components:
                 type: string
                 description: Action the button will trigger when pressed.
               label:
-                $ref: "#/components/schemas/I18ned"
+                $ref: '#/components/schemas/I18ned'
                 description: Label to display on the button.
             required:
               - action
@@ -341,13 +390,13 @@ components:
         - title
         - body
       additionalProperties: false
-
   messages:
     syncArticles:
+      title: Sync Articles
       summary: Synchronize available articles in the cash register.
       description: >
-        The synchronized articles are currently used to updated the prices of articles 
-        already available in the Blink app, based on matching PLUs.
+        The synchronized articles are currently used to updated the prices of
+        articles  already available in the Blink app, based on matching PLUs.
       payload:
         type: object
         properties:
@@ -358,7 +407,7 @@ components:
             type: object
             properties:
               articles:
-                $ref: "#/components/schemas/SyncedArticles"
+                $ref: '#/components/schemas/SyncedArticles'
             required:
               - articles
         required:
@@ -370,24 +419,27 @@ components:
             event: syncArticles
             data:
               articles:
-                - id: "a"
-                  name: "Eggs Benedict"
-                  priceLookup: "1"
-                  price: 1.00
-                - id: "b"
-                  name: "Waldorf Salad"
-                  priceLookup: "2"
-                  price: 2.00
-                - id: "c"
-                  name: "Caesar Salad"
-                  priceLookup: "3"
-                  price: 3.00
-
+                - id: a
+                  name: Eggs Benedict
+                  priceLookup: '1'
+                  price: 1
+                - id: b
+                  name: Waldorf Salad
+                  priceLookup: '2'
+                  price: 2
+                - id: c
+                  name: Caesar Salad
+                  priceLookup: '3'
+                  price: 3
     updateBasket:
-      summary: Report a change in article prices in the current basket after guest identification.
+      title: Update Basket
+      summary: >-
+        Report a change in article prices in the current basket after guest
+        identification.
       description: >
-        The updated prices are used to already show the correct total price to the guest during payment.
-        The event should always be send before `articleWeighed` and already include the price of the weighed article.
+        The updated prices are used to already show the correct total price to
+        the guest during payment. The event should always be send before
+        `articleWeighed` and already include the price of the weighed article.
       payload:
         type: object
         properties:
@@ -398,7 +450,7 @@ components:
             type: object
             properties:
               articles:
-                $ref: "#/components/schemas/BasketArticles"
+                $ref: '#/components/schemas/BasketArticles'
             required:
               - articles
         required:
@@ -410,20 +462,20 @@ components:
             event: updateBasket
             data:
               articles:
-                - id: "a"
-                  name: "Eggs Benedict"
-                  priceLookup: "1"
-                  price: 2.00
-                - id: "b"
-                  name: "Waldorf Salad"
-                  priceLookup: "2"
-                  price: 4.00
-                - id: "c"
-                  name: "Caesar Salad"
-                  priceLookup: "3"
-                  price: 6.00
-
+                - id: a
+                  name: Eggs Benedict
+                  priceLookup: '1'
+                  price: 2
+                - id: b
+                  name: Waldorf Salad
+                  priceLookup: '2'
+                  price: 4
+                - id: c
+                  name: Caesar Salad
+                  priceLookup: '3'
+                  price: 6
     setBasket:
+      title: Set Basket
       summary: Set the current basket.
       description: The contents of the basket are completely replaced by the new contents.
       payload:
@@ -436,7 +488,7 @@ components:
             type: object
             properties:
               articles:
-                $ref: "#/components/schemas/ScanArticles"
+                $ref: '#/components/schemas/ScanArticles'
             required:
               - articles
         required:
@@ -449,17 +501,18 @@ components:
             data:
               checkoutId: string
               articles:
-                - id: "abc"
-                  name: "Caesar Salad"
-                  priceLookup: "123"
-                - id: "def"
-                  name: "Beef Stroganoff"
-                  priceLookup: "456"
-
+                - id: abc
+                  name: Caesar Salad
+                  priceLookup: '123'
+                - id: def
+                  name: Beef Stroganoff
+                  priceLookup: '456'
     addArticles:
+      title: Add Articles
       summary: Add articles to the current basket.
       description: >
-        Previous contents of the basket are kept. If no previous basket was open on the cash register side, it should be opened by the message. 
+        Previous contents of the basket are kept. If no previous basket was open
+        on the cash register side, it should be opened by the message. 
       payload:
         type: object
         properties:
@@ -470,7 +523,7 @@ components:
             type: object
             properties:
               articles:
-                $ref: "#/components/schemas/ScanArticles"
+                $ref: '#/components/schemas/ScanArticles'
             required:
               - articles
         required:
@@ -483,22 +536,22 @@ components:
             data:
               checkoutId: string
               articles:
-                - id: "abc"
-                  name: "Caesar Salad"
-                  priceLookup: "123"
-                - id: "def"
-                  name: "Beef Stroganoff"
-                  priceLookup: "456"
-
+                - id: abc
+                  name: Caesar Salad
+                  priceLookup: '123'
+                - id: def
+                  name: Beef Stroganoff
+                  priceLookup: '456'
     weighArticle:
+      title: Weigh Article
       summary: Initiate a weighing operation for an article.
       description: >
-        This event should activate the scale and either way the article if it is already placed on the scale
-        or placed afterwards.
-      payload: 
+        This event should activate the scale and either way the article if it is
+        already placed on the scale or placed afterwards.
+      payload:
         type: object
         properties:
-          event: 
+          event:
             type: string
             const: weighArticle
           data:
@@ -506,7 +559,7 @@ components:
             properties:
               article:
                 type: object
-                $ref: "#/components/schemas/ScanArticle"
+                $ref: '#/components/schemas/ScanArticle'
             required:
               - article
         required:
@@ -518,14 +571,14 @@ components:
             event: weighArticle
             data:
               article:
-                id: "ghi"
-                name: "Salad bar"
+                id: ghi
+                name: Salad bar
                 price: 0.75
-                priceLookup: "123"
+                priceLookup: '123'
                 scale:
-                  unit: "100g"
-
+                  unit: 100g
     startPayment:
+      title: Start Payment
       summary: Initiate the payment for the current basket.
       payload:
         type: object
@@ -539,18 +592,19 @@ components:
               paymentMethod:
                 type: string
                 description: >
-                  Method used to complete the transaction, e.g. `KEY_CARD` or `CREDIT_CARD`. 
-                  Exact values depend on the cash register.
+                  Method used to complete the transaction, e.g. `KEY_CARD` or
+                  `CREDIT_CARD`.  Exact values depend on the cash register.
               checkoutId:
                 type: string
                 description: >
-                  Unique ID for the checkout assigned by the Blink app. 
-                  Useful for reconciliation between the scanner and the cash register.
+                  Unique ID for the checkout assigned by the Blink app.  Useful
+                  for reconciliation between the scanner and the cash register.
               identifier:
                 type: string
                 description: >
-                  Identifier for the guest, such as provided by a QR code or an employee card.
-                  Can be used if a QR code is directly scanned by VisioLab.
+                  Identifier for the guest, such as provided by a QR code or an
+                  employee card. Can be used if a QR code is directly scanned by
+                  VisioLab.
             required:
               - paymentMethod
               - checkoutId
@@ -564,12 +618,12 @@ components:
             data:
               paymentMethod: CREDIT_CARD
               checkoutId: 7KhiQJfcA5pdyzPofILF
-
     printReceipt:
+      title: Print Receipt
       summary: Print a physical receipt for a checkout.
       description: >
-        Prompts the register to print a receipt for the given checkout.
-        If `receiptId` is not provided, the register should print the last receipt.
+        Prompts the register to print a receipt for the given checkout. If
+        `receiptId` is not provided, the register should print the last receipt.
       payload:
         type: object
         properties:
@@ -581,7 +635,7 @@ components:
             properties:
               receiptId:
                 type: string
-                description: >
+                description: |
                   Unique ID for the checkout assigned by the register. 
         required:
           - event
@@ -593,12 +647,12 @@ components:
             data:
               checkoutId: 7KhiQJfcA5pdyzPofILF
               receiptId: 32eab9d1-bacb-4363-a88b-bcd9315ae897
-
     apiError:
+      title: API Error
       summary: Report an error.
       description: >
-        Report an error that occurred either in response to a received event or due to some
-        external factor.
+        Report an error that occurred either in response to a received event or
+        due to some external factor.
       payload:
         type: object
         properties:
@@ -606,19 +660,23 @@ components:
             type: string
             const: error
           data:
-            $ref: "#/components/schemas/ApiError"
+            $ref: '#/components/schemas/ApiErrorData'
+        required:
+          - event
+          - data
+        additionalProperties: false
       examples:
         - payload:
             event: error
             data:
               reason: malformed
-              message: "Event data could not be decoded."
-  
+              message: Event data could not be decoded.
     apiWarning:
+      title: API Warning
       summary: Report a warning.
       description: >
-        Report a warning that occurred either in response to a received event or due to some
-        external factor.
+        Report a warning that occurred either in response to a received event or
+        due to some external factor.
       payload:
         type: object
         properties:
@@ -626,15 +684,19 @@ components:
             type: string
             const: warning
           data:
-            $ref: "#/components/schemas/ApiWarning"
+            $ref: '#/components/schemas/ApiWarningData'
+        required:
+          - event
+          - data
+        additionalProperties: false
       examples:
         - payload:
             event: warning
             data:
               reason: deprecated
-              message: "Field totalGross is deprecated, use `total.gross` instead."
-                
+              message: 'Field totalGross is deprecated, use `total.gross` instead.'
     articleWeighed:
+      title: Article Weighed
       summary: Report the result of a weighing operation.
       payload:
         type: object
@@ -647,7 +709,7 @@ components:
             properties:
               article:
                 type: object
-                $ref: "#/components/schemas/BasketArticle"
+                $ref: '#/components/schemas/BasketArticle'
             required:
               - article
         required:
@@ -659,15 +721,15 @@ components:
             event: articleWeighed
             data:
               article:
-                id: "ghi"
-                name: "Salad bar"
-                priceLookup: "123"
+                id: ghi
+                name: Salad bar
+                priceLookup: '123'
                 price: 3.75
                 scale:
-                  unit: "g"
+                  unit: g
                   weight: 500
-
     weighingFailed:
+      title: Weighing Failed
       summary: Report an error during a weighing operation.
       payload:
         type: object
@@ -682,7 +744,7 @@ components:
                 type: string
                 description: Reason code for the weighing failure.
               message:
-                $ref: "#/components/schemas/I18ned"
+                $ref: '#/components/schemas/I18ned'
             required:
               - reason
               - message
@@ -694,15 +756,16 @@ components:
         - payload:
             event: weighingFailed
             data:
-              reason: "unstable"
+              reason: unstable
               message:
-                en: "Weight not stable."
-                de: "Gewicht nicht stabil."
-
+                en: Weight not stable.
+                de: Gewicht nicht stabil.
     guestAuthenticated:
+      title: Guest Authenticated
       summary: Report that a guest has been authenticated.
       description: >
-        Inform the scanner that payment flows that require upfront authentication can proceed.
+        Inform the scanner that payment flows that require upfront
+        authentication can proceed.
       payload:
         type: object
         properties:
@@ -715,15 +778,17 @@ components:
               identifier:
                 type: string
                 description: >
-                  Identifier for the guest, such as provided by a QR code or an employee card.
+                  Identifier for the guest, such as provided by a QR code or an
+                  employee card.
               group:
                 type: string
                 description: >
-                  The price group of the guest. Whatever identifier is used in the cash register
-                  to identify the price group of guests, e.g. "employee" or "student".
+                  The price group of the guest. Whatever identifier is used in
+                  the cash register to identify the price group of guests, e.g.
+                  "employee" or "student".
               balance:
                 type: number
-                description: >
+                description: |
                   The current balance on the card.
             required:
               - identifier
@@ -735,12 +800,13 @@ components:
         - payload:
             event: guestAuthenticated
             data:
-              identifier: "1234567890"
-
+              identifier: '1234567890'
     guestRemoved:
+      title: Guest Removed
       summary: Report a previously authenticated guest has been removed again.
       description: >
-        Inform the scanner that payment flows that require upfront authentication can no longer proceed.
+        Inform the scanner that payment flows that require upfront
+        authentication can no longer proceed.
       payload:
         type: object
         properties:
@@ -753,7 +819,8 @@ components:
               identifier:
                 type: string
                 description: >
-                  Identifier for the guest, such as provided by a QR code or an employee card.
+                  Identifier for the guest, such as provided by a QR code or an
+                  employee card.
             required:
               - identifier
         required:
@@ -764,9 +831,9 @@ components:
         - payload:
             event: guestRemoved
             data:
-              identifier: "1234567890"
-
+              identifier: '1234567890'
     paymentSuccess:
+      title: Payment Success
       summary: Report the success of a payment.
       payload:
         type: object
@@ -775,7 +842,7 @@ components:
             type: string
             const: paymentSuccess
           data:
-            $ref: "#/components/schemas/SuccessfulPayment"
+            $ref: '#/components/schemas/SuccessfulPayment'
         required:
           - event
           - data
@@ -785,9 +852,9 @@ components:
             event: paymentSuccess
             data:
               total:
-                gross: 5.20
-
+                gross: 5.2
     paymentFailure:
+      title: Payment Failure
       summary: Report the failure of a payment.
       payload:
         type: object
@@ -796,7 +863,7 @@ components:
             type: string
             const: paymentFailure
           data:
-            $ref: "#/components/schemas/FailedPayment"
+            $ref: '#/components/schemas/FailedPayment'
         required:
           - event
           - data
@@ -805,16 +872,16 @@ components:
         - payload:
             event: paymentFailure
             data:
-              reason: "cancelled"
+              reason: cancelled
               message:
-                en: "Please tap your card again."
-                de: "Bitte legen Sie Ihre Karte erneut auf."
-
+                en: Please tap your card again.
+                de: Bitte legen Sie Ihre Karte erneut auf.
     reset:
+      title: Reset
       summary: Reset the cash register.
       description: >
-        Cancel all ongoing transactions and delete all 
-        articles from the current basket.
+        Cancel all ongoing transactions and delete all  articles from the
+        current basket.
       payload:
         type: object
         properties:
@@ -824,16 +891,16 @@ components:
         required:
           - event
         additionalProperties: false
-
     showDialog:
+      title: Show Dialog
       summary: Show a dialog that requires user interaction.
       description: >
-        The dialog will be rendered based on the data, including all buttons.
-        It will report back the button that was pressed with the action that is 
-        attached to the button. The dialog will be closed automatically after
-        a button was pressed. In case a new dialog should be opened, a new 
-        message has to be sent. The dialog can only be shown during checkout
-        and not during scanning.
+        The dialog will be rendered based on the data, including all buttons. It
+        will report back the button that was pressed with the action that is 
+        attached to the button. The dialog will be closed automatically after a
+        button was pressed. In case a new dialog should be opened, a new 
+        message has to be sent. The dialog can only be shown during checkout and
+        not during scanning.
       payload:
         type: object
         properties:
@@ -841,33 +908,33 @@ components:
             type: string
             const: showDialog
           data:
-            $ref: "#/components/schemas/Dialog"
+            $ref: '#/components/schemas/Dialog'
         required:
           - event
           - data
         additionalProperties: false
       examples:
         - payload:
-            event: "showDialog"
+            event: showDialog
             data:
-              id: "survey"
+              id: survey
               title:
-                en: "Survey"
-                de: "Umfrage"
+                en: Survey
+                de: Umfrage
               body:
-                en: "How satisfied are you with the interface?"
-                de: "Wie zufrieden sind Sie mit der Schnittstelle?"
+                en: How satisfied are you with the interface?
+                de: Wie zufrieden sind Sie mit der Schnittstelle?
               buttons:
-                - action: "-1"
+                - action: '-1'
                   label:
-                    en: "Not at all"
-                    de: "Gar nicht"
-                - action: "+1"
+                    en: Not at all
+                    de: Gar nicht
+                - action: '+1'
                   label:
-                    en: "A lot"
-                    de: "Sehr"
-
+                    en: A lot
+                    de: Sehr
     closeDialog:
+      title: Close Dialog
       summary: Close any currently open dialog.
       payload:
         type: object
@@ -889,15 +956,15 @@ components:
         additionalProperties: false
       examples:
         - payload:
-            event: "closeDialog"
+            event: closeDialog
             data:
-              id: "survey"
-
+              id: survey
     userInput:
+      title: User Input
       summary: Report the user's response to a dialog.
       description: >
-        Reports the action of the button that was pressed in a dialog. 
-        The actions corresponds to what was set in the `showDialog` message.
+        Reports the action of the button that was pressed in a dialog.  The
+        actions corresponds to what was set in the `showDialog` message.
       payload:
         type: object
         properties:
@@ -920,7 +987,7 @@ components:
         additionalProperties: false
       examples:
         - payload:
-            event: "userInput"
+            event: userInput
             data:
-              id: "survey"
-              action: "+1"
+              id: survey
+              action: '+1'
