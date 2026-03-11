@@ -13,10 +13,7 @@
     ],
     "ignoredBuiltDependencies": [
       "yarn"
-    ],
-    "overrides": {
-      "@asyncapi/studio": "npm:empty-npm-package@1.0.0"
-    }
+    ]
   },
   "scripts": {
     "start": "pnpm run build && pnpm run preview",
