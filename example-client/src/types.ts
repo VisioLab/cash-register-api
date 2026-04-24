@@ -175,6 +175,14 @@ export interface WeighingFailed {
        * The German text.
        */
       de: string;
+      /**
+       * The Dutch text.
+       */
+      nl?: string;
+      /**
+       * The Japanese text.
+       */
+      ja?: string;
     };
   };
 }
@@ -246,6 +254,14 @@ export interface PaymentFailure {
        * The German text.
        */
       de: string;
+      /**
+       * The Dutch text.
+       */
+      nl?: string;
+      /**
+       * The Japanese text.
+       */
+      ja?: string;
     };
   };
 }
@@ -266,6 +282,14 @@ export interface ShowDialog {
        * The German text.
        */
       de: string;
+      /**
+       * The Dutch text.
+       */
+      nl?: string;
+      /**
+       * The Japanese text.
+       */
+      ja?: string;
     };
     body: {
       /**
@@ -276,6 +300,14 @@ export interface ShowDialog {
        * The German text.
        */
       de: string;
+      /**
+       * The Dutch text.
+       */
+      nl?: string;
+      /**
+       * The Japanese text.
+       */
+      ja?: string;
     };
     buttons?: {
       /**
@@ -291,6 +323,14 @@ export interface ShowDialog {
          * The German text.
          */
         de: string;
+        /**
+         * The Dutch text.
+         */
+        nl?: string;
+        /**
+         * The Japanese text.
+         */
+        ja?: string;
       };
     }[];
   };
@@ -597,6 +637,14 @@ export interface I18Ned {
    * The German text.
    */
   de: string;
+  /**
+   * The Dutch text.
+   */
+  nl?: string;
+  /**
+   * The Japanese text.
+   */
+  ja?: string;
 }
 
 export interface SuccessfulPayment {
@@ -661,6 +709,14 @@ export interface FailedPayment {
      * The German text.
      */
     de: string;
+    /**
+     * The Dutch text.
+     */
+    nl?: string;
+    /**
+     * The Japanese text.
+     */
+    ja?: string;
   };
 }
 
@@ -678,6 +734,14 @@ export interface Dialog {
      * The German text.
      */
     de: string;
+    /**
+     * The Dutch text.
+     */
+    nl?: string;
+    /**
+     * The Japanese text.
+     */
+    ja?: string;
   };
   body: {
     /**
@@ -688,6 +752,14 @@ export interface Dialog {
      * The German text.
      */
     de: string;
+    /**
+     * The Dutch text.
+     */
+    nl?: string;
+    /**
+     * The Japanese text.
+     */
+    ja?: string;
   };
   buttons?: {
     /**
@@ -703,6 +775,14 @@ export interface Dialog {
        * The German text.
        */
       de: string;
+      /**
+       * The Dutch text.
+       */
+      nl?: string;
+      /**
+       * The Japanese text.
+       */
+      ja?: string;
     };
   }[];
 }
