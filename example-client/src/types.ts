@@ -1,21 +1,21 @@
 export interface SyncArticles {
-  event: "syncArticles";
+  event: "syncArticles"
   data: {
     articles: {
       /**
        * Name of the article.
        */
-      name: string;
+      name: string
       /**
        * The price lookup code for the article. Whatever identifier is used in the cash register to identify the price group of articles, such as an article ID.
        *
        */
-      priceLookup: string;
+      priceLookup: string
       /**
        * The default price for the articles. Is disregarded for price calculation if priceLookup is present. For scale items this is the price per unit of weight.
        *
        */
-      price: number;
+      price: number
       /**
        * Optional scale configuration for the article. If present, the article will be weighed instead of counted. The price will be calculated based on the weight.
        *
@@ -25,43 +25,43 @@ export interface SyncArticles {
          * Unit of the weight, e.g. `g` or `kg`.
          *
          */
-        unit?: string;
+        unit?: string
         /**
          * The factor by which the unit is multiplied to display the price per unit to the guest. E.g. 100 if the price is denoted in 100g.
          *
          */
-        factor?: number;
-      };
+        factor?: number
+      }
       /**
        * Optional unique identifier for the article, such as a GUID. Must not contain any "." or "/" characters. Different articles with the same price on different days should still have different IDs. If not set, a unique ID will be generated internally.
        *
        */
-      id?: string;
+      id?: string
       /**
        * Preview image for the article as base64 encoded string.
        */
-      previewImage?: string;
-    }[];
-  };
+      previewImage?: string
+    }[]
+  }
 }
 
 export interface UpdateBasket {
-  event: "updateBasket";
+  event: "updateBasket"
   data: {
     articles: {
       /**
        * Name of the article.
        */
-      name: string;
+      name: string
       /**
        * The price lookup code for the article. Whatever identifier is used in the cash register to identify the price group of articles, such as an article ID.
        *
        */
-      priceLookup: string;
+      priceLookup: string
       /**
        * The updated price for the article after recalculation with discounts.
        */
-      price: number;
+      price: number
       /**
        * Only present if the article is weighed.
        */
@@ -70,71 +70,71 @@ export interface UpdateBasket {
          * The weight of the article in units.
          *
          */
-        weight?: number;
+        weight?: number
         /**
          * Unit of the weight, e.g. `g` or `kg`. Only present if the article is weighed.
          *
          */
-        unit?: string;
-      };
+        unit?: string
+      }
       /**
        * Optional unique identifier for the article, such as a GUID. Must not contain any "." or "/" characters. Must match the IDs that were sent in the original basket. Different articles with the same price on different days should still have different IDs.
        *
        */
-      id?: string;
-    }[];
-  };
+      id?: string
+    }[]
+  }
 }
 
 export interface GuestAuthenticated {
-  event: "guestAuthenticated";
+  event: "guestAuthenticated"
   data: {
     /**
      * Identifier for the guest, such as provided by a QR code or an employee card.
      *
      */
-    identifier: string;
+    identifier: string
     /**
      * The price group of the guest. Whatever identifier is used in the cash register to identify the price group of guests, e.g. "employee" or "student".
      *
      */
-    group?: string;
+    group?: string
     /**
      * The current balance on the card.
      *
      */
-    balance?: number;
-  };
+    balance?: number
+  }
 }
 
 export interface GuestRemoved {
-  event: "guestRemoved";
+  event: "guestRemoved"
   data: {
     /**
      * Identifier for the guest, such as provided by a QR code or an employee card.
      *
      */
-    identifier: string;
-  };
+    identifier: string
+  }
 }
 
 export interface ArticleWeighed {
-  event: "articleWeighed";
+  event: "articleWeighed"
   data: {
     article: {
       /**
        * Name of the article.
        */
-      name: string;
+      name: string
       /**
        * The price lookup code for the article. Whatever identifier is used in the cash register to identify the price group of articles, such as an article ID.
        *
        */
-      priceLookup: string;
+      priceLookup: string
       /**
        * The updated price for the article after recalculation with discounts.
        */
-      price: number;
+      price: number
       /**
        * Only present if the article is weighed.
        */
@@ -143,80 +143,80 @@ export interface ArticleWeighed {
          * The weight of the article in units.
          *
          */
-        weight?: number;
+        weight?: number
         /**
          * Unit of the weight, e.g. `g` or `kg`. Only present if the article is weighed.
          *
          */
-        unit?: string;
-      };
+        unit?: string
+      }
       /**
        * Optional unique identifier for the article, such as a GUID. Must not contain any "." or "/" characters. Must match the IDs that were sent in the original basket. Different articles with the same price on different days should still have different IDs.
        *
        */
-      id?: string;
-    };
-  };
+      id?: string
+    }
+  }
 }
 
 export interface WeighingFailed {
-  event: "weighingFailed";
+  event: "weighingFailed"
   data: {
     /**
      * Reason code for the weighing failure.
      */
-    reason: string;
+    reason: string
     message: {
       /**
        * The English text.
        */
-      en: string;
+      en: string
       /**
        * The German text.
        */
-      de: string;
+      de: string
       /**
        * The Dutch text.
        */
-      nl?: string;
+      nl?: string
       /**
        * The Japanese text.
        */
-      ja?: string;
-    };
-  };
+      ja?: string
+    }
+  }
 }
 
 export interface PaymentSuccess {
-  event: "paymentSuccess";
+  event: "paymentSuccess"
   data: {
     /**
      * Identifier for the cash register that processed the payment.
      *
      */
-    cashRegisterId?: string;
+    cashRegisterId?: string
     /**
      * Unique identifier for the receipt, such as a GUID. Must not contain any "." or "/" characters.
      *
      */
-    receiptId?: string;
+    receiptId?: string
     /**
      * @deprecated
      * The amount that was payed for the transaction.
      */
-    totalGross?: number;
+    totalGross?: number
     /**
      * URL pointing to the digital receipt for the transaction. Will be rendered as QR code.
      */
-    receiptUrl?: string;
+    receiptUrl?: string
     /**
      * The remaining balance on the card after the transaction.
      */
-    remainingBalance?: number;
+    remainingBalance?: number
     /**
      * The remaining allowance for the guest after the transaction.
      */
-    remainingAllowance?: number;
+    remainingAllowance?: number
     /**
      * Total amounts of the transaction.
      *
@@ -225,268 +225,268 @@ export interface PaymentSuccess {
       /**
        * The amount that was payed for the transaction.
        */
-      gross: number;
+      gross: number
       /**
        * The amount of taxes that was payed for the transaction.
        */
-      tax?: number;
+      tax?: number
       /**
        * The amount without taxes that was payed for the transaction.
        */
-      net?: number;
-    };
-  };
+      net?: number
+    }
+  }
 }
 
 export interface PaymentFailure {
-  event: "paymentFailure";
+  event: "paymentFailure"
   data: {
     /**
      * Reason for the payment failure.
      */
-    reason: "cancelled" | "cardRemovedTooQuickly" | "insufficientBalance" | "other";
+    reason: "cancelled" | "cardRemovedTooQuickly" | "insufficientBalance" | "other"
     message: {
       /**
        * The English text.
        */
-      en: string;
+      en: string
       /**
        * The German text.
        */
-      de: string;
+      de: string
       /**
        * The Dutch text.
        */
-      nl?: string;
+      nl?: string
       /**
        * The Japanese text.
        */
-      ja?: string;
-    };
-  };
+      ja?: string
+    }
+  }
 }
 
 export interface ShowDialog {
-  event: "showDialog";
+  event: "showDialog"
   data: {
     /**
      * Identifier for this kind of dialog. E.g. `cardReaderError`.
      */
-    id: string;
+    id: string
     title: {
       /**
        * The English text.
        */
-      en: string;
+      en: string
       /**
        * The German text.
        */
-      de: string;
+      de: string
       /**
        * The Dutch text.
        */
-      nl?: string;
+      nl?: string
       /**
        * The Japanese text.
        */
-      ja?: string;
-    };
+      ja?: string
+    }
     body: {
       /**
        * The English text.
        */
-      en: string;
+      en: string
       /**
        * The German text.
        */
-      de: string;
+      de: string
       /**
        * The Dutch text.
        */
-      nl?: string;
+      nl?: string
       /**
        * The Japanese text.
        */
-      ja?: string;
-    };
+      ja?: string
+    }
     buttons?: {
       /**
        * Action the button will trigger when pressed.
        */
-      action: string;
+      action: string
       label: {
         /**
          * The English text.
          */
-        en: string;
+        en: string
         /**
          * The German text.
          */
-        de: string;
+        de: string
         /**
          * The Dutch text.
          */
-        nl?: string;
+        nl?: string
         /**
          * The Japanese text.
          */
-        ja?: string;
-      };
-    }[];
-  };
+        ja?: string
+      }
+    }[]
+  }
 }
 
 export interface CloseDialog {
-  event: "closeDialog";
+  event: "closeDialog"
   data: {
     /**
      * Identifier for this kind of dialog. E.g. `cardReaderError`.
      */
-    id: string;
-  };
+    id: string
+  }
 }
 
 export interface ApiError {
-  event: "error";
+  event: "error"
   data: {
-    reason: "malformed" | "internal" | "unexpectedEvent" | "unknown";
-    message: string;
-  };
+    reason: "malformed" | "internal" | "unexpectedEvent" | "unknown"
+    message: string
+  }
 }
 
 export interface ApiWarning {
-  event: "warning";
+  event: "warning"
   data: {
-    reason: "deprecated";
-    message: string;
-  };
+    reason: "deprecated"
+    message: string
+  }
 }
 
 export interface SetBasket {
-  event: "setBasket";
+  event: "setBasket"
   data: {
     articles: {
       /**
        * Name of the article.
        */
-      name: string;
+      name: string
       /**
        * The price lookup code for the article. Whatever identifier is used in the cash register, to identify the price group of articles, such as an article ID.
        *
        */
-      priceLookup: string;
+      priceLookup: string
       /**
        * Unique identifier for the article, such as a GUID. Must not contain any "." or "/" characters.
        *
        */
-      id: string;
-    }[];
-  };
+      id: string
+    }[]
+  }
 }
 
 export interface AddArticles {
-  event: "addArticles";
+  event: "addArticles"
   data: {
     articles: {
       /**
        * Name of the article.
        */
-      name: string;
+      name: string
       /**
        * The price lookup code for the article. Whatever identifier is used in the cash register, to identify the price group of articles, such as an article ID.
        *
        */
-      priceLookup: string;
+      priceLookup: string
       /**
        * Unique identifier for the article, such as a GUID. Must not contain any "." or "/" characters.
        *
        */
-      id: string;
-    }[];
-  };
+      id: string
+    }[]
+  }
 }
 
 export interface WeighArticle {
-  event: "weighArticle";
+  event: "weighArticle"
   data: {
     article: {
       /**
        * Name of the article.
        */
-      name: string;
+      name: string
       /**
        * The price lookup code for the article. Whatever identifier is used in the cash register, to identify the price group of articles, such as an article ID.
        *
        */
-      priceLookup: string;
+      priceLookup: string
       /**
        * Unique identifier for the article, such as a GUID. Must not contain any "." or "/" characters.
        *
        */
-      id: string;
-    };
-  };
+      id: string
+    }
+  }
 }
 
 export interface StartPayment {
-  event: "startPayment";
+  event: "startPayment"
   data: {
     /**
      * Method used to complete the transaction, e.g. `KEY_CARD` or `CREDIT_CARD`.  Exact values depend on the cash register.
      *
      */
-    paymentMethod: string;
+    paymentMethod: string
     /**
      * Unique ID for the checkout assigned by the Blink app.  Useful for reconciliation between the scanner and the cash register.
      *
      */
-    checkoutId: string;
+    checkoutId: string
     /**
      * Identifier for the guest, such as provided by a QR code or an employee card. Can be used if a QR code is directly scanned by VisioLab.
      *
      */
-    identifier?: string;
-  };
+    identifier?: string
+  }
 }
 
 export interface PrintReceipt {
-  event: "printReceipt";
+  event: "printReceipt"
   data: {
     /**
      * Unique ID for the checkout assigned by the register.
      *
      */
-    receiptId?: string;
-  };
+    receiptId?: string
+  }
 }
 
 export interface UserInput {
-  event: "userInput";
+  event: "userInput"
   data: {
-    id: string;
-    action: string;
-  };
+    id: string
+    action: string
+  }
 }
 
 export interface Reset {
-  event: "reset";
+  event: "reset"
 }
 
 export type SyncedArticles = {
   /**
    * Name of the article.
    */
-  name: string;
+  name: string
   /**
    * The price lookup code for the article. Whatever identifier is used in the cash register to identify the price group of articles, such as an article ID.
    *
    */
-  priceLookup: string;
+  priceLookup: string
   /**
    * The default price for the articles. Is disregarded for price calculation if priceLookup is present. For scale items this is the price per unit of weight.
    *
    */
-  price: number;
+  price: number
   /**
    * Optional scale configuration for the article. If present, the article will be weighed instead of counted. The price will be calculated based on the weight.
    *
@@ -496,39 +496,39 @@ export type SyncedArticles = {
      * Unit of the weight, e.g. `g` or `kg`.
      *
      */
-    unit?: string;
+    unit?: string
     /**
      * The factor by which the unit is multiplied to display the price per unit to the guest. E.g. 100 if the price is denoted in 100g.
      *
      */
-    factor?: number;
-  };
+    factor?: number
+  }
   /**
    * Optional unique identifier for the article, such as a GUID. Must not contain any "." or "/" characters. Different articles with the same price on different days should still have different IDs. If not set, a unique ID will be generated internally.
    *
    */
-  id?: string;
+  id?: string
   /**
    * Preview image for the article as base64 encoded string.
    */
-  previewImage?: string;
-}[];
+  previewImage?: string
+}[]
 
 export interface SyncedArticle {
   /**
    * Name of the article.
    */
-  name: string;
+  name: string
   /**
    * The price lookup code for the article. Whatever identifier is used in the cash register to identify the price group of articles, such as an article ID.
    *
    */
-  priceLookup: string;
+  priceLookup: string
   /**
    * The default price for the articles. Is disregarded for price calculation if priceLookup is present. For scale items this is the price per unit of weight.
    *
    */
-  price: number;
+  price: number
   /**
    * Optional scale configuration for the article. If present, the article will be weighed instead of counted. The price will be calculated based on the weight.
    *
@@ -538,38 +538,38 @@ export interface SyncedArticle {
      * Unit of the weight, e.g. `g` or `kg`.
      *
      */
-    unit?: string;
+    unit?: string
     /**
      * The factor by which the unit is multiplied to display the price per unit to the guest. E.g. 100 if the price is denoted in 100g.
      *
      */
-    factor?: number;
-  };
+    factor?: number
+  }
   /**
    * Optional unique identifier for the article, such as a GUID. Must not contain any "." or "/" characters. Different articles with the same price on different days should still have different IDs. If not set, a unique ID will be generated internally.
    *
    */
-  id?: string;
+  id?: string
   /**
    * Preview image for the article as base64 encoded string.
    */
-  previewImage?: string;
+  previewImage?: string
 }
 
 export type BasketArticles = {
   /**
    * Name of the article.
    */
-  name: string;
+  name: string
   /**
    * The price lookup code for the article. Whatever identifier is used in the cash register to identify the price group of articles, such as an article ID.
    *
    */
-  priceLookup: string;
+  priceLookup: string
   /**
    * The updated price for the article after recalculation with discounts.
    */
-  price: number;
+  price: number
   /**
    * Only present if the article is weighed.
    */
@@ -578,34 +578,34 @@ export type BasketArticles = {
      * The weight of the article in units.
      *
      */
-    weight?: number;
+    weight?: number
     /**
      * Unit of the weight, e.g. `g` or `kg`. Only present if the article is weighed.
      *
      */
-    unit?: string;
-  };
+    unit?: string
+  }
   /**
    * Optional unique identifier for the article, such as a GUID. Must not contain any "." or "/" characters. Must match the IDs that were sent in the original basket. Different articles with the same price on different days should still have different IDs.
    *
    */
-  id?: string;
-}[];
+  id?: string
+}[]
 
 export interface BasketArticle {
   /**
    * Name of the article.
    */
-  name: string;
+  name: string
   /**
    * The price lookup code for the article. Whatever identifier is used in the cash register to identify the price group of articles, such as an article ID.
    *
    */
-  priceLookup: string;
+  priceLookup: string
   /**
    * The updated price for the article after recalculation with discounts.
    */
-  price: number;
+  price: number
   /**
    * Only present if the article is weighed.
    */
@@ -614,37 +614,37 @@ export interface BasketArticle {
      * The weight of the article in units.
      *
      */
-    weight?: number;
+    weight?: number
     /**
      * Unit of the weight, e.g. `g` or `kg`. Only present if the article is weighed.
      *
      */
-    unit?: string;
-  };
+    unit?: string
+  }
   /**
    * Optional unique identifier for the article, such as a GUID. Must not contain any "." or "/" characters. Must match the IDs that were sent in the original basket. Different articles with the same price on different days should still have different IDs.
    *
    */
-  id?: string;
+  id?: string
 }
 
 export interface I18Ned {
   /**
    * The English text.
    */
-  en: string;
+  en: string
   /**
    * The German text.
    */
-  de: string;
+  de: string
   /**
    * The Dutch text.
    */
-  nl?: string;
+  nl?: string
   /**
    * The Japanese text.
    */
-  ja?: string;
+  ja?: string
 }
 
 export interface SuccessfulPayment {
@@ -652,29 +652,29 @@ export interface SuccessfulPayment {
    * Identifier for the cash register that processed the payment.
    *
    */
-  cashRegisterId?: string;
+  cashRegisterId?: string
   /**
    * Unique identifier for the receipt, such as a GUID. Must not contain any "." or "/" characters.
    *
    */
-  receiptId?: string;
+  receiptId?: string
   /**
    * @deprecated
    * The amount that was payed for the transaction.
    */
-  totalGross?: number;
+  totalGross?: number
   /**
    * URL pointing to the digital receipt for the transaction. Will be rendered as QR code.
    */
-  receiptUrl?: string;
+  receiptUrl?: string
   /**
    * The remaining balance on the card after the transaction.
    */
-  remainingBalance?: number;
+  remainingBalance?: number
   /**
    * The remaining allowance for the guest after the transaction.
    */
-  remainingAllowance?: number;
+  remainingAllowance?: number
   /**
    * Total amounts of the transaction.
    *
@@ -683,150 +683,150 @@ export interface SuccessfulPayment {
     /**
      * The amount that was payed for the transaction.
      */
-    gross: number;
+    gross: number
     /**
      * The amount of taxes that was payed for the transaction.
      */
-    tax?: number;
+    tax?: number
     /**
      * The amount without taxes that was payed for the transaction.
      */
-    net?: number;
-  };
+    net?: number
+  }
 }
 
 export interface FailedPayment {
   /**
    * Reason for the payment failure.
    */
-  reason: "cancelled" | "cardRemovedTooQuickly" | "insufficientBalance" | "other";
+  reason: "cancelled" | "cardRemovedTooQuickly" | "insufficientBalance" | "other"
   message: {
     /**
      * The English text.
      */
-    en: string;
+    en: string
     /**
      * The German text.
      */
-    de: string;
+    de: string
     /**
      * The Dutch text.
      */
-    nl?: string;
+    nl?: string
     /**
      * The Japanese text.
      */
-    ja?: string;
-  };
+    ja?: string
+  }
 }
 
 export interface Dialog {
   /**
    * Identifier for this kind of dialog. E.g. `cardReaderError`.
    */
-  id: string;
+  id: string
   title: {
     /**
      * The English text.
      */
-    en: string;
+    en: string
     /**
      * The German text.
      */
-    de: string;
+    de: string
     /**
      * The Dutch text.
      */
-    nl?: string;
+    nl?: string
     /**
      * The Japanese text.
      */
-    ja?: string;
-  };
+    ja?: string
+  }
   body: {
     /**
      * The English text.
      */
-    en: string;
+    en: string
     /**
      * The German text.
      */
-    de: string;
+    de: string
     /**
      * The Dutch text.
      */
-    nl?: string;
+    nl?: string
     /**
      * The Japanese text.
      */
-    ja?: string;
-  };
+    ja?: string
+  }
   buttons?: {
     /**
      * Action the button will trigger when pressed.
      */
-    action: string;
+    action: string
     label: {
       /**
        * The English text.
        */
-      en: string;
+      en: string
       /**
        * The German text.
        */
-      de: string;
+      de: string
       /**
        * The Dutch text.
        */
-      nl?: string;
+      nl?: string
       /**
        * The Japanese text.
        */
-      ja?: string;
-    };
-  }[];
+      ja?: string
+    }
+  }[]
 }
 
 export interface ApiErrorData {
-  reason: "malformed" | "internal" | "unexpectedEvent" | "unknown";
-  message: string;
+  reason: "malformed" | "internal" | "unexpectedEvent" | "unknown"
+  message: string
 }
 
 export interface ApiWarningData {
-  reason: "deprecated";
-  message: string;
+  reason: "deprecated"
+  message: string
 }
 
 export type ScanArticles = {
   /**
    * Name of the article.
    */
-  name: string;
+  name: string
   /**
    * The price lookup code for the article. Whatever identifier is used in the cash register, to identify the price group of articles, such as an article ID.
    *
    */
-  priceLookup: string;
+  priceLookup: string
   /**
    * Unique identifier for the article, such as a GUID. Must not contain any "." or "/" characters.
    *
    */
-  id: string;
-}[];
+  id: string
+}[]
 
 export interface ScanArticle {
   /**
    * Name of the article.
    */
-  name: string;
+  name: string
   /**
    * The price lookup code for the article. Whatever identifier is used in the cash register, to identify the price group of articles, such as an article ID.
    *
    */
-  priceLookup: string;
+  priceLookup: string
   /**
    * Unique identifier for the article, such as a GUID. Must not contain any "." or "/" characters.
    *
    */
-  id: string;
+  id: string
 }

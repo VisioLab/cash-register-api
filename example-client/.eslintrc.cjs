@@ -10,7 +10,7 @@ module.exports = {
     "plugin:import/warnings",
     "plugin:import/typescript",
     "plugin:@typescript-eslint/recommended",
-    "prettier"
+    "prettier",
   ],
   parser: "@typescript-eslint/parser",
   parserOptions: {
@@ -19,11 +19,7 @@ module.exports = {
   },
   ignorePatterns: [
     "dist/", // Ignore built files.
-    "vite.config.ts"
+    "vite.config.ts",
   ],
-  plugins: [
-    "@typescript-eslint",
-    "import",
-  ],
-
-};
+  plugins: ["@typescript-eslint", "import"],
+}
