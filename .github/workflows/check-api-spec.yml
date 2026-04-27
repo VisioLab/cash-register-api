@@ -28,3 +28,17 @@ jobs:
         run: |
           pnpm install --frozen-lockfile
           pnpm run validate
+
+  automerge:
+    if: ${{ github.event_name == 'pull_request' && github.actor == 'dependabot[bot]' }}
+    needs: validate
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      contents: write
+    steps:
+      - uses: fastify/github-action-merge-dependabot@30c3f8f14a4f7b315ba38dbc1b793d27128fef82 # v3.12.0
+        with:
+          target: minor
+          use-github-auto-merge: true
+          github-token: ${{ secrets.GITHUB_TOKEN }}
