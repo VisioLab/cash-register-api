@@ -13,7 +13,10 @@
     ],
     "ignoredBuiltDependencies": [
       "yarn"
-    ]
+    ],
+    "overrides": {
+      "lodash@<=4.18.1": "4.18.1"
+    }
   },
   "scripts": {
     "start": "pnpm run build && pnpm run preview",
