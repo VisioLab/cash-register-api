@@ -15,7 +15,8 @@
       "yarn"
     ],
     "overrides": {
-      "lodash@<=4.18.1": "4.18.1"
+      "lodash@<=4.18.1": "4.18.1",
+      "@asyncapi/studio>next": "15.5.24"
     }
   },
   "scripts": {
