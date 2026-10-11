@@ -16,7 +16,8 @@
     ],
     "overrides": {
       "lodash@<=4.18.1": "4.18.1",
-      "@asyncapi/studio>next": "15.5.24"
+      "@asyncapi/studio>next": "15.5.24",
+      "simple-git@3": "4.0.1"
     }
   },
   "scripts": {
