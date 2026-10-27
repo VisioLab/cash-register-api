@@ -16,7 +16,7 @@
     ],
     "overrides": {
       "lodash@<=4.18.1": "4.18.1",
-      "@asyncapi/studio>next": "15.5.24"
+      "simple-git@3": "4.0.1"
     }
   },
   "scripts": {
@@ -33,7 +33,7 @@
     "validate": "pnpm exec asyncapi validate ../api.yml"
   },
   "dependencies": {
-    "@asyncapi/cli": "^6.0.0",
+    "@asyncapi/cli": "^6.1.0",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
     "@mui/material": "^7.0.0",
